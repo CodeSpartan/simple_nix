@@ -51,18 +51,5 @@
         ./configuration.nix
       ];
     };
-
-    # Expose overlaid CLI tools for lightweight hash computation in CI.
-    # `nix build ./nixos#claude-code` builds just that package (no NixOS config eval).
-    # Separate nixpkgs instantiation is intentional -- avoids full NixOS config eval in CI.
-    packages.x86_64-linux = let
-      pkgs = import nixpkgs {
-        system = "x86_64-linux";
-        config.allowUnfree = true;
-        overlays = [ cliToolsOverlay ];
-      };
-    in {
-      inherit (pkgs) claude-code opencode codex br;
-    };
   };
 }

@@ -26,10 +26,10 @@ nixos/                   # NixOS system config (flake-based)
   programs.nix           # system packages, steam, docker, flatpak
   auto-upgrade.nix       # nightly check for upstream updates + notification
   nordvpn.nix            # NordVPN daemon + GUI (FHS-wrapped from .deb)
-  overlays/cli-tools.nix # version overlay for AI coding tools
+  overlays/cli-tools.nix # br built from source (upstream flake is broken)
   home/                  # home-manager modules
 scripts/
-  update-tools.sh        # bump AI tool versions + hashes
+  install-ai-tools.sh    # native install of claude-code + codex to ~/.local/bin
   add-secret.sh          # add and wire up a new agenix secret
 config/                  # dotfiles (most symlinked by link.sh)
   nvim/                  # Neovim (NvChad), symlinked
@@ -136,7 +136,7 @@ Relog (SDDM) to pick up the new Hyprland session.
 - **Go**: go, gopls
 - **JVM**: JDK, Kotlin, kotlin-language-server
 - **Neovim**: NvChad-based, LSPs from nix (clangd, basedpyright, ruff, rust-analyzer, ts_ls, bashls), conform.nvim for formatting. See [`config/nvim/CHEATSHEET.md`](config/nvim/CHEATSHEET.md)
-- **AI coding tools**: claude-code, codex, opencode are managed via a [version overlay](#auto-updating-cli-tools) that stays ahead of nixpkgs
+- **AI coding tools**: claude-code and codex install natively via [`scripts/install-ai-tools.sh`](#ai-coding-tools) (they update too often for OS rebuilds)
 - **AMD uProf** (optional, AMD CPUs only) -- microarchitectural profiler: IBS sampling, Zen PMU counters, cache/mem/branch/TLB events, power timechart. See [AMD uProf setup](#amd-uprof-optional)
 - **NVIDIA Nsight Graphics** (optional, NVIDIA GPUs only) -- headless frame debugger and GPU profiler CLI for Vulkan/OpenGL/DirectX. See [Nsight Graphics setup](#nvidia-nsight-graphics-optional)
 
@@ -339,31 +339,20 @@ bootctl status
 
 To boot Windows: press F11 at POST for the boot device menu, select the Windows drive. BitLocker will ask for the recovery key once after key enrollment, then re-seals automatically.
 
-## Auto-Updating CLI Tools
+## AI Coding Tools
 
-AI coding tools (claude-code, codex, opencode) update faster than nixpkgs can merge PRs. Rather than wait 1-2 weeks, a version overlay bumps them ahead of nixpkgs automatically.
-
-### How it works
-
-```
-nixos/overlays/cli-tools.nix   # version pins + hashes (patched by the update script)
-scripts/update-tools.sh        # checks npm/GitHub, computes hashes, patches the overlay
-.github/workflows/             # CI checks every 6h, creates a PR on change
-nixos/auto-upgrade.nix         # systemd timer: checks for updates nightly at 04:00, notifies user
-```
-
-The nightly update check is **enabled by default** (`autoUpgrade = true` in `host.nix`). It fetches `origin/main` and notifies you (shell login + desktop notification) if your local branch is behind. You rebuild manually with `./install.sh`. Set to `false` to disable.
-
-When nixpkgs catches up or passes the overlay version, the overlay becomes a no-op -- the nixpkgs package is used as-is with zero overhead.
-
-### Manual update
+claude-code and codex release too often to package in nix (an OS rebuild per bump). They install natively to `~/.local/bin` (already on PATH via home-manager):
 
 ```bash
-./scripts/update-tools.sh              # bump all tools
-./scripts/update-tools.sh --tool codex # bump one tool
-./scripts/update-tools.sh --dry-run    # preview without changing files
-./install.sh                           # apply
+./scripts/install-ai-tools.sh          # install/update both
+./scripts/install-ai-tools.sh codex    # just one
 ```
+
+claude-code uses Anthropic's official installer and self-updates afterwards. codex installs from npm (`@openai/codex`, vendors static musl binaries that run on NixOS unpatched) with `--prefix ~/.local`; rerun the script to update it.
+
+br is built from source in `nixos/overlays/cli-tools.nix` because its upstream flake is broken.
+
+The nightly update check (`nixos/auto-upgrade.nix`) is **enabled by default** (`autoUpgrade = true` in `host.nix`). It fetches `origin/main` and notifies you (shell login + desktop notification) if your local branch is behind. You rebuild manually with `./install.sh`. Set to `false` to disable.
 
 ## Secrets
 

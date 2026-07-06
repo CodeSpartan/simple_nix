@@ -1,33 +1,11 @@
-# Overlay for AI coding CLI tools.
-# Versions and hashes are grouped at the top for easy programmatic updates.
-# When the overlay version matches nixpkgs, the upstream package is used as-is.
+# Overlay for CLI tools not usable straight from nixpkgs.
+# claude-code and codex are intentionally NOT packaged here: they release
+# too often to justify an OS rebuild per bump. They install natively to
+# ~/.local/bin via scripts/install-ai-tools.sh instead.
 { fenix }:
 final: prev:
 
 let
-  # -- claude-code (prebuilt native binary from Anthropic GCS) ---------
-  # 2.1.113+ ships a Bun-compiled single-file binary (no cli.js). We fetch
-  # the per-platform binary directly and wrap it; buildNpmPackage is bypassed.
-  claudeCodeVersion = "2.1.200";
-  claudeCodeNativeHashes = {
-    x86_64-linux   = "sha256-JuQqMmiXnwxaO2wPN1sV3X3s+q5LsCd0OQ1qI/TNUa0=";
-    aarch64-linux  = "sha256-Q0q4XNIV731c16/B0CwKlcBSE1fYgZ9wyne2tLHFJz0=";
-    x86_64-darwin  = "sha256-sKTdVqkbJOGMn4O1Cn8ZmJ7Lq6PSrkv28/lfQDOoc3E=";
-    aarch64-darwin = "sha256-5v1SwMcv+DZjvzy/yDO0X6q6K5qZUoYyedw8/BoEkrY=";
-  };
-  claudeCodeNativePlatform = {
-    x86_64-linux   = "linux-x64";
-    aarch64-linux  = "linux-arm64";
-    x86_64-darwin  = "darwin-x64";
-    aarch64-darwin = "darwin-arm64";
-  };
-  claudeCodeGcsBase = "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases";
-
-  # -- opencode (stdenvNoCC + Bun, GitHub source) ----------------------
-  opencodeVersion = "1.17.13";
-  opencodeSrcHash = "sha256-WE8+O+Od8M71fKoOOhE9CbTsJ0JMAi0ZajmYd//VG2k=";
-  opencodeNodeModulesHash = "sha256-SUNfdHtASPh1mpxKvIKJ2GrDHAxmv7Gu7B7vr3PX5W4=";
-
   # -- br / beads_rust (buildRustPackage, GitHub source) ---------------
   # Upstream's flake.nix is broken (crane vendors Cargo.lock at the wrong
   # path) and pulls a sibling toon_rust input. We sidestep that by building
@@ -41,121 +19,7 @@ let
   brNightlyDate = "2026-02-19";
   brNightlySha = "sha256-ccIyMJknpRkaU9pLkFC4E9j0XxMa50GT4CYhwGvs8/U=";
 
-  # -- codex (buildRustPackage, GitHub source) -------------------------
-  codexVersion = "0.142.5";
-  codexSrcHash = "sha256-Ua1UVArTvjHcg3bPK1FYyShYiIUH3AOxtoUTvA4UZwU=";
-  codexCargoHash = "sha256-1gDiCB3Nf/0aIm+EoL3g9C0xbCi3cv6TfH5VytjJpOY=";
-  codexLibrustyV8Version = "149.2.0";
-  codexLibrustyV8Hashes = {
-    x86_64-linux = "sha256-iu2YY323533Iv7i7R1nsW95HLQv3lD9Y4OYqNQlFxVk=";
-    aarch64-linux = "sha256-+XdRJ8pk3MSjZi0BpSGizvuluY+DOUOog9hHc7Kv88U=";
-    x86_64-darwin = "sha256-eUlAo4o/ZrfvUqXwA8awlPdDrQQKZK+z082frUlADwc=";
-    aarch64-darwin = "sha256-+rsuyNO6Wm3qY9uaNalg3FypheujLzQrm6Sqocc0sv4=";
-  };
-
-  # Compare versions: true if a > b (by sort -V)
-  versionNewer = a: b: a != b && builtins.compareVersions a b > 0;
-
 in {
-
-  # -- claude-code -----------------------------------------------------
-  # When our pinned version is newer than nixpkgs', build a fresh derivation
-  # from Anthropic's prebuilt native binary. The old nixpkgs derivation is
-  # buildNpmPackage with a postPatch on cli.js which no longer exists in 2.1.113+.
-  claude-code =
-    if prev ? claude-code && versionNewer claudeCodeVersion prev.claude-code.version
-    then
-      let
-        system = prev.stdenv.hostPlatform.system;
-        platform = claudeCodeNativePlatform.${system}
-          or (builtins.throw "claude-code overlay: unsupported platform ${system}");
-        nativeBinary = prev.fetchurl {
-          url = "${claudeCodeGcsBase}/${claudeCodeVersion}/${platform}/claude";
-          hash = claudeCodeNativeHashes.${system};
-        };
-      in prev.stdenv.mkDerivation {
-        pname = "claude-code";
-        version = claudeCodeVersion;
-
-        dontUnpack = true;
-        # The "native" binary is a Bun single-file executable with a trailer;
-        # stripping corrupts it.
-        dontStrip = true;
-
-        nativeBuildInputs = [ prev.makeBinaryWrapper ]
-          ++ prev.lib.optionals prev.stdenv.hostPlatform.isElf [ prev.autoPatchelfHook ];
-
-        installPhase = ''
-          runHook preInstall
-          mkdir -p $out/bin
-          install -m755 ${nativeBinary} $out/bin/.claude-unwrapped
-          makeBinaryWrapper $out/bin/.claude-unwrapped $out/bin/claude \
-            --set DISABLE_AUTOUPDATER 1 \
-            --set DISABLE_INSTALLATION_CHECKS 1 \
-            --set USE_BUILTIN_RIPGREP 0 \
-            --prefix PATH : ${prev.lib.makeBinPath (
-              [ prev.procps prev.ripgrep ]
-              ++ prev.lib.optionals prev.stdenv.hostPlatform.isLinux [ prev.bubblewrap prev.socat ]
-            )}
-          runHook postInstall
-        '';
-
-        meta = (prev.claude-code.meta or {}) // {
-          mainProgram = "claude";
-        };
-      }
-    else prev.claude-code or (builtins.throw "overlay: claude-code not found in nixpkgs");
-
-  # -- opencode --------------------------------------------------------
-  opencode =
-    if prev ? opencode && versionNewer opencodeVersion prev.opencode.version
-    then prev.opencode.overrideAttrs (old: rec {
-      version = opencodeVersion;
-      src = prev.fetchFromGitHub {
-        owner = "anomalyco";
-        repo = "opencode";
-        tag = "v${version}";
-        hash = opencodeSrcHash;
-      };
-      node_modules = old.node_modules.overrideAttrs {
-        inherit src;
-        outputHash = opencodeNodeModulesHash;
-        # prettier is a root-workspace devDep; --filter . is needed so bun install includes it
-        buildPhase = ''
-          runHook preBuild
-
-          # packages/app pins ghostty-web to the moving github branch ref `#main`.
-          # bun --frozen-lockfile re-resolves `#main` to the current branch HEAD,
-          # which drifts from the commit recorded in bun.lock and aborts the build.
-          # Rewrite the ref to the exact commit the lockfile records so the frozen
-          # install resolves to a stable, reproducible tree.
-          ghostty_commit=$(grep -oE 'anomalyco/ghostty-web#[0-9a-f]+' bun.lock | head -1 | sed 's/.*#//')
-          if [ -n "$ghostty_commit" ]; then
-            sed -i "s|ghostty-web#main|ghostty-web#$ghostty_commit|" packages/app/package.json
-          fi
-
-          bun install \
-            --cpu="*" \
-            --frozen-lockfile \
-            --filter ./packages/app \
-            --filter ./packages/desktop \
-            --filter ./packages/opencode \
-            --filter . \
-            --ignore-scripts \
-            --no-progress \
-            --os="*"
-
-          bun --bun ./nix/scripts/canonicalize-node-modules.ts
-          bun --bun ./nix/scripts/normalize-bun-binaries.ts
-
-          runHook postBuild
-        '';
-      };
-      env = old.env // {
-        OPENCODE_VERSION = version;
-      };
-    })
-    else prev.opencode or (builtins.throw "overlay: opencode not found in nixpkgs");
 
   # -- br --------------------------------------------------------------
   br = let
@@ -202,38 +66,4 @@ in {
       platforms = prev.lib.platforms.unix;
     };
   };
-
-  # -- codex -----------------------------------------------------------
-  codex =
-    if prev ? codex && versionNewer codexVersion prev.codex.version
-    then prev.codex.overrideAttrs (old: rec {
-      version = codexVersion;
-      src = prev.fetchFromGitHub {
-        owner = "openai";
-        repo = "codex";
-        tag = "rust-v${version}";
-        hash = codexSrcHash;
-      };
-      sourceRoot = "${src.name}/codex-rs";
-      # Fresh build, not override: overrideAttrs doesn't reach nested vendorStaging -> stale Cargo.lock.
-      cargoDeps = prev.rustPlatform.fetchCargoVendor {
-        inherit src sourceRoot;
-        name = "codex-${version}-vendor";
-        hash = codexCargoHash;
-      };
-      # nixpkgs' inherited postPatch assumes older Cargo.toml content
-      # (`lto = "fat"`). 0.139.0 uses `lto = "thin"`; the env overrides
-      # below handle release profile settings without patching sources.
-      postPatch = "";
-      env = old.env // {
-        RUSTY_V8_ARCHIVE = prev.fetchurl {
-          name = "librusty_v8-${codexLibrustyV8Version}";
-          url = "https://github.com/denoland/rusty_v8/releases/download/v${codexLibrustyV8Version}/librusty_v8_release_${prev.stdenv.hostPlatform.rust.rustcTarget}.a.gz";
-          sha256 = codexLibrustyV8Hashes.${prev.stdenv.hostPlatform.system} or (builtins.throw "codex overlay: unsupported platform ${prev.stdenv.hostPlatform.system}");
-        };
-        CARGO_PROFILE_RELEASE_LTO = "false";
-        CARGO_PROFILE_RELEASE_CODEGEN_UNITS = "16";
-      };
-    })
-    else prev.codex or (builtins.throw "overlay: codex not found in nixpkgs");
 }

@@ -177,8 +177,10 @@ in
     ngfx-replay                # Replay a captured frame (headless)
   ] ++ [
 
-    # AI coding tools
-    claude-code codex opencode glow
+    # AI coding tools (claude-code and codex install natively via
+    # scripts/install-ai-tools.sh; they update too often for OS rebuilds)
+    glow
+    bubblewrap                 # sandbox runtime for the native claude-code install
     br bv                      # Rust port of beads (overlay) + Go TUI viewer (flake input)
 
     # LSP servers (for neovim)
