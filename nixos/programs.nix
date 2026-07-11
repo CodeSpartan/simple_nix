@@ -69,6 +69,7 @@ in
     fzf                        # Fuzzy finder (used by shell, nvim, etc.)
     delta                      # Better git diffs
     jq                         # JSON processor
+    sqlite                     # sqlite3 CLI for inspecting .sqlite files
     htop                       # Process viewer
     tree                       # Directory listing as tree
     psmisc                     # killall, pstree
