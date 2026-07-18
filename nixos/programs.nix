@@ -100,6 +100,15 @@ in
     # JVM
     jdk kotlin kotlin-language-server
 
+    # Haskell
+    ghc cabal-install haskell-language-server
+
+    # Lean (lean4 ships lake + the `lean --server` LSP)
+    lean4
+
+    # Idris
+    idris2 idris2Packages.idris2Lsp
+
     # C/C++ / CUDA
     gnumake cmake ninja gcc clang
     clang-tools                # clangd LSP
@@ -196,6 +205,8 @@ in
     rustfmt                    # Rust
     gotools                    # Go (goimports)
     prettier                   # TypeScript/JavaScript
+    ormolu                     # Haskell
+    hlint                      # Haskell linter
     codespell                  # Spell checker for code
     pre-commit                 # Git pre-commit hook framework
 
