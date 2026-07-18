@@ -108,6 +108,7 @@ Relog (SDDM) to pick up the new Hyprland session.
 ### Known issues
 
 - **Telegram steals focus on new messages** -- Telegram's "Draw attention to the window" feature uses Wayland activation, which Hyprland treats as a focus request. Go to Telegram -> Settings -> Notifications -> disable **Draw attention to the window**. See [hyprwm/Hyprland#9186](https://github.com/hyprwm/Hyprland/issues/9186).
+- **Screen share picker does nothing (Discord, etc.)** -- when `xdg-desktop-portal-hyprland` restarts without the `xdg-desktop-portal` frontend restarting too, the frontend keeps a stale capability cache and advertises zero capturable sources, so `SelectSources` hangs and no picker ever opens. Resync them with `systemctl --user restart xdg-desktop-portal.service`; it recurs on any backend-only restart (compositor restart, portal update).
 
 ## Deployment
 

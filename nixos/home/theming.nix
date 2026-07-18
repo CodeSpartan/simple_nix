@@ -50,4 +50,13 @@
 
   # KDE color scheme (Ayu Dark)
   xdg.configFile."kdeglobals".source = ../../config/kde/kdeglobals;
+
+  # Disable KDE's GTK-config kded module. When a KDE app starts kded6 it rewrites
+  # .gtkrc-2.0, xsettingsd.conf and gtk-3.0/colors.css, whose file-monitor events
+  # crash every running GTK app (hyprpanel, brave, nm-applet, ...). GTK theming is
+  # already set via gtk.* above, so this module is redundant here.
+  xdg.configFile."kded6rc".text = ''
+    [Module-gtkconfig]
+    autoload=false
+  '';
 }
