@@ -35,9 +35,12 @@
     "kernel.hung_task_panic" = 1;    # task stuck in D-state >120s => panic
   };
   # Hardware watchdog -- sp5100_tco on this AMD chipset. If systemd stops
-  # pinging it, the chipset itself resets the box. Only option that survives
-  # the scenario where every CPU is deadlocked and software watchdogs can't run.
-  systemd.settings.Manager.RuntimeWatchdogSec = "30s";
+  # pinging it, the chipset itself resets the box. Only backstop that survives
+  # a full deadlock where every CPU is stuck and software watchdogs can't run.
+  # Set above the 120s hung_task threshold so the software panic detectors win
+  # the race and dump a backtrace to pstore first. A shorter timeout resets
+  # blind, before any culprit is captured.
+  systemd.settings.Manager.RuntimeWatchdogSec = "150s";
 
   # AMD CPU microcode updates -- security and stability patches
   hardware.cpu.amd.updateMicrocode = true;
