@@ -24,7 +24,7 @@ nixos/                   # NixOS system config (flake-based)
   desktop.nix            # SDDM, Hyprland, Plasma, portals, audio, fonts
   security.nix           # SSH, PAM, gnome-keyring, agenix
   programs.nix           # system packages, steam, docker, flatpak
-  auto-upgrade.nix       # nightly check for upstream updates + notification
+  update-check.nix       # nightly check for upstream changes + notification
   nordvpn.nix            # NordVPN daemon + GUI (FHS-wrapped from .deb)
   overlays/cli-tools.nix # br built from source (upstream flake is broken)
   home/                  # home-manager modules
@@ -72,7 +72,7 @@ All machine-specific values live here:
   cursorSize = 24;             # 16@1x, 24@1.5x, 32@2x
   nvidia = true;               # false for AMD/Intel GPU
   repoDir = "/home/my_username/code/simple_nix";  # local clone path (for update checks)
-  autoUpgrade = true;          # nightly check for upstream updates (notifies, doesn't rebuild)
+  updateCheck = true;          # fetch origin/main nightly and notify; never pull or rebuild
 }
 ```
 
@@ -353,7 +353,7 @@ claude-code uses Anthropic's official installer and self-updates afterwards. cod
 
 br is built from source in `nixos/overlays/cli-tools.nix` because its upstream flake is broken.
 
-The nightly update check (`nixos/auto-upgrade.nix`) is **enabled by default** (`autoUpgrade = true` in `host.nix`). It fetches `origin/main` and notifies you (shell login + desktop notification) if your local branch is behind. You rebuild manually with `./install.sh`. Set to `false` to disable.
+The nightly update check (`nixos/update-check.nix`) is **enabled by default** (`updateCheck = true` in `host.nix`). It fetches `origin/main` and notifies you (shell login + desktop notification) if your local branch is behind. It never pulls commits, changes `flake.lock`, rebuilds, or activates NixOS. Review and apply upstream changes manually when you are ready. Set `updateCheck = false` to disable it.
 
 ## Secrets
 

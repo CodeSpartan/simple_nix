@@ -10,8 +10,8 @@
   steamScaling = "1.666667";         # HiDPI scaling for Steam (match monitor scale)
   cursorSize = 24;                   # cursor size (scale with DPI: 16@1x, 24@1.5x, 32@2x)
   nvidia = true;                     # set false on AMD/Intel GPU machines
-  repoDir = "/home/vitalii/code/simple_nix";   # local clone path (for auto-upgrade) -- must match username above
-  autoUpgrade = true;                # nightly rebuild from local clone (git pull + nixos-rebuild)
+  repoDir = "/home/vitalii/code/simple_nix";   # local clone path for the update check; must match username above
+  updateCheck = true;                # fetch origin/main nightly and notify; never pull or rebuild
   amduprof = true;                   # AMD uProf -- requires one-time tarball setup, see README
   nsightGraphics = true;             # NVIDIA Nsight Graphics CLI -- requires one-time installer setup, see README
 }

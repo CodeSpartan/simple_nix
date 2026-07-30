@@ -32,7 +32,7 @@
       cliToolsOverlay = import ./overlays/cli-tools.nix { inherit fenix; };
 
       requiredFields = [ "username" "hostname" "timezone" "defaultLocale" "regionalLocale"
-                         "tmpfsSize" "steamScaling" "cursorSize" "nvidia" "repoDir" "autoUpgrade" ];
+                         "tmpfsSize" "steamScaling" "cursorSize" "nvidia" "repoDir" "updateCheck" ];
       missingFields = builtins.filter (f: ! builtins.hasAttr f _host) requiredFields;
     in
     assert missingFields == []

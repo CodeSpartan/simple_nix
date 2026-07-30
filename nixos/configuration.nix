@@ -8,7 +8,7 @@
     ./security.nix
     ./programs.nix
     ./home
-    ./auto-upgrade.nix
+    ./update-check.nix
     ./nordvpn.nix
   ];
 
