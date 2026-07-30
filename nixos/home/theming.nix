@@ -55,6 +55,22 @@
   # .gtkrc-2.0, xsettingsd.conf and gtk-3.0/colors.css, whose file-monitor events
   # crash every running GTK app (hyprpanel, brave, nm-applet, ...). GTK theming is
   # already set via gtk.* above, so this module is redundant here.
+  #
+  # KDED6 still reads module overrides from the legacy kded5rc filename. Keep the
+  # kded6rc guard as well so this remains safe if upstream adopts the versioned
+  # filename later. Preserve the existing browser-integration reminder preference
+  # when Home Manager takes ownership of kded5rc.
+  xdg.configFile."kded5rc" = {
+    force = true;
+    text = ''
+      [Module-browserintegrationreminder]
+      autoload=false
+
+      [Module-gtkconfig]
+      autoload=false
+    '';
+  };
+
   xdg.configFile."kded6rc".text = ''
     [Module-gtkconfig]
     autoload=false
