@@ -19,6 +19,9 @@ local servers = {
   "basedpyright",
   "ruff",
   "nixd",
+  -- slangd serves both hlsl and shaderslang buffers. It ships with the
+  -- shader-slang package already in nixos/programs.nix.
+  "slangd",
   -- tblgen_lsp_server and mlir_lsp_server are not in nixpkgs.
   -- Build them from the LLVM project source tree, then add to this list
   -- with a server-settings/ file pointing cmd to your build output:

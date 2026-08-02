@@ -24,8 +24,10 @@ NvChad-based config for everyday editing with a bias toward C/C++/MLIR/TableGen 
 
 - `:Format` formats the whole buffer or the selected range
 - formatting uses `stylua`, `ruff_fix`, `ruff_format`, `rustfmt`, `goimports`, `clang-format`, `prettier`, and `codespell` (LSP fallback for unconfigured filetypes)
-- enabled LSP servers: `clangd`, `bashls`, `ts_ls`, `rust_analyzer`, `gopls`, `cmake`, `tblgen_lsp_server`, `mlir_lsp_server`, `basedpyright`, `ruff`
+- enabled LSP servers: `clangd`, `bashls`, `ts_ls`, `rust_analyzer`, `gopls`, `cmake`, `kotlin_ls`, `basedpyright`, `ruff`, `nixd`, `slangd`
 - `*.mlir` files are forced to `mlir` filetype
+- `*.hlsl`, `*.hlsli`, `*.fx`, `*.fxh`, `*.usf`, `*.ush` map to `hlsl`, which Neovim does not detect on its own. `slangd` serves both `hlsl` and `shaderslang` buffers
+- shader and GPU filetypes beyond HLSL need no local mapping: Neovim already resolves `*.slang` to `shaderslang`, the `*.vert`/`*.frag`/`*.comp`/`*.glsl` family to `glsl`, and `*.cu`/`*.cuh` to `cuda`. `clangd` picks up `cuda` buffers on its own; `glsl` has no language server configured
 - undo and backup files live under Neovim's data directory
 - clipboard sync is intentionally disabled by default (`opt.clipboard = ""`)
 
@@ -39,5 +41,5 @@ stylua config/nvim
 ## External tools
 
 - required: `nvim` 0.11+, `git`, `ripgrep`
-- useful: `make`, `stylua`, `tree-sitter`, `codespell`, `ruff`, `rustfmt`, `goimports`, `prettier`, `basedpyright`, `clangd`, `gopls`, `typescript-language-server`, `typescript`, `rust-analyzer`, `cmake-language-server`, `bash-language-server`
-- optional / project-specific: `tblgen_lsp_server`, `mlir_lsp_server`
+- useful: `make`, `stylua`, `tree-sitter`, `codespell`, `ruff`, `rustfmt`, `goimports`, `prettier`, `basedpyright`, `clangd`, `gopls`, `typescript-language-server`, `typescript`, `rust-analyzer`, `cmake-language-server`, `bash-language-server`, `slangd`
+- optional / project-specific: `tblgen_lsp_server`, `mlir_lsp_server`, `glsl_analyzer`

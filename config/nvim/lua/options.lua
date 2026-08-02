@@ -99,6 +99,21 @@ api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
   end,
 })
 
+-- Neovim ships no extension mapping for HLSL, so shader sources open with an
+-- empty filetype and get neither treesitter nor LSP. Cover the Direct3D,
+-- effect-file, and Unreal spellings. Slang needs nothing here: .slang already
+-- maps to shaderslang upstream.
+vim.filetype.add {
+  extension = {
+    hlsl = "hlsl",
+    hlsli = "hlsl",
+    fx = "hlsl",
+    fxh = "hlsl",
+    usf = "hlsl",
+    ush = "hlsl",
+  },
+}
+
 opt.clipboard = ""
 
 local view_state = {}

@@ -13,11 +13,9 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     config = function()
-      local cfg = require "configs.treesitter"
-      require("nvim-treesitter").setup { highlight = cfg.highlight }
       -- v2 dropped ensure_installed; install() is async and a no-op
       -- for already-installed parsers.
-      require("nvim-treesitter").install(cfg.install)
+      require("nvim-treesitter").install(require("configs.treesitter").install)
     end,
   },
   {
