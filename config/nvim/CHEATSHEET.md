@@ -77,7 +77,20 @@ These mappings appear after an LSP attaches to the current buffer.
 <leader>fW        grep current word
 <leader>fd        grep in current file's directory
 <leader>fD        grep in NvimTree root or file's directory
+<leader>fs        search history (/ patterns), <C-e> to edit before running
+<leader>fc        command history (: lines), <C-e> to edit before running
+<C-Up>            previous prompt, inside any Telescope picker
+<C-Down>          next prompt, inside any Telescope picker
 ```
+
+`<C-Up>` walks back through prompts you have typed in Telescope, so it recalls
+past `<leader>fw` greps. The list is shared across pickers, so file names typed
+into `<leader>ff` show up in the same cycle.
+
+Both history pickers read Vim's own history, which shada carries between
+sessions. The same lists are reachable without Telescope: `q/` and `q:` open
+them in an editable window, and `<Up>` on the `/` or `:` prompt filters by the
+prefix already typed.
 
 ## Trouble
 

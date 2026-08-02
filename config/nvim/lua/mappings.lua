@@ -121,6 +121,10 @@ map("n", "<leader>gb", function()
 end, { desc = "Git: Blame line" })
 
 map("n", "<leader>fR", "<cmd>Telescope resume<CR>", { desc = "Telescope resume" })
+-- Both pickers list newest first. <CR> runs the entry, <C-e> puts it back on
+-- the prompt line to edit before running.
+map("n", "<leader>fs", "<cmd>Telescope search_history<CR>", { desc = "Telescope search history" })
+map("n", "<leader>fc", "<cmd>Telescope command_history<CR>", { desc = "Telescope command history" })
 map("n", "<leader>fG", "<cmd>Telescope live_grep additional_args=function() return { '--hidden', '--no-ignore' } end<CR>", { desc = "Telescope live grep all" })
 map("n", "<leader>fW", function()
   local builtin = require "telescope.builtin"

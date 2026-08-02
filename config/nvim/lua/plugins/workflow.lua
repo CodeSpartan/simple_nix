@@ -29,6 +29,7 @@ return {
     "nvim-telescope/telescope.nvim",
     opts = function(_, opts)
       local config = require "configs.telescope"
+      opts.defaults = vim.tbl_deep_extend("force", opts.defaults or {}, config.defaults or {})
       opts.extensions = vim.tbl_deep_extend("force", opts.extensions or {}, config.extensions or {})
       return opts
     end,
