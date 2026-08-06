@@ -70,6 +70,7 @@ in
     delta                      # Better git diffs
     jq                         # JSON processor
     xxd                        # Hex dump
+    binwalk                    # Firmware image analysis and extraction
     sqlite                     # sqlite3 CLI for inspecting .sqlite files
     htop                       # Process viewer
     tree                       # Directory listing as tree
