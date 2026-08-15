@@ -228,13 +228,13 @@ in
     qt5.qtwayland qt6.qtwayland
 
     # Hyprland ecosystem
-    hyprpanel                  # Status bar
+    wayle                      # Status bar / desktop shell (replaced archived hyprpanel)
     rofi                       # App launcher + window switcher
     hyprpaper                  # Wallpaper daemon
     hyprlock                   # Lock screen
     hypridle                   # Idle management (triggers lock/suspend)
     wl-clipboard               # Wayland clipboard (wl-copy/wl-paste)
-    socat                      # Hyprland event-socket listener (hyprpanel monitor-wake reload)
+    socat                      # Unix socket relay (Hyprland event-socket debugging)
     grimblast                  # Screenshot helper (wraps grim+slurp+wl-copy)
     grim                       # Screenshot capture
     slurp                      # Region selection for screenshots

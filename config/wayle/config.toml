@@ -1,0 +1,130 @@
+# Wayle -- status bar / desktop shell (replaces HyprPanel, archived upstream).
+#
+# Hot-reloaded: saving this file re-styles the running bar, no restart needed.
+# `wayle panel settings` opens a GUI that writes back to this same file.
+# Full option reference: `wayle config default` / https://wayle.app/config/
+#
+# Ayu Dark palette -- see README.md "Theme" for the shared color roles.
+
+[general]
+font-sans = "Inter"
+font-mono = "JetBrainsMono Nerd Font"
+
+# --- Bar geometry and chrome ---
+# Flush to the top edge, square corners, hairline bottom-ish border on all
+# sides, and buttons with no pill background (icon + label only).
+[bar]
+location = "top"
+exclusive = true
+layer = "top"
+bg = "bg-base"
+rounding = "none"
+border-location = "all"
+border-width = 1
+border-color = "#1A1D23"
+button-variant = "basic"
+button-rounding = "none"
+button-opacity = 95
+button-bg-opacity = 0
+button-gap = 0.25
+
+[[bar.layout]]
+monitor = "*"
+left = ["dashboard", "hyprland-workspaces"]
+center = ["clock"]
+# `cputemp` was a separate HyprPanel module; Wayle's cpu module exposes
+# {{ temp_c }} directly, so the two buttons are folded into one.
+right = [
+    "cpu",
+    "ram",
+    "volume",
+    "network",
+    "systray",
+    "keyboard-input",
+    "notifications",
+]
+
+# --- Theme ---
+# Static palette (no wallpaper-derived theming), so `theme-provider = "wayle"`.
+# Modules not listed below inherit these semantic slots, which keeps any module
+# added later on-palette without extra config.
+[styling]
+theme-provider = "wayle"
+rounding = "none"
+
+[styling.palette]
+bg = "#0B0E14"
+surface = "#14171D"
+elevated = "#1A1D23"
+fg = "#B8B5AC"
+fg-muted = "#3D4046"
+primary = "#FF8F40"
+red = "#F07178"
+yellow = "#E6C54C"
+green = "#AAD94C"
+blue = "#59C2FF"
+
+# --- Modules ---
+# Ayu purple (#D2A6FF) has no slot in Wayle's 10-color palette, so the modules
+# that used it in HyprPanel carry the hex inline.
+
+[modules.dashboard]
+icon-color = "accent"
+dropdown-lock-command = "loginctl lock-session"
+
+[modules.hyprland-workspaces]
+# HyprPanel: hideUnoccupied = true -> min-workspace-count 0 shows only
+# active + occupied workspaces.
+min-workspace-count = 0
+active-indicator = "underline"
+active-color = "#D2A6FF"
+occupied-color = "red"
+empty-color = "blue"
+container-bg-color = "transparent"
+
+[modules.clock]
+format = "%a %b %d  %H:%M:%S"
+icon-color = "#D2A6FF"
+label-color = "#D2A6FF"
+
+[modules.cpu]
+format = "{{ percent }}%  {{ temp_c }}°C"
+icon-color = "#D2A6FF"
+label-color = "#D2A6FF"
+
+[modules.ram]
+icon-color = "accent"
+label-color = "accent"
+
+[modules.volume]
+icon-color = "yellow"
+label-color = "yellow"
+
+[modules.network]
+icon-color = "#D2A6FF"
+label-color = "#D2A6FF"
+
+[modules.systray]
+button-bg-color = "transparent"
+
+[modules.keyboard-input]
+icon-color = "blue"
+label-color = "blue"
+
+[modules.keyboard-input.layout-alias-map]
+# kb_layout = us,ru in config/hypr/user.conf
+"English (US)" = "US"
+"Russian" = "RU"
+
+[modules.notifications]
+icon-color = "blue"
+label-color = "blue"
+
+[modules.storage]
+mount-point = "/"
+
+# --- Wallpaper ---
+# hyprpaper owns the wallpaper (config/hypr/hyprpaper.conf); keep Wayle's
+# engine off so the two don't fight over the background surface.
+[wallpaper]
+engine-enabled = false

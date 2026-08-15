@@ -38,7 +38,6 @@
   nixpkgs.overlays = [
     cliToolsOverlay
     (import ./overlays/hyprland-output-fallback.nix)
-    (import ./overlays/hyprpanel.nix)
     (import ./overlays/amduprof.nix)
     (import ./overlays/nsight-graphics.nix)
   ];

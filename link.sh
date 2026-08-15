@@ -48,10 +48,10 @@ fi
 ln -sfn "$REPO/config/nvim" "$HOME/.config/nvim"
 mkdir -p "$HOME/.config/kitty"
 ln -sf "$REPO/config/kitty/kitty.conf" "$HOME/.config/kitty/kitty.conf"
-mkdir -p "$HOME/.config/hyprpanel"
-ln -sf "$REPO/config/hyprpanel/config.json" "$HOME/.config/hyprpanel/config.json"
+mkdir -p "$HOME/.config/wayle"
+ln -sf "$REPO/config/wayle/config.toml" "$HOME/.config/wayle/config.toml"
 mkdir -p "$HOME/.config/hypr"
-for f in user.conf hypridle.conf hyprlock.conf hyprpaper.conf cheatsheet.sh toggle-layout.sh notif-log.py hyprpanel-monitor-restart.sh; do
+for f in user.conf hypridle.conf hyprlock.conf hyprpaper.conf cheatsheet.sh toggle-layout.sh; do
   ln -sf "$REPO/config/hypr/$f" "$HOME/.config/hypr/$f"
 done
 

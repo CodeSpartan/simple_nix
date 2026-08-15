@@ -35,7 +35,7 @@ config/                  # dotfiles (most symlinked by link.sh)
   nvim/                  # Neovim (NvChad), symlinked
   hypr/                  # Hyprland user config, symlinked
   kitty/                 # terminal, symlinked
-  hyprpanel/             # status bar, symlinked
+  wayle/                 # status bar, symlinked
   rofi/                  # app launcher, symlinked
   p10k/                  # Powerlevel10k prompt, symlinked
   clangd/                # clangd config, symlinked
@@ -151,12 +151,12 @@ This config fixes those collisions with a 10-group system. Parameters stay purpl
 
 | Role | Hex | Used for |
 |------|-----|----------|
-| Background | `#0B0E14` | kitty, hyprlock, hyprpanel, KDE, rofi |
-| Surface | `#14171D` | rofi bg-alt, hyprpanel cards, KDE Window bg |
-| Border | `#1A1D23` | Hyprland inactive border, hyprpanel borders |
-| Foreground | `#B8B5AC` | kitty, hyprlock, hyprpanel, KDE, rofi |
+| Background | `#0B0E14` | kitty, hyprlock, wayle, KDE, rofi |
+| Surface | `#14171D` | rofi bg-alt, wayle cards, KDE Window bg |
+| Border | `#1A1D23` | Hyprland inactive border, wayle borders |
+| Foreground | `#B8B5AC` | kitty, hyprlock, wayle, KDE, rofi |
 | Dimmed | `#3D4046` | kitty bright-black, disabled states |
-| Accent | `#FF8F40` | Hyprland borders, hyprlock, hyprpanel, kitty cursor, rofi, GTK, KDE |
+| Accent | `#FF8F40` | Hyprland borders, hyprlock, wayle, kitty cursor, rofi, GTK, KDE |
 | Red | `#F07178` | errors, destructive actions |
 | Green | `#AAD94C` | strings, success states |
 | Yellow | `#E6C54C` | warnings, functions (neovim) |
@@ -192,7 +192,9 @@ Applied via:
 - **KDE** -- full Ayu Dark color scheme in `kdeglobals` (deployed by home-manager)
 - **GTK 3/4** -- accent, destructive, success, warning, error overrides in `gtk.css`
 - **rofi** -- custom `ayu-dark.rasi` theme
-- **hyprpanel** -- custom `config.json` with Ayu Dark palette
+- **wayle** -- custom `config.toml` with the Ayu Dark palette mapped onto Wayle's
+  10 semantic color slots (purple `#D2A6FF` has no slot, so the modules that use
+  it carry the hex inline)
 - **hyprlock** -- blurred background with Ayu Dark text/input colors
 - **Hyprland** -- border colors use accent orange
 
