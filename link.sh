@@ -50,6 +50,13 @@ mkdir -p "$HOME/.config/kitty"
 ln -sf "$REPO/config/kitty/kitty.conf" "$HOME/.config/kitty/kitty.conf"
 mkdir -p "$HOME/.config/wayle"
 ln -sf "$REPO/config/wayle/config.toml" "$HOME/.config/wayle/config.toml"
+# Wayle compiles styles/index.scss on top of its built-in stylesheet. Wayle
+# recreates this directory with a stock scaffold whenever it is missing, so a
+# real directory has to go first -- ln -sfn would nest the link inside it.
+if [[ -d "$HOME/.config/wayle/styles" && ! -L "$HOME/.config/wayle/styles" ]]; then
+  rm -rf "$HOME/.config/wayle/styles"
+fi
+ln -sfn "$REPO/config/wayle/styles" "$HOME/.config/wayle/styles"
 mkdir -p "$HOME/.config/hypr"
 for f in user.conf hypridle.conf hyprlock.conf hyprpaper.conf cheatsheet.sh toggle-layout.sh; do
   ln -sf "$REPO/config/hypr/$f" "$HOME/.config/hypr/$f"

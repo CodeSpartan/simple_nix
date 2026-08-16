@@ -1,0 +1,18 @@
+# Template for machine-local Wayle overrides.
+#
+# Copy to ~/.config/wayle/local.toml and edit. It is imported by config.toml
+# via `imports = ["local.toml"]`.
+#
+# NOTE: import paths resolve relative to the symlink at ~/.config/wayle/, not to
+# config.toml's real location in this repo -- so the live file sits next to the
+# symlink and is never inside the working tree. That is deliberate: anything
+# here (e.g. your location) stays out of git by construction. A missing
+# local.toml is not an error, so a fresh clone still starts.
+#
+# Values here are overridden by anything set in config.toml, so only put keys
+# here that config.toml leaves unset.
+
+[modules.weather]
+# City name, or "lat,lon" coordinates. Wayle has no IP-geolocation mode -- the
+# location must be stated. open-meteo needs no API key.
+location = "Dublin, Ireland"
