@@ -57,6 +57,12 @@ in
 
   # --- Firewall ---
   # NixOS enables firewall by default; make policy explicit
+  age.secrets.id_ed25519_gitlab = {
+    file = ./secrets/id_ed25519_gitlab.age;
+    owner = host.username;
+    group = "users";
+    mode = "0600";
+  };
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [ ];   # openssh module auto-opens 22

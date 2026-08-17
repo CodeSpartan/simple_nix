@@ -1,12 +1,18 @@
 { config, pkgs, ... }:
 
 {
-  # SSH -- route GitHub traffic through the agenix-managed key
+  # SSH -- route GitHub/GitLab traffic through their agenix-managed keys.
+  # IdentityFile points at the agenix decrypt path (/run/agenix/<name>), not a
+  # plain ~/.ssh file -- the key only exists on disk as the encrypted .age
+  # blob in the repo plus this tmpfs copy recreated on every activation.
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
     settings."github.com" = {
       IdentityFile = "${config.home.homeDirectory}/.ssh/id_ed25519_github";
+    };
+    settings."gitlab.com" = {
+      IdentityFile = "/run/agenix/id_ed25519_gitlab";
     };
   };
 
