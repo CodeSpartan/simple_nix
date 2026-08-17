@@ -58,7 +58,7 @@ if [[ -d "$HOME/.config/wayle/styles" && ! -L "$HOME/.config/wayle/styles" ]]; t
 fi
 ln -sfn "$REPO/config/wayle/styles" "$HOME/.config/wayle/styles"
 mkdir -p "$HOME/.config/hypr"
-for f in user.conf hypridle.conf hyprlock.conf hyprpaper.conf cheatsheet.sh toggle-layout.sh show-desktop.sh; do
+for f in user.conf hypridle.conf hyprlock.conf hyprpaper.conf cheatsheet.sh toggle-layout.sh; do
   ln -sf "$REPO/config/hypr/$f" "$HOME/.config/hypr/$f"
 done
 
