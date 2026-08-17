@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   # SSH -- route GitHub/GitLab traffic through their agenix-managed keys.
@@ -9,7 +9,7 @@
     enable = true;
     enableDefaultConfig = false;
     settings."github.com" = {
-      IdentityFile = "${config.home.homeDirectory}/.ssh/id_ed25519_github";
+      IdentityFile = "/run/agenix/id_ed25519_github";
     };
     settings."gitlab.com" = {
       IdentityFile = "/run/agenix/id_ed25519_gitlab";

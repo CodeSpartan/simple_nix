@@ -17,4 +17,5 @@ in
   # No secrets yet. Add one with ./scripts/add-secret.sh <name> -- it encrypts
   # for every key in this file and wires up nixos/security.nix automatically.
   "id_ed25519_gitlab.age".publicKeys = [ ashberry ];
+  "id_ed25519_github.age".publicKeys = [ ashberry ];
 }
