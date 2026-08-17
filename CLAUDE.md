@@ -105,6 +105,24 @@ password/browser prompt) **cannot** be run from this tool — they need a
 terminal the user is actually watching. Hand those back with exact commands
 rather than attempting them.
 
+## Flatpak apps (Discord, and any future ones)
+
+`services.flatpak.enable = true` is set in `nixos/programs.nix`, but that
+only enables the *service* — apps installed with `flatpak install --user`
+live entirely outside Nix (`~/.local/share/flatpak`, `~/.var/app/...`), not
+in this repo, and are **not reproducible** from this flake on a fresh
+machine. Used deliberately for Discord: nixpkgs' Discord package gets
+`patchelf`'d for NixOS and that's caused real client/screen-share bugs
+before, so Flatpak's unmodified upstream binary was chosen on purpose.
+
+- Install: `flatpak install --user flathub <app-id>` (no sudo, Flathub
+  already added as a user remote).
+- Update: manual, `flatpak update` — nothing automates this, no timer is
+  configured, and `./install.sh`/`nixos-rebuild` never touches it.
+- Prefer this path over the nixpkgs package specifically when the user
+  reports upstream-app bugs the nixpkgs build doesn't have upstream, same
+  reasoning as Discord.
+
 ## `~/Desktop/message to vitalii.txt`
 
 A running, brief log of genuine upstream-worthy findings (bugs, doc gaps,
