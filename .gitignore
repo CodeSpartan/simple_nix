@@ -11,6 +11,7 @@ nixos/hardware-configuration.nix
 .spec/
 wallpapers/*
 !wallpapers/.gitkeep
+!wallpapers/wallpaper.png
 # Wayle imports this from ~/.config/wayle/, not from here -- see
 # config/wayle/local.toml.example. Ignored in case a copy lands in the repo.
 config/wayle/local.toml
