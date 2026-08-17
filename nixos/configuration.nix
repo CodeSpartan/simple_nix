@@ -9,7 +9,6 @@
     ./programs.nix
     ./home
     ./update-check.nix
-    ./nordvpn.nix
   ];
 
   # --- Networking ---
@@ -23,7 +22,9 @@
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     cores = 0;           # 0 = use all available cores for each build
-    max-jobs = "auto";   # Run as many build jobs in parallel as there are cores
+    max-jobs = 1;         # 1 = build one derivation at a time (this machine: 4 cores / 7.5G RAM --
+                           # "auto" ran N derivations x N cores each in parallel and got OOM-killed
+                           # mid-build; raise back to "auto" once running on a beefier box)
     auto-optimise-store = true;   # Deduplicate nix store paths at build time via hardlinks
     substituters = lib.mkIf host.nvidia [ "https://cache.nixos-cuda.org" ];
     trusted-public-keys = lib.mkIf host.nvidia [ "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M=" ];

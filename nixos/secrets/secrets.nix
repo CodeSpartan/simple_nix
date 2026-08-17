@@ -1,14 +1,19 @@
 let
-  # Personal age key (portable -- store private key in password manager)
-  vitalii = "age1ujz6pq06c08j943lkl2mmtp2mf6wvksygddddt58qt802lmuh9qqmu53yr";
+  # Personal age key (portable -- store the private key in your password manager,
+  # and at ~/.config/age/keys.txt on any machine you want to bootstrap).
+  # Generated with: nix-shell -p age --run "age-keygen -o ~/.config/age/keys.txt"
+  ashberry = "age15c9kjwel5xuru7ex6qaquuj873k0eczw7qmyd7uc72rmd8c3ruuq8ctyzl";
 
-  # Machine host key (for unattended decryption at boot)
-  nixos = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINaEhNq5blLJu8Z2J0Byl9nULJZiUOPnBGL/Za0Q18iD";
+  # Machine host key (for unattended decryption at boot).
+  # Not known yet -- this machine hasn't been switched once, so
+  # /etc/ssh/ssh_host_ed25519_key doesn't exist. After the first successful
+  # `./install.sh`, run:
+  #   cat /etc/ssh/ssh_host_ed25519_key.pub
+  # and drop the ssh-ed25519 line in here, then re-encrypt any secrets:
+  #   cd nixos/secrets && agenix -r -i ~/.config/age/keys.txt
+  # nixos = "ssh-ed25519 AAAA...";
 in
 {
-  "id_ed25519_github.age".publicKeys = [ vitalii nixos ];
-  "openrouter-api-key.age".publicKeys = [ vitalii nixos ];
-  "aws-access-key-id.age".publicKeys = [ nixos vitalii ];
-  "aws-secret-access-key.age".publicKeys = [ nixos vitalii ];
-  "aws-default-key-pair.age".publicKeys = [ nixos vitalii ];
+  # No secrets yet. Add one with ./scripts/add-secret.sh <name> -- it encrypts
+  # for every key in this file and wires up nixos/security.nix automatically.
 }

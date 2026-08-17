@@ -48,26 +48,12 @@ in
     "${host.homeDir}/.config/age/keys.txt"
   ];
 
-  # SSH keys -- symlinked into ~/.ssh
-  age.secrets.id_ed25519_github = userSecret // {
-    file = ./secrets/id_ed25519_github.age;
-    path = "${host.homeDir}/.ssh/id_ed25519_github";
-  };
-  age.secrets.aws-default-key-pair = userSecret // {
-    file = ./secrets/aws-default-key-pair.age;
-    path = "${host.homeDir}/.ssh/aws-default-key-pair.pem";
-  };
-
-  # API keys / credentials -- decrypted to /run/agenix/<name>, read manually or via EnvironmentFile
-  age.secrets.openrouter-api-key = userSecret // {
-    file = ./secrets/openrouter-api-key.age;
-  };
-  age.secrets.aws-access-key-id = userSecret // {
-    file = ./secrets/aws-access-key-id.age;
-  };
-  age.secrets.aws-secret-access-key = userSecret // {
-    file = ./secrets/aws-secret-access-key.age;
-  };
+  # No secrets configured yet -- the original owner's GitHub/AWS/OpenRouter
+  # secrets were dropped (this machine has no key that can decrypt them, and
+  # they aren't this machine's credentials to hold). Add your own with:
+  #   ./scripts/add-secret.sh my-secret-name
+  # which encrypts the value, adds it to nixos/secrets/secrets.nix, and wires
+  # up an `age.secrets.<name>` block here automatically. See README > Secrets.
 
   # --- Firewall ---
   # NixOS enables firewall by default; make policy explicit
