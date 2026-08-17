@@ -93,8 +93,11 @@ for r in "${RECIPIENTS[@]}"; do
   AGE_ARGS+=(-r "$r")
 done
 
-# Encrypt (printf avoids trailing newline that echo would add)
-printf '%s' "$SECRET_VALUE" | age "${AGE_ARGS[@]}" -o "$SECRET_FILE"
+# Encrypt. $(cat) above already stripped every trailing newline from stdin, so
+# restore exactly one -- OpenSSH's private-key parser rejects a key file with
+# no trailing newline after the "-----END ... KEY-----" line ("invalid
+# format"), which silently broke SSH auth for secrets added this way.
+printf '%s\n' "$SECRET_VALUE" | age "${AGE_ARGS[@]}" -o "$SECRET_FILE"
 unset SECRET_VALUE
 echo ""
 echo "Encrypted: nixos/secrets/${SECRET_NAME}.age"
