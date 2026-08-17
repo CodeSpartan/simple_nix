@@ -45,6 +45,7 @@ in
   };
   virtualisation.podman.enable = true;
   services.flatpak.enable = true;       # Flatpak for apps that need it (e.g. Discord with Krisp)
+  services.ivpn.enable = true;          # ivpn-service daemon; without it the CLI/UI have no /etc/opt/ivpn/mutable
   services.printing = {
     enable = true;
     browsing = false;                  # Don't advertise printers on the network
@@ -221,7 +222,7 @@ in
     openvpn                    # OpenVPN tunnel client
     networkmanager-openvpn     # OpenVPN plugin for NetworkManager GUI
     v2ray                      # Proxy platform for bypassing network restrictions
-    ivpn                       # IVPN daemon
+    # ivpn CLI + ivpn-service daemon come from services.ivpn.enable above
     ivpn-ui                    # IVPN desktop GUI
 
     # Qt Wayland -- needed for native Wayland rendering in Qt apps (Dolphin, KDE tools)
