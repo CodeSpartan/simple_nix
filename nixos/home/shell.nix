@@ -18,6 +18,8 @@
     enable = true;
     lfs.enable = true;                 # Git Large File Storage for binaries (images, etc.)
     settings = {
+      user.name = "CodeSpartan";
+      user.email = "codespartan.supp@gmail.com";
       pull.rebase = true;
       rebase.committerDateIsAuthorDate = true;
       push.autoSetupRemote = true;
