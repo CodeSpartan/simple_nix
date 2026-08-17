@@ -92,7 +92,7 @@ in
     kitty neovim kdePackages.kate
 
     # Python
-    python3 uv ruff
+    python3 uv ruff jupyter                 # jupyter: notebook + jupyterlab, `jupyter notebook` / `jupyter lab`
 
     # Rust
     rustc cargo rust-analyzer cargo-nextest
