@@ -50,7 +50,6 @@ left = ["dashboard", "hyprland-workspaces"]
 center = ["clock", "weather"]
 right = [
     "cpu",
-    "custom-cputemp",
     "ram",
     "storage",
     "volume",
@@ -131,37 +130,6 @@ label-color = "yellow"
 above = 90
 icon-color = "red"
 label-color = "red"
-
-# CPU temperature, kept as its own button with a thermometer icon (HyprPanel had
-# a separate `cputemp` module). Wayle's cpu module exposes {{ temp_c }}, but a
-# module can only be configured once, so a second button needs a custom module.
-#
-# Emits JSON so the tooltip can show the per-CCD sensors alongside Tctl.
-# Resolves k10temp by name rather than a hwmonN path -- that numbering is not
-# stable across reboots. On k10temp: temp1=Tctl, temp3=Tccd1, temp4=Tccd2
-# (there is no temp2).
-#
-# Custom modules have no `thresholds` key, so the warn/crit colouring goes
-# through `class-format` + the rules in styles/index.scss instead.
-[[modules.custom]]
-id = "cputemp"
-command = '''for d in /sys/class/hwmon/*; do
-  [ "$(cat "$d/name" 2>/dev/null)" = k10temp ] || continue
-  t=$(cat "$d/temp1_input" 2>/dev/null); c1=$(cat "$d/temp3_input" 2>/dev/null); c2=$(cat "$d/temp4_input" 2>/dev/null)
-  awk -v t="${t:-0}" -v c1="${c1:-0}" -v c2="${c2:-0}" 'BEGIN{printf "{\"tctl\":%.0f,\"ccd1\":%.0f,\"ccd2\":%.0f}", t/1000, c1/1000, c2/1000}'
-  break
-done'''
-interval-ms = 2000
-format = "{{ tctl }}°C"
-tooltip-format = "Tctl {{ tctl }}°C   CCD1 {{ ccd1 }}°C   CCD2 {{ ccd2 }}°C"
-class-format = "{% if tctl >= 85 %}temp-crit{% elif tctl >= 70 %}temp-warn{% endif %}"
-icon-name = "ld-thermometer-symbolic"
-# Cold-to-hot ramp: blue -> yellow (>=70C) -> red (>=85C). Not HyprPanel's red,
-# which is now the crit state -- reusing it at idle would make the ramp read as
-# "back to normal" at 85C.
-icon-color = "blue"
-label-color = "blue"
-left-click = "missioncenter"
 
 [modules.ram]
 format = "{{ percent | int }}%"

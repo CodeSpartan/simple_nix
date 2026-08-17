@@ -12,22 +12,3 @@
 .workspace-divider {
   font-weight: var(--weight-medium);
 }
-
-// Warn/crit colouring for the cputemp custom module. Built-in modules have a
-// `thresholds` key; custom modules do not, so config.toml emits `temp-warn` /
-// `temp-crit` via `class-format` and the colour is applied here.
-//
-// Wayle resolves button colour as `menubutton.bar-button .bar-button-label {
-// color: var(--bar-btn-label-color) }` and sets that var from a per-widget
-// `* { ... }` provider, so overriding the var does not win. The class is
-// repeated to raise specificity above that rule without naming the element
-// type (a custom module without a dropdown is a plain button, not a menubutton).
-.temp-warn.temp-warn.temp-warn .bar-button-label,
-.temp-warn.temp-warn.temp-warn image {
-  color: var(--yellow);
-}
-
-.temp-crit.temp-crit.temp-crit .bar-button-label,
-.temp-crit.temp-crit.temp-crit image {
-  color: var(--red);
-}
