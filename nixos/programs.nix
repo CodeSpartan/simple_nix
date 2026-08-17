@@ -80,6 +80,7 @@ in
     tmux                       # Terminal multiplexer
     mc                         # Midnight Commander file manager
     ntfs3g                     # NTFS filesystem support
+    exfatprogs                 # exFAT filesystem support (mkfs.exfat, fsck.exfat)
     efibootmgr                 # Manage UEFI NVRAM boot entries
   ] ++ lib.optionals host.nvidia [
     nvtopPackages.nvidia       # GPU process monitoring
