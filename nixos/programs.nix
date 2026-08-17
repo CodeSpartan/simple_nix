@@ -214,7 +214,7 @@ in
     pre-commit                 # Git pre-commit hook framework
 
     # Desktop apps
-    brave vscode vlc spotify telegram-desktop slack yt-dlp qbittorrent
+    brave vscode vlc spotify telegram-desktop slack yt-dlp qbittorrent obsidian
     mangohud                   # Real-time FPS/GPU/CPU overlay for games
 
     # VPN
