@@ -21,10 +21,11 @@
   # --- Nix settings ---
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
-    cores = 0;           # 0 = use all available cores for each build
-    max-jobs = 1;         # 1 = build one derivation at a time (this machine: 4 cores / 7.5G RAM --
-                           # "auto" ran N derivations x N cores each in parallel and got OOM-killed
-                           # mid-build; raise back to "auto" once running on a beefier box)
+    cores = 2;             # cap per-build parallelism so 2 cores stay free for the desktop
+                           # (this machine: 4 cores / 7.5G RAM, no swap yet -- was pegging all 4
+                           # threads and making the UI unresponsive; raise back to 0 on a beefier box)
+    max-jobs = 1;         # 1 = build one derivation at a time (see above -- "auto" ran N
+                           # derivations x N cores each in parallel and got OOM-killed mid-build)
     auto-optimise-store = true;   # Deduplicate nix store paths at build time via hardlinks
     substituters = lib.mkIf host.nvidia [ "https://cache.nixos-cuda.org" ];
     trusted-public-keys = lib.mkIf host.nvidia [ "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M=" ];
