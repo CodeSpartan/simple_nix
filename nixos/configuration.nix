@@ -1,4 +1,4 @@
-{ lib, pkgs, host, cliToolsOverlay, ... }:
+{ lib, pkgs, host, ... }:
 
 {
   imports = [
@@ -35,7 +35,6 @@
   };
 
   nixpkgs.overlays = [
-    cliToolsOverlay
     (import ./overlays/amduprof.nix)
     (import ./overlays/nsight-graphics.nix)
     (import ./overlays/wayle-pr255.nix)   # TEMPORARY, see that file -- drop once wayle-rs/wayle#255 merges
