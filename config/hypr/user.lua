@@ -278,6 +278,11 @@ hl.bind(mainMod .. " + J",         hl.dsp.layout("togglesplit"))              --
 hl.bind(mainMod .. " + M",         hl.dsp.exec_cmd(configDir .. "/toggle-layout.sh"))
 hl.bind(mainMod .. " + N",         hl.dsp.exec_cmd("kitty --class=notif-log sh -c 'wayle notify list | less -R'"))
 
+-- Black screen after a monitor replug: aquamarine 0.15.0 leaves the output at 0x0 and
+-- never re-applies the monitor rule (hyprwm/aquamarine#382). A reload re-applies it.
+-- locked = true so it also works from the lock screen. Drop this once aquamarine is fixed.
+hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("hyprctl reload"), { locked = true })
+
 -- Screenshots
 hl.bind("Print",                   hl.dsp.exec_cmd("flameshot gui"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("grimblast --freeze copysave area"))

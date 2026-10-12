@@ -354,7 +354,7 @@ claude-code and codex release too often to package in nix (an OS rebuild per bum
 ./scripts/install-ai-tools.sh codex    # just one
 ```
 
-claude-code uses Anthropic's official installer and self-updates afterwards. codex installs from npm (`@openai/codex`, vendors static musl binaries that run on NixOS unpatched) with `--prefix ~/.local`; rerun the script to update it.
+claude-code uses Anthropic's official installer and self-updates afterwards. codex installs from npm (`@openai/codex`, vendors static musl binaries that run on NixOS unpatched) with `--prefix ~/.local`; rerun the script to update it. The script also copies and pins the managed Codex app-server daemon to the installed CLI package, even when the CLI is already current, then prints both versions. Updating the daemon can interrupt active Codex sessions; run the script from a separate terminal when ready to reconnect.
 
 The nightly update check (`nixos/update-check.nix`) is **enabled by default** (`updateCheck = true` in `host.nix`). It fetches `origin/main` and notifies you (shell login + desktop notification) if your local branch is behind. It never pulls commits, changes `flake.lock`, rebuilds, or activates NixOS. Review and apply upstream changes manually when you are ready. Set `updateCheck = false` to disable it.
 

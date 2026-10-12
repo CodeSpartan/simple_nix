@@ -11,4 +11,5 @@ in
   "aws-access-key-id.age".publicKeys = [ nixos vitalii ];
   "aws-secret-access-key.age".publicKeys = [ nixos vitalii ];
   "aws-default-key-pair.age".publicKeys = [ nixos vitalii ];
+  "vastai.age".publicKeys = [ vitalii nixos ];
 }

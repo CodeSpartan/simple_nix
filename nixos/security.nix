@@ -57,6 +57,10 @@ in
     file = ./secrets/aws-default-key-pair.age;
     path = "${host.homeDir}/.ssh/aws-default-key-pair.pem";
   };
+  age.secrets.vastai = userSecret // {
+    file = ./secrets/vastai.age;
+    path = "${host.homeDir}/.ssh/vastai";
+  };
 
   # API keys / credentials -- decrypted to /run/agenix/<name>, read manually or via EnvironmentFile
   age.secrets.openrouter-api-key = userSecret // {

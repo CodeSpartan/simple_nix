@@ -9,8 +9,9 @@ set -euo pipefail
 #           install, so this script only needs to run once.
 #   codex   npm package (vendors static musl binaries, runs on NixOS
 #           unpatched). npm's default prefix is the read-only nix store,
-#           so --prefix ~/.local routes the bin to ~/.local/bin. No
-#           self-updater; rerun this script to update.
+#           so --prefix ~/.local routes the bin to ~/.local/bin.
+#           Rerun this script to update the CLI and managed app-server
+#           daemon together. Updating the daemon can interrupt active work.
 #
 # Usage: install-ai-tools.sh [claude|codex]   (default: both)
 
@@ -48,12 +49,16 @@ install_codex() {
   fi
   if [[ "$current" == "$latest" ]]; then
     echo "  up to date: ${current}"
-    return
+  else
+    echo "  installing: ${current:-none} -> ${latest}"
+    npm install -g --prefix "${HOME}/.local" "@openai/codex@${latest}"
+    echo "  installed: $("${BIN_DIR}/codex" --version 2>/dev/null || echo '?')"
   fi
-  echo "  installing: ${current:-none} -> ${latest}"
 
-  npm install -g --prefix "${HOME}/.local" "@openai/codex@${latest}"
-  echo "  installed: $("${BIN_DIR}/codex" --version 2>/dev/null || echo '?')"
+  # The daemon has a separate package and can lag behind an up-to-date CLI.
+  echo "  updating managed app-server from CLI (may interrupt active Codex work)"
+  "${BIN_DIR}/codex" app-server daemon update --from-cli --yes
+  "${BIN_DIR}/codex" app-server daemon version
 }
 
 if should_install claude; then install_claude; fi

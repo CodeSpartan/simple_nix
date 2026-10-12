@@ -29,6 +29,7 @@ if [[ "$mode" == "enable" ]]; then
     sudo sysctl -w kernel.kptr_restrict=0                  # needed for kernel stack symbolication
     sudo sysctl -w kernel.randomize_va_space=0             # ASLR off: stable VA layout for sub-us dispatch benches
     sudo sysctl -w kernel.numa_balancing=0 || true         # stop kthread page migration onto bench cores
+    sudo sysctl -w kernel.yama.ptrace_scope=0
     sudo cpupower frequency-set -g performance
     echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference > /dev/null
 
@@ -132,6 +133,7 @@ else
     sudo sysctl -w kernel.kptr_restrict=1
     sudo sysctl -w kernel.randomize_va_space=2
     sudo sysctl -w kernel.numa_balancing=1 || true
+    sudo sysctl -w kernel.yama.ptrace_scope=1
     sudo cpupower frequency-set -g performance
 
     if [[ -e /sys/devices/system/cpu/cpufreq/boost ]]; then

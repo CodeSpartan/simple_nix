@@ -8,6 +8,10 @@
     settings."github.com" = {
       IdentityFile = "${config.home.homeDirectory}/.ssh/id_ed25519_github";
     };
+    # rented GPU hosts: vast.ai's ssh proxies
+    settings."*.vast.ai" = {
+      IdentityFile = "${config.home.homeDirectory}/.ssh/vastai";
+    };
   };
 
   # Git -- rebase on pull and copy AuthorDate to CommitterDate during rebase so the
