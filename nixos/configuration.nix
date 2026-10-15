@@ -40,6 +40,7 @@
   nixpkgs.overlays = [
     (import ./overlays/amduprof.nix)
     (import ./overlays/nsight-graphics.nix)
+    (import ./overlays/typescript-language-server-hash.nix)
   ];
   nixpkgs.config.allowUnfree = true;
 
