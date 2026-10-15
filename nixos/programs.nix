@@ -62,6 +62,7 @@ in
   environment.systemPackages = with pkgs; [
     # Core utilities
     git-filter-repo gh glab wget curl unzip p7zip file fastfetch optipng
+    bc                         # Arbitrary-precision command-line calculator
     imagemagick                # Image conversion/resizing (convert, mogrify)
     poppler-utils              # PDF utilities (pdftotext, pdfimages, pdfinfo)
     ffmpeg                     # Audio/video transcoding and processing
