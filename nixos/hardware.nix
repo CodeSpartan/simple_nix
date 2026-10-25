@@ -97,6 +97,12 @@
   services.smartd.enable = true;        # Monitor SSD/HDD health via SMART -- warns before failure
   services.irqbalance.enable = true;    # Distribute hardware interrupts across CPU cores
 
+  # --- Razer peripherals ---
+  hardware.openrazer = {
+    enable = true;
+    users = [ host.username ];         # Permission to configure devices through the user daemon
+  };
+
   # --- Bluetooth ---
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;

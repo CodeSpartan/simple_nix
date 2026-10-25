@@ -261,6 +261,7 @@ in
     imv                        # Fast Wayland-native image viewer
     file-roller                # Archive manager GUI (zip/tar/7z)
     mission-center             # System monitor (CPU/GPU/RAM/disk, GTK4 Wayland native)
+    polychromatic              # Razer mouse settings GUI (OpenRazer enabled in hardware.nix)
 
     # Desktop services
     lxqt.lxqt-policykit       # Polkit authentication agent (GUI sudo prompts)

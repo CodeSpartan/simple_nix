@@ -28,7 +28,8 @@ nixos/                   # NixOS system config (flake-based)
   nordvpn.nix            # NordVPN daemon + GUI (FHS-wrapped from .deb)
   home/                  # home-manager modules
 scripts/
-  install-ai-tools.sh    # native install of claude-code + codex to ~/.local/bin
+  install-ai-tools.sh    # local CLI + desktop installs for Claude and ChatGPT
+  ai-desktop-launcher.sh # NixOS runtime libraries for the locally installed GUIs
   add-secret.sh          # add and wire up a new agenix secret
 config/                  # dotfiles (most symlinked by link.sh)
   nvim/                  # Neovim (NvChad), symlinked
@@ -114,6 +115,21 @@ Relog (SDDM) to pick up the new Hyprland session.
 - **home-manager** deploys mc and kde as nix store symlinks (`./install.sh` to apply)
 - **link.sh** symlinks everything else for live editing (no rebuild needed)
 
+## Razer mouse
+
+[OpenRazer](https://openrazer.github.io/) supplies the driver and user daemon;
+[Polychromatic](https://polychromatic.app/) supplies the settings GUI. The Razer
+Viper V3 Pro is supported, including USB IDs `1532:00c0` and `1532:00c1`.
+
+After the first rebuild, reboot to load the driver and pick up membership in the
+`openrazer` group. Open **Polychromatic** from the application launcher, or run
+`polychromatic-controller`, to configure DPI, polling rate, and supported power
+settings. The daemon starts with the graphical session and provides battery
+notifications.
+
+This covers the mouse's basic hardware settings. Button remapping, Hypershift,
+and firmware updates are [not supported by OpenRazer/Polychromatic](https://docs.polychromatic.app/openrazer/).
+
 ## Dev Environment
 
 - **nix-ld** enabled -- pip wheels, npm native modules, and other binary packages just work
@@ -136,7 +152,7 @@ Relog (SDDM) to pick up the new Hyprland session.
 - **Go**: go, gopls
 - **JVM**: JDK, Kotlin, kotlin-language-server
 - **Neovim**: NvChad-based, LSPs from nix (clangd, basedpyright, ruff, rust-analyzer, ts_ls, bashls), conform.nvim for formatting. See [`config/nvim/CHEATSHEET.md`](config/nvim/CHEATSHEET.md)
-- **AI coding tools**: claude-code and codex install natively via [`scripts/install-ai-tools.sh`](#ai-coding-tools) (they update too often for OS rebuilds)
+- **AI tools**: Claude Code, Codex, ChatGPT Desktop, and Claude Desktop install locally via [`scripts/install-ai-tools.sh`](#ai-tools) and update independently of OS rebuilds
 - **AMD uProf** (optional, AMD CPUs only) -- microarchitectural profiler: IBS sampling, Zen PMU counters, cache/mem/branch/TLB events, power timechart. See [AMD uProf setup](#amd-uprof-optional)
 - **NVIDIA Nsight Graphics** (optional, NVIDIA GPUs only) -- headless frame debugger and GPU profiler CLI for Vulkan/OpenGL/DirectX. See [Nsight Graphics setup](#nvidia-nsight-graphics-optional)
 
@@ -345,16 +361,29 @@ bootctl status
 
 To boot Windows: press F11 at POST for the boot device menu, select the Windows drive. BitLocker will ask for the recovery key once after key enrollment, then re-seals automatically.
 
-## AI Coding Tools
+## AI Tools
 
-claude-code and codex release too often to package in nix (an OS rebuild per bump). They install natively to `~/.local/bin` (already on PATH via home-manager):
+The CLI tools and official Linux desktop apps install through one script, independently of NixOS rebuilds. Commands go in `~/.local/bin` (already on PATH via home-manager):
 
 ```bash
-./scripts/install-ai-tools.sh          # install/update both
-./scripts/install-ai-tools.sh codex    # just one
+./scripts/install-ai-tools.sh                 # install/update all four
+./scripts/install-ai-tools.sh cli             # Claude Code + Codex CLIs
+./scripts/install-ai-tools.sh gui             # ChatGPT + Claude desktop apps
+./scripts/install-ai-tools.sh codex           # just the Codex CLI
+./scripts/install-ai-tools.sh claude          # just the Claude Code CLI
+./scripts/install-ai-tools.sh chatgpt         # just ChatGPT Desktop
+./scripts/install-ai-tools.sh claude-desktop  # just Claude Desktop
 ```
 
 claude-code uses Anthropic's official installer and self-updates afterwards. codex installs from npm (`@openai/codex`, vendors static musl binaries that run on NixOS unpatched) with `--prefix ~/.local`; rerun the script to update it. The script also copies and pins the managed Codex app-server daemon to the installed CLI package, even when the CLI is already current, then prints both versions. Updating the daemon can interrupt active Codex sessions; run the script from a separate terminal when ready to reconnect.
+
+The desktop installer selects the newest version from [OpenAI's Linux repository](https://learn.chatgpt.com/docs/linux/linux-app) and [Anthropic's Linux repository](https://support.claude.com/en/articles/10065433-install-claude-desktop), checks the download against the repository's SHA-256, and extracts the official `.deb` into `~/.local/share/ai-tools/`. It creates application-menu entries and the `chatgpt` and `claude-desktop` commands. `XDG_DATA_HOME` is honored. Close the app before updating; rerun the script to update it. The previous release is retained, and a failed download or extraction leaves the current app in place. No sudo, apt installation, flake input, or system rebuild is involved.
+
+On NixOS, the desktop launcher uses this configuration's existing `nix-ld`, Brave, and Seahorse installations for the loader and Chromium/GTK/keyring libraries. It resolves their current library paths at launch, so system upgrades do not leave hardcoded store paths behind. `curl`, `ar`, `tar` (with xz/zstd support), Python 3, and `flock` are installer prerequisites already supplied by this configuration. The desktop installer also accepts Linux ARM64 on other distributions; this repo's NixOS configuration targets x86_64.
+
+The NixOS launcher explicitly selects GNOME Keyring (`--password-store=gnome-libsecret`), because Electron does not automatically recognize Hyprland's keyring backend. It selects native Wayland when `NIXOS_OZONE_WL=1` and `WAYLAND_DISPLAY` are set. When `TMPDIR` is unset or `/tmp`, the launcher supplies a private directory under `~/.cache/ai-tools/` for temporary files that honor `TMPDIR`; upstream components may still use hardcoded `/tmp` paths. Custom launch arguments and a custom `TMPDIR` are preserved.
+
+This installs the GUI applications; Claude Cowork's local virtual machine still needs KVM access, QEMU, firmware, and virtiofsd. The installer does not configure those host services or Debian-specific firmware paths. Desktop features remain subject to upstream Linux preview/beta support and your account plan.
 
 The nightly update check (`nixos/update-check.nix`) is **enabled by default** (`updateCheck = true` in `host.nix`). It fetches `origin/main` and notifies you (shell login + desktop notification) if your local branch is behind. It never pulls commits, changes `flake.lock`, rebuilds, or activates NixOS. Review and apply upstream changes manually when you are ready. Set `updateCheck = false` to disable it.
 
