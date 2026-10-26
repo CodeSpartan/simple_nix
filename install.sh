@@ -14,13 +14,32 @@ git -C "$REPO" add -f nixos/hardware-configuration.nix
 
 echo "==> Rebuilding NixOS..."
 _hostname=$(nix eval --raw -f "$REPO/nixos/host.nix" hostname 2>/dev/null || hostname)
-sudo nixos-rebuild switch -L --flake "$REPO/nixos#$_hostname"
+# Exit 4 = new system is active but some unit is in a failed state, even an unrelated
+# one like fwupd-refresh without network; clear stale failures, then warn instead of aborting
+sudo systemctl reset-failed
+_rc=0
+sudo nixos-rebuild switch -L --flake "$REPO/nixos#$_hostname" || _rc=$?
+if [[ $_rc -eq 4 ]]; then
+  echo "    WARNING: switched, but some units failed (listed above); continuing"
+elif [[ $_rc -ne 0 ]]; then
+  exit "$_rc"
+fi
 
-# Ensure new packages are in PATH for the current session
-export PATH="/run/current-system/sw/bin:$PATH"
+# Ensure new packages are in PATH for the current session; wrappers first so sudo stays setuid
+export PATH="/run/wrappers/bin:/run/current-system/sw/bin:$PATH"
 
 echo "==> Symlinking configs..."
 "$REPO/link.sh"
+
+echo "==> Installing and updating Flatpak apps..."
+sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+# Already-installed apps are skipped; the update below covers them
+sudo flatpak install --noninteractive flathub \
+  com.discordapp.Discord \
+  org.blender.Blender
+# Also pulls the GL.nvidia extension matching a new host driver
+sudo flatpak update --noninteractive
+sudo flatpak uninstall --unused --noninteractive
 
 # Unstage hardware-configuration.nix so it stays gitignored
 git -C "$REPO" reset nixos/hardware-configuration.nix 2>/dev/null || true
