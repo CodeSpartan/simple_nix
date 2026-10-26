@@ -13,8 +13,11 @@ to run themselves over assuming they know the equivalent.
 
 ## This machine
 
-- Desktop. AMD Ryzen 9 3900X (12c/24t), 32GB RAM, NVIDIA RTX 4080 SUPER,
-  btrfs root (`/`).
+- Desktop, replacing the old Intel/no-GPU laptop this fork originally ran
+  on — that laptop is **retired, not in use anymore**. Any "weak hardware"
+  framing from that era no longer applies.
+- AMD Ryzen 9 3900X (12c/24t), 32GB RAM, NVIDIA RTX 4080 SUPER, btrfs root
+  (`/`).
 - Monitor: 4K, scale **2** (set in `config/hypr/user.conf`).
 - Secure Boot via Lanzaboote is enabled (`host.nix` -> `nixos/hardware.nix`).
 - This is a forked, personalized copy of a friend's (Vitalii's) config,
@@ -23,6 +26,48 @@ to run themselves over assuming they know the equivalent.
   laptop this fork first ran on. No low-RAM/weak-GPU dialing-back applies
   here; upstream's un-tuned defaults (`nvidia = true`, `cores = 0`,
   `max-jobs = "auto"`, etc.) are the right starting point.
+
+## TODO
+
+- Logitech mouse software: figure out the exact model, then wire up either
+  **Solaar** (`pkgs.solaar` — Unifying/Bolt receiver, battery/pairing/DPI)
+  or **Piper** + `services.ratbagd.enable` (`pkgs.piper` — G-series DPI/
+  button remap/RGB), analogous to how Razer gets OpenRazer+Polychromatic
+  on Vitalii's upstream. Not installed yet.
+
+## Migration status (fresh install, in progress)
+
+This is a brand-new NixOS install (2026-10-26). Sequence so far:
+1. Installed `gh`/`git` declaratively into `/etc/nixos/configuration.nix`
+   (not this repo — that file predates the flake).
+2. Cloned this fork to `~/code/simple_nix`, personalized `host.nix`/
+   `hardware.nix`/`configuration.nix`/`hypr/user.conf` for this machine
+   (see git log: "personalize for the new AMD + RTX 4080 SUPER desktop").
+3. Hit a live crash: the fresh install was running **nouveau**, which
+   corrupts/freezes on this RTX 4080 SUPER. Hand-patched
+   `/etc/nixos/configuration.nix` directly (outside this repo) with a
+   minimal `hardware.nvidia`/`videoDrivers` block to stabilize immediately
+   — first attempt failed because `linuxPackages_latest` (kernel 7.3) is
+   too new for `nvidia-open` to build; switched to plain `linuxPackages`
+   (6.18.57), which built and is now running clean (confirmed via `lsmod`).
+   That hand-patch is a temporary bridge and is separate from this repo.
+4. Pulled 11 of Vitalii's upstream commits into this fork (skipped NordVPN,
+   his vastai secret, and Razer/openrazer — see git log for details).
+   This brought `flake.lock`'s nixpkgs pin from Aug 13 to Oct 23, which
+   should avoid the kernel/nvidia mismatch from step 3 when this repo's
+   own flake is built.
+5. **Next**: run `./install.sh` (full flake-based rebuild, replaces the
+   `/etc/nixos` hand-patch). After it succeeds, still need the Secure Boot
+   BIOS steps from the README (clear Secure Boot keys, reboot, `sbctl
+   enroll-keys --microsoft`, reboot, enable Secure Boot) — `sbctl
+   create-keys` has already been run.
+6. **Rollback plan if `install.sh` misbehaves**: if the build itself fails,
+   nothing is activated — the current generation (the hand-patched,
+   nvidia-working one) is untouched, zero risk. If it builds and switches
+   but something's broken at runtime, roll back with
+   `sudo nixos-rebuild switch --rollback`, or pick the previous generation
+   from the systemd-boot menu at reboot. Diagnose from there rather than
+   re-attempting blindly.
 
 ## Repo vs. system config — where to make a change
 
