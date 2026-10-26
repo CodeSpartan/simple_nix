@@ -53,7 +53,7 @@ hl.monitor({
     output   = "",
     mode     = "highrr",
     position = "auto",
-    scale    = 1.666667,
+    scale    = 2,
 })
 
 
@@ -93,12 +93,12 @@ end)
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 
 -- NOTE: keep cursor size in sync with cursorSize in nixos/host.nix
-hl.env("XCURSOR_SIZE", "24")
-hl.env("HYPRCURSOR_SIZE", "24")
+hl.env("XCURSOR_SIZE", "32")
+hl.env("HYPRCURSOR_SIZE", "32")
 -- NOTE: GDK_SCALE must be integer; GDK_DPI_SCALE = monitorScale / GDK_SCALE
 -- Adjust both when changing monitor scale (hl.monitor above)
 hl.env("GDK_SCALE", "2")
-hl.env("GDK_DPI_SCALE", "0.8333")
+hl.env("GDK_DPI_SCALE", "1.0")
 -- NOTE: keep in sync with qt settings in nixos/home/theming.nix
 hl.env("QT_QPA_PLATFORMTHEME", "kde")
 hl.env("QT_STYLE_OVERRIDE", "breeze")
