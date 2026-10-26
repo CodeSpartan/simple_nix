@@ -2,7 +2,7 @@ let
   # Personal age key (portable -- store the private key in your password manager,
   # and at ~/.config/age/keys.txt on any machine you want to bootstrap).
   # Generated with: nix-shell -p age --run "age-keygen -o ~/.config/age/keys.txt"
-  ashberry = "age15c9kjwel5xuru7ex6qaquuj873k0eczw7qmyd7uc72rmd8c3ruuq8ctyzl";
+  vervain = "age1f4nrvtr637kwemkjltrul5lulv29f82dnm9ssprtpjmqv003s5wqyshljh";
 
   # Machine host key (for unattended decryption at boot).
   # Not known yet -- this machine hasn't been switched once, so
@@ -14,8 +14,8 @@ let
   # nixos = "ssh-ed25519 AAAA...";
 in
 {
-  # No secrets yet. Add one with ./scripts/add-secret.sh <name> -- it encrypts
+  # No secrets yet -- id_ed25519_github.age/id_ed25519_gitlab.age from the
+  # previous (retired) machine were encrypted for a lost age key and had to
+  # be dropped; re-add with ./scripts/add-secret.sh <name>, which encrypts
   # for every key in this file and wires up nixos/security.nix automatically.
-  "id_ed25519_gitlab.age".publicKeys = [ ashberry ];
-  "id_ed25519_github.age".publicKeys = [ ashberry ];
 }
