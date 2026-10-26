@@ -48,11 +48,10 @@ in
   programs.gpu-screen-recorder.enable = true;   # NVENC screen recorder + setcap gsr-kms-server wrapper
   services.flatpak.enable = true;       # Flatpak for apps that need it (e.g. Discord with Krisp)
   services.ivpn.enable = true;          # ivpn-service daemon; without it the CLI/UI have no /etc/opt/ivpn/mutable
-  # ...but don't run it at boot: the daemon polls IVPN's server list hourly even while
-  # logged out. Start it on demand before using the CLI/UI:
-  #   sudo systemctl start ivpn-service
-  # Same on-demand pattern as the nordvpn daemon in nordvpn.nix.
-  systemd.services.ivpn-service.wantedBy = lib.mkForce [ ];
+  # Starts at boot (module default, multi-user.target) -- this user wants the
+  # CLI/UI usable immediately rather than having to `systemctl start` it by
+  # hand first. Trade-off: the daemon polls iVPN's server list hourly even
+  # while logged out. Set back to `lib.mkForce [ ]` if that matters more.
   services.printing = {
     enable = true;
     browsing = false;                  # Don't advertise printers on the network
