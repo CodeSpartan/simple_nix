@@ -1,0 +1,34 @@
+--- a/crates/wayle-shell/src/shell/bar/modules/network/methods.rs
++++ b/crates/wayle-shell/src/shell/bar/modules/network/methods.rs
+@@ -51,7 +51,18 @@
+             ),
+ 
+             _ => {
+-                if let Some(wifi) = network.wifi.get() {
++                // Falls through here for anything other than plain Wifi/Wired/None --
++                // notably Vpn/WireGuard, which NetworkManager reports as "primary"
++                // whenever a VPN tunnel is up, even though the real underlying link is
++                // wired. Prefer a genuinely connected wired device over a merely
++                // *present* (possibly disconnected) wifi device, so a desktop with a
++                // wifi card but no wifi use doesn't misreport as "Disconnected".
++                if let Some(wired) = network.wired.get() {
++                    let ctx = WiredContext {
++                        connectivity: wired.connectivity.get(),
++                    };
++                    (wired_icon(config, &ctx), wired_label(&ctx))
++                } else if let Some(wifi) = network.wifi.get() {
+                     let ssid = wifi.ssid.get();
+                     let ctx = WifiContext {
+                         enabled: wifi.enabled.get(),
+@@ -60,11 +71,6 @@
+                         ssid: ssid.as_deref(),
+                     };
+                     (wifi_icon(config, &ctx), wifi_label(&ctx))
+-                } else if let Some(wired) = network.wired.get() {
+-                    let ctx = WiredContext {
+-                        connectivity: wired.connectivity.get(),
+-                    };
+-                    (wired_icon(config, &ctx), wired_label(&ctx))
+                 } else {
+                     (
+                         config.wifi_offline_icon.get().clone(),

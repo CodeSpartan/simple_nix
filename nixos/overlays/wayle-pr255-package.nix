@@ -38,6 +38,13 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   cargoHash = "sha256-4PUXJwUP5h/ggZQbY78BdqMh5oZes1XCeWuT2/S94Z4=";
 
+  # The bar's "network" module falls back to a wifi device's (possibly
+  # disconnected) state whenever NetworkManager's primary connection isn't
+  # plain Wifi/Wired/None -- which is always, on this machine, since iVPN's
+  # WireGuard tunnel is reported as primary. Prefer an actually-connected
+  # wired device in that fallback instead. See wayle-network-prefer-wired.patch.
+  patches = [ ./wayle-network-prefer-wired.patch ];
+
   nativeBuildInputs = [
     copyDesktopItems
     glib
