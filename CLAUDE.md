@@ -150,7 +150,8 @@ Lanzaboote stub active). MSI-specific lessons, in case keys are ever reset:
 
 ## Git remotes / GitHub
 
-- `origin` → `https://github.com/CodeSpartan/simple_nix.git` (user's fork).
+- `origin` → `git@github.com:CodeSpartan/simple_nix.git` (user's fork, SSH —
+  HTTPS has no stored credentials, pushes over it fail).
 - `upstream` → `https://github.com/Lallapallooza/simple_nix.git` (Vitalii's;
   read-only in practice — pull fixes from here, don't push).
 - `gh` is authenticated as `CodeSpartan` with `git_protocol ssh`.
@@ -164,7 +165,7 @@ Lanzaboote stub active). MSI-specific lessons, in case keys are ever reset:
   from this working tree.
 - Cloning over HTTPS from Claude's shell can pop a GUI password prompt
   (ksshaskpass) on the user's desktop — prefix with
-  `GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=/bin/true`.
+  `GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=true` (NixOS has no `/bin/true`).
 
 ## Secrets (agenix)
 
