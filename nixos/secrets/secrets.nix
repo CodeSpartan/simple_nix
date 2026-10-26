@@ -14,8 +14,11 @@ let
   # nixos = "ssh-ed25519 AAAA...";
 in
 {
-  # No secrets yet -- id_ed25519_github.age/id_ed25519_gitlab.age from the
-  # previous (retired) machine were encrypted for a lost age key and had to
-  # be dropped; re-add with ./scripts/add-secret.sh <name>, which encrypts
-  # for every key in this file and wires up nixos/security.nix automatically.
+  # id_ed25519_github.age/id_ed25519_gitlab.age from the previous (retired)
+  # machine were encrypted for a lost age key, undecryptable here, and were
+  # replaced with freshly generated keypairs. Add more with
+  # ./scripts/add-secret.sh <name> -- it encrypts for every key in this file
+  # and wires up nixos/security.nix automatically.
+  "id_ed25519_github.age".publicKeys = [ vervain ];
+  "id_ed25519_gitlab.age".publicKeys = [ vervain ];
 }
