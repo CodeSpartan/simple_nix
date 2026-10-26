@@ -13,12 +13,16 @@ to run themselves over assuming they know the equivalent.
 
 ## This machine
 
-- Laptop, 4 cores, **7.5GB RAM**, no swap by default, btrfs root (`/`).
-- Panel: eDP-1, 1920x1080, scale **1.5** (set in `config/hypr/user.conf`).
-- This is a forked, personalized copy of a friend's (Vitalii's) config —
+- Desktop. AMD Ryzen 9 3900X (12c/24t), 32GB RAM, NVIDIA RTX 4080 SUPER,
+  btrfs root (`/`).
+- Monitor: 4K, scale **2** (set in `config/hypr/user.conf`).
+- Secure Boot via Lanzaboote is enabled (`host.nix` -> `nixos/hardware.nix`).
+- This is a forked, personalized copy of a friend's (Vitalii's) config,
   originally built and tuned for *his* machine (~32GB RAM, 4K monitor,
-  NVIDIA). Don't assume upstream's defaults fit this box; several already
-  had to be dialed back (see below).
+  NVIDIA) — this box is actually close to that original spec, unlike the
+  laptop this fork first ran on. No low-RAM/weak-GPU dialing-back applies
+  here; upstream's un-tuned defaults (`nvidia = true`, `cores = 0`,
+  `max-jobs = "auto"`, etc.) are the right starting point.
 
 ## Repo vs. system config — where to make a change
 
@@ -35,15 +39,6 @@ to run themselves over assuming they know the equivalent.
   store**. You cannot hand-edit `~/.gitconfig` etc. directly (learned this
   the hard way: `git config --global` failed with "Read-only file system").
   Change the source in `nixos/home/*.nix`, then `./install.sh`.
-
-## Low-RAM tuning already applied — don't casually revert
-
-`nixos/configuration.nix` has `max-jobs = 1` and `cores = 2` (not upstream's
-`max-jobs = "auto"`, `cores = 0`). Upstream's setting OOM-killed the `nix`
-process outright and froze the desktop on this machine (confirmed via
-`dmesg`/kernel OOM logs) building the `br` from-source Rust overlay package.
-If pulling upstream changes ever touches this block, keep the capped values
-unless the machine's RAM situation has actually changed.
 
 ## Git remotes
 
