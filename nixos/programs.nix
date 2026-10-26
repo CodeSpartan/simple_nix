@@ -45,6 +45,7 @@ in
     daemon.settings.dns = [ "1.1.1.1" "8.8.8.8" ];
   };
   virtualisation.podman.enable = true;
+  programs.gpu-screen-recorder.enable = true;   # NVENC screen recorder + setcap gsr-kms-server wrapper
   services.flatpak.enable = true;       # Flatpak for apps that need it (e.g. Discord with Krisp)
   services.ivpn.enable = true;          # ivpn-service daemon; without it the CLI/UI have no /etc/opt/ivpn/mutable
   # ...but don't run it at boot: the daemon polls IVPN's server list hourly even while
@@ -252,6 +253,7 @@ in
     flameshot                  # Screenshot with annotation UI -- bound to Print (wlroots capture via grim is on by default)
     grim                       # Screenshot capture
     slurp                      # Region selection for screenshots
+    gpu-screen-recorder-gtk    # GUI for gpu-screen-recorder -- window/screen capture with desktop/mic audio
 
     # Theming (GTK theme + icons managed by home-manager in theming.nix)
 
