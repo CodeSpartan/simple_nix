@@ -384,6 +384,14 @@ hl.window_rule({
     suppress_event = "fullscreen maximize",
 })
 
+-- Keep IVPN's main window tiled and let it fill the tile.
+hl.window_rule({
+    name        = "ivpn-main",
+    match       = { class = "^IVPN$", title = "^IVPN Client$" },
+    tile        = true,
+    no_max_size = true,
+})
+
 -- Float utility windows
 for _, class in ipairs({
     "^(pavucontrol)$",
