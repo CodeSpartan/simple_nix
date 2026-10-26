@@ -107,4 +107,18 @@ echo "==> Symlinking clangd config..."
 mkdir -p "$HOME/.config/clangd"
 ln -sf "$REPO/config/clangd/config.yaml" "$HOME/.config/clangd/config.yaml"
 
+echo "==> Setting up Claude Code status line..."
+mkdir -p "$HOME/.claude"
+ln -sf "$REPO/config/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+# settings.json is NOT symlinked: Claude Code rewrites it (model, theme, plugins).
+# Merge only our keys in, same approach as VS Code above.
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+[[ -f "$CLAUDE_SETTINGS" ]] || echo '{}' > "$CLAUDE_SETTINGS"
+if merged=$(jq -s '.[0] * .[1]' "$CLAUDE_SETTINGS" "$REPO/config/claude/settings.json" 2>/dev/null); then
+  printf '%s\n' "$merged" > "$CLAUDE_SETTINGS"
+  echo "    Merged statusLine into $CLAUDE_SETTINGS"
+else
+  echo "    SKIP: $CLAUDE_SETTINGS is not plain JSON, apply config/claude/settings.json by hand" >&2
+fi
+
 echo "Done."
