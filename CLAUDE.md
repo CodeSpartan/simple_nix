@@ -23,7 +23,12 @@ from that era no longer applies.
 - AMD Ryzen 9 3900X (12c/24t), 32GB RAM, NVIDIA RTX 4080 SUPER, btrfs root.
 - **MSI** motherboard (AMI firmware) — *not* the ASRock board the README's
   BIOS steps describe; menu names differ (see Secure Boot below).
-- Monitor: 4K, scale **2** — set in `config/hypr/user.lua`.
+- Monitor: LG ULTRAGEAR+ 4K@144, scale **2** — set in `config/hypr/user.lua`.
+  ICC calibration profile `config/hypr/lg-ultragear-srgb-d65.icm` (made for
+  the monitor's **sRGB picture mode**) applied via a `desc:` monitor rule.
+  Hyprland reports nothing about ICC (no status field, no log line) and
+  `hyprctl eval hl.monitor(...)` doesn't apply monitor rules -- A/B test by
+  editing user.lua + `hyprctl reload`, and judge by eye.
 - Network: two onboard ethernet ports. `enp35s0` (Realtek, `r8169`) is the
   one in use. `eno1` (Killer/Atheros, `alx`) is unused and its driver is
   **blacklisted** in `nixos/hardware.nix` (see Wayle below for why).

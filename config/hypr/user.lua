@@ -56,6 +56,18 @@ hl.monitor({
     scale    = 2,
 })
 
+-- The LG, matched by description (stable, unlike the port name), with its
+-- calibration profile. A specific rule replaces the catch-all rather than
+-- merging with it, so it repeats mode/position/scale. The ICC forces the
+-- sRGB transfer function and doesn't mix with HDR gaming.
+hl.monitor({
+    output   = "desc:LG Electronics LG ULTRAGEAR+ 307NTRLFX550",
+    mode     = "highrr",
+    position = "auto",
+    scale    = 2,
+    icc      = configDir .. "/lg-ultragear-srgb-d65.icm",
+})
+
 
 ---------------------
 ---- MY PROGRAMS ----
