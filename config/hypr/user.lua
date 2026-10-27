@@ -385,6 +385,26 @@ hl.bind(mainMod .. " + grave", function()
     end
 end)
 
+-- Brave: Ctrl+scroll over the tab bar switches tabs, like Brave on Windows.
+-- On Linux Brave's only control is brave://flags "Change active tab on scroll
+-- event": on = plain scroll switches tabs, off = no scroll switching at all.
+-- With it off, these binds send Brave Ctrl+PageDown/PageUp when the cursor is
+-- in the tab bar (top 40px of the window). non_consuming: the scroll still
+-- reaches every app, so Ctrl+scroll zoom keeps working elsewhere.
+local brave_tabbar_height = 40
+local function brave_tab_scroll(key)
+    return function()
+        local w = hl.get_active_window()
+        local c = hl.get_cursor_pos()
+        if not (w and c) or w.class ~= "brave-browser" then return end
+        if c.x < w.at.x or c.x > w.at.x + w.size.x
+            or c.y < w.at.y or c.y > w.at.y + brave_tabbar_height then return end
+        hl.dispatch(hl.dsp.send_shortcut({ mods = "CTRL", key = key }))
+    end
+end
+hl.bind("CTRL + mouse_down", brave_tab_scroll("Next"),  { non_consuming = true })
+hl.bind("CTRL + mouse_up",   brave_tab_scroll("Prior"), { non_consuming = true })
+
 -- Scratchpad (hidden overlay workspace)
 hl.bind(mainMod .. " + S",        hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mainMod .. " + CTRL + S", hl.dsp.window.move({ workspace = "special:magic" }))

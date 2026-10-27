@@ -292,6 +292,10 @@ Calibri, ...) were copied from `/mnt/cdrive/Windows/Fonts` into
 reinstall. nixpkgs' `corefonts`/`vista-fonts` lack Tahoma, which sites like
 rpgcodex.net (and the RPGCodex Mod userscript) ask for first; without it
 Brave falls back to Inter.
+Tab switching by scroll: brave://flags `brave-change-active-tab-on-scroll-event`
+is **Disabled** (on Linux it's all-or-nothing -- no Ctrl-only mode); Ctrl+scroll
+over the tab bar is re-created by Hyprland binds in `user.lua` that send
+Ctrl+PageDown/PageUp (`brave_tabbar_height`, non-consuming).
 Userscripts (Tampermonkey) are kept in `config/userscripts/` -- e.g.
 `eda-yandex-light.user.js` forces eda.yandex.ru to its light theme.
 
