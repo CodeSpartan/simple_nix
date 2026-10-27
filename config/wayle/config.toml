@@ -24,6 +24,7 @@ font-mono = "JetBrainsMono Nerd Font"
 # Flush to the top edge, square corners, hairline border, and buttons with no
 # pill background (icon + label only).
 [bar]
+scale = 0.9
 location = "top"
 exclusive = true
 layer = "top"
@@ -47,8 +48,9 @@ button-label-size = 1.15
 [[bar.layout]]
 monitor = "*"
 left = ["dashboard", "hyprland-workspaces"]
-center = ["clock", "weather"]
+center = ["clock"]
 right = [
+    "custom-weather",
     "cpu",
     "custom-cputemp",
     "ram",
@@ -107,11 +109,19 @@ format = "%a %b %d  %H:%M:%S"
 icon-color = "#D2A6FF"
 label-color = "#D2A6FF"
 
-# Location comes from ~/.config/wayle/local.toml so it stays out of git.
-# open-meteo needs no API key.
-[modules.weather]
-provider = "open-meteo"
-units = "metric"
+# Weather from MET Norway via weather.sh (no API key). Wayle's built-in
+# weather module is unused: its keyless provider, open-meteo, is unreachable
+# from this network (ISP blocks its host; it also refuses the iVPN exit).
+# The location is still `location` under [modules.weather] in
+# ~/.config/wayle/local.toml, which weather.sh reads.
+[[modules.custom]]
+id = "weather"
+command = "$HOME/.config/wayle/weather.sh"
+interval-ms = 1800000   # 30 min; MET updates hourly and asks not to be polled hard
+format = "{{ temp }}°C"
+tooltip-format = "{{ details }}"
+icon-name = "ld-sun-symbolic"
+icon-map = { "clear-day" = "ld-sun-symbolic", "clear-night" = "ld-moon-symbolic", "partly-day" = "ld-cloud-sun-symbolic", "partly-night" = "ld-cloud-moon-symbolic", "cloudy" = "ld-cloud-symbolic", "fog" = "ld-cloud-fog-symbolic", "drizzle" = "ld-cloud-drizzle-symbolic", "rain" = "ld-cloud-rain-symbolic", "sleet" = "ld-cloud-hail-symbolic", "snow" = "ld-cloud-snow-symbolic", "thunder" = "ld-cloud-lightning-symbolic", "default" = "ld-sun-symbolic" }
 icon-color = "yellow"
 label-color = "yellow"
 

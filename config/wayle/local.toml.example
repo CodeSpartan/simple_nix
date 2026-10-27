@@ -13,6 +13,6 @@
 # here that config.toml leaves unset.
 
 [modules.weather]
-# City name, or "lat,lon" coordinates. Wayle has no IP-geolocation mode -- the
-# location must be stated. open-meteo needs no API key.
+# City name, or "lat,lon" coordinates. Read by config/wayle/weather.sh (MET
+# Norway, no API key) -- the built-in weather module isn't used.
 location = "Dublin, Ireland"

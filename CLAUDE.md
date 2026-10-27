@@ -109,9 +109,19 @@ NVIDIA xwayland/cursor workarounds all live in `user.lua`.
      is blacklisted to remove `eno1`. If that port is ever needed, remove the
      blacklist and the bar will say "Disconnected" again (cosmetic only).
 - Known, harmless: a once-a-second `missing field overFullscreen` log spam
-  (wayle vs newer Hyprland IPC); weather shows `--` because open-meteo times
-  out through iVPN; two identical iVPN tray icons (bug in iVPN's Electron
-  app — both come from the same PID; leave it).
+  (wayle vs newer Hyprland IPC); two identical iVPN tray icons (bug in
+  iVPN's Electron app — both come from the same PID; leave it).
+- Weather is a **custom module** (`config/wayle/weather.sh`, MET Norway
+  `api.met.no`, no key), not wayle's built-in one. The built-in's keyless
+  provider open-meteo is unreachable here by any route: its forecast host is
+  on Hetzner, which the ISP blocks, and it also refuses the iVPN exit
+  (bypassing iVPN doesn't help). Location is still `location` in
+  `local.toml`; the script geocodes it via OSM Nominatim and caches it in
+  `~/.cache/wayle-weather/`.
+- Bar dates are English via `nixos/overlays/wayle-english-dates.nix`, which
+  wraps the `wayle` binary with `LC_TIME=en_US.UTF-8` (system LC_TIME stays
+  ru_RU). Wrapping the binary, not Hyprland's launch line, because
+  `wayle panel restart` starts the new bar from the caller's environment.
 - wayle is built from a PR branch (`nixos/overlays/wayle-pr255*.nix`). Its
   `postPatch` still disables LTO for the old 7.5GB laptop — harmless here.
 
