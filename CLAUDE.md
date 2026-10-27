@@ -286,6 +286,12 @@ wipes the extension's data** -- restore `Local Extension Settings/<id>` (and
 `Sync Extension Settings`, `IndexedDB/chrome-extension_<id>_*`) afterwards
 with Brave fully quit. Brave keeps running with no windows while a PWA
 (WhatsApp) is open -- check `pgrep -x brave`, not `pgrep -f`.
+Windows fonts (Tahoma, Verdana, Georgia, Arial, Times, Consolas, Segoe UI,
+Calibri, ...) were copied from `/mnt/cdrive/Windows/Fonts` into
+`~/.local/share/fonts/windows` (+ `fc-cache -f`) -- outside git; redo after a
+reinstall. nixpkgs' `corefonts`/`vista-fonts` lack Tahoma, which sites like
+rpgcodex.net (and the RPGCodex Mod userscript) ask for first; without it
+Brave falls back to Inter.
 Userscripts (Tampermonkey) are kept in `config/userscripts/` -- e.g.
 `eda-yandex-light.user.js` forces eda.yandex.ru to its light theme.
 
