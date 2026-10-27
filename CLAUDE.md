@@ -272,6 +272,22 @@ Nix `xray` and `sing-box` there, plus xray's `geoip.dat`/`geosite.dat`
 (v2rayN points xray's asset dir at `bin/`). Don't use v2rayN's in-app core
 update -- it would replace the links with downloaded binaries.
 
+Runs in **Tun mode** (sing-box TUN as root, VLESS via xray). Its ip rules
+(prio 9000+) sit above iVPN's bypass fwmark rule (32765), so while it's on,
+the iVPN bypass list has no effect -- v2rayN has its own copy, kept by hand:
+- Routing lives in `~/.local/share/v2rayN/guiConfigs/guiNDB.db` (sqlite,
+  `RoutingItem.RuleSet` JSON). Edits there apply on the user's Reload;
+  `guiNConfig.json` (DNS etc.) is rewritten by the running app -- change
+  those settings in the UI. Back up the DB before editing.
+- Active preset "RU-Bypass Russia (Whitelist)" (was the stock China one):
+  direct for processes `chrome steam steamwebhelper max max-service`,
+  `geosite:yandex`, private nets, Yandex DNS, `geosite:category-ru`,
+  `geoip:ru`; Google + everything else via proxy; UDP 443 blocked. Direct/
+  bootstrap DNS 77.88.8.8. Process rules match the exe basename per socket
+  (no child inheritance), so Electron apps (yandex-music) need domain rules.
+- Verify with the sing-box API: `curl 127.0.0.1:10814/connections`
+  (process, outbound, matched rule per connection).
+
 ## Flatpak apps
 
 `services.flatpak.enable` only enables the service; apps live outside Nix.
