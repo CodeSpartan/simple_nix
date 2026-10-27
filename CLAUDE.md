@@ -258,6 +258,15 @@ grim /path/in/scratchpad/screenshot.png   # then Read it; crop with imagemagick
   interactive password/browser prompt **cannot** run from this tool — hand
   back exact commands (the user can run them with the `!` prefix).
 
+## v2rayN (proxy client)
+
+`v2raynScaled` in `programs.nix` (Avalonia app; wrapped with
+`AVALONIA_GLOBAL_SCALE_FACTOR=2` or it renders at 1x). It only looks for
+cores in `~/.local/share/v2rayN/bin/<core>/`, so `link.sh` symlinks the
+Nix `xray` and `sing-box` there, plus xray's `geoip.dat`/`geosite.dat`
+(v2rayN points xray's asset dir at `bin/`). Don't use v2rayN's in-app core
+update -- it would replace the links with downloaded binaries.
+
 ## Flatpak apps
 
 `services.flatpak.enable` only enables the service; apps live outside Nix.

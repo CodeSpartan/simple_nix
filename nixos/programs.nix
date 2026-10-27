@@ -56,6 +56,21 @@ let
       done
     '';
   };
+
+  # v2rayN is an Avalonia (.NET) app on XWayland; same force_zero_scaling
+  # story as VLC, so it drew at 1x. Avalonia's own scale knob fixes it.
+  # Its .desktop file runs plain `v2rayN` from PATH, so no repointing.
+  v2raynScaled = pkgs.symlinkJoin {
+    name = "v2rayn-${pkgs.v2rayn.version}-scaled";
+    inherit (pkgs.v2rayn) version meta;
+    paths = [ pkgs.v2rayn ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      rm "$out/bin/v2rayN"
+      makeWrapper "${pkgs.v2rayn}/bin/v2rayN" "$out/bin/v2rayN" \
+        --set AVALONIA_GLOBAL_SCALE_FACTOR 2
+    '';
+  };
 in
 
 {
@@ -299,6 +314,8 @@ in
     openvpn                    # OpenVPN tunnel client
     networkmanager-openvpn     # OpenVPN plugin for NetworkManager GUI
     v2ray                      # Proxy platform for bypassing network restrictions
+    v2raynScaled               # v2rayN: GUI client for VLESS/VMess/Trojan/... proxy servers
+    xray sing-box              # Proxy cores v2rayN drives
     # ivpn CLI + ivpn-service daemon come from services.ivpn.enable above
     ivpn-ui                    # IVPN desktop GUI
 

@@ -67,6 +67,22 @@ done
 mkdir -p "$HOME/.config/ivpn-bypass"
 ln -sf "$REPO/config/ivpn-bypass/apps" "$HOME/.config/ivpn-bypass/apps"
 
+# v2rayN only looks for its proxy cores in its own data folder; point it at
+# the Nix-installed ones (stable /run/current-system paths survive updates).
+# It also tells xray to read geoip/geosite.dat from bin/, so link the copies
+# nixpkgs' xray wrapper ships -- that store path changes, hence re-resolved
+# on every run.
+v2n="$HOME/.local/share/v2rayN/bin"
+mkdir -p "$v2n/xray" "$v2n/sing_box"
+ln -sf /run/current-system/sw/bin/xray "$v2n/xray/xray"
+ln -sf /run/current-system/sw/bin/sing-box "$v2n/sing_box/sing-box"
+xray_assets=$(grep -o "/nix/store/[^']*-v2ray-assets/share/v2ray" \
+  "$(readlink -f /run/current-system/sw/bin/xray)" 2>/dev/null | head -1)
+if [ -n "$xray_assets" ]; then
+  ln -sf "$xray_assets/geoip.dat" "$v2n/geoip.dat"
+  ln -sf "$xray_assets/geosite.dat" "$v2n/geosite.dat"
+fi
+
 echo "==> Symlinking wallpaper..."
 mkdir -p "$HOME/Pictures"
 if [[ -f "$REPO/wallpapers/wallpaper.png" ]]; then
