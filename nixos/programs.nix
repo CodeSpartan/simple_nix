@@ -143,6 +143,7 @@ in
   # CLI/UI usable immediately rather than having to `systemctl start` it by
   # hand first. Trade-off: the daemon polls iVPN's server list hourly even
   # while logged out. Set back to `lib.mkForce [ ]` if that matters more.
+  services.ratbagd.enable = true;       # Gaming-mouse config daemon that Piper talks to (Logitech G300s)
   services.printing = {
     enable = true;
     browsing = false;                  # Don't advertise printers on the network
@@ -323,6 +324,7 @@ in
     braveAutoscroll vscode vlcScaled telegram-desktop yt-dlp qbittorrent obsidian
     yandex-music               # Official Yandex Music app, repackaged for Linux
     mangohud                   # Real-time FPS/GPU/CPU overlay for games
+    piper                      # GUI for the G300s: buttons, DPI, polling rate, LED (via ratbagd)
 
     # VPN
     ookla-speedtest            # `speedtest`: Ookla speed test CLI (compare VPNs)
