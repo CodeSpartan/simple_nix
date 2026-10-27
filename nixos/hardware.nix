@@ -105,7 +105,7 @@
 
   # --- Bluetooth ---
   hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
+  hardware.bluetooth.powerOnBoot = false;  # available, but off until turned on (tray / blueman)
   services.blueman.enable = true;       # Bluetooth GUI manager
 
   # --- Swap ---
