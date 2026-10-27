@@ -1,0 +1,18 @@
+# hyprland-per-window-layout: every window remembers its own keyboard layout.
+# This file only sets the layout a *new* window starts in, per app.
+# Layout index = position in kb_layout ("us,ru" in hypr/user.lua): 0 = us, 1 = ru.
+# Window class names: `hyprctl clients` (the "class:" line).
+# Read at startup -- after editing, restart it:
+#   pkill hyprland-per-w; hyprctl eval 'hl.exec_cmd("hyprland-per-window-layout")'
+
+# Keyboards to switch. Others are picked up on the first layout switch, but
+# until then it has none, so per-window restore wouldn't work right after
+# login. Names: `hyprctl devices` (the keyboard's "main: yes" entry).
+keyboards = [
+    "royuan-akko-multi-modes-keyboard-b",
+]
+
+[[default_layouts]]
+1 = [
+    "max",   # MAX messenger
+]

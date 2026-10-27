@@ -105,6 +105,15 @@ in its own mask: `CTRL + SHIFT + Shift_L`, not `CTRL + Shift_L`. Keys
 simulated with `wtype` don't trigger Hyprland binds at all -- bind changes
 need a real keypress from the user to test.
 
+Per-window layout memory (like Windows): `hyprland-per-window-layout`,
+autostarted in `user.lua`; config `config/hyprland-per-window-layout/
+options.toml` (linked by `link.sh`) sets per-app defaults for new windows
+(MAX → ru). It learns keyboards only from layout-change events, so the
+keyboard is named in `keyboards` -- otherwise it does nothing until the
+first switch after login. Testable without keypresses: `hyprctl
+switchxkblayout all <n>` and `hl.dsp.focus` do emit the events it uses.
+`pkill -x hyprland-per-wi` (comm is truncated; `-f` matches your own shell).
+
 ## Wayle (status bar)
 
 - **`~/.config/wayle/local.toml` must exist.** `config.toml` does

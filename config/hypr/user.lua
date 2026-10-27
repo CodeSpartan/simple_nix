@@ -95,6 +95,11 @@ hl.on("hyprland.start", function()
 
     hl.exec_cmd("flameshot")   -- tray daemon; `flameshot gui` exits 1 without it
 
+    -- Remembers the keyboard layout per window (like Windows): switching
+    -- windows restores whatever layout was last used in that window.
+    -- Per-app defaults for new windows: config/hyprland-per-window-layout/
+    hl.exec_cmd("hyprland-per-window-layout")
+
     -- Polkit agent (for admin password prompts)
     hl.exec_cmd("lxqt-policykit-agent")
 end)

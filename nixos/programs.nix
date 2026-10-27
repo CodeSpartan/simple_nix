@@ -318,6 +318,7 @@ in
     mangohud                   # Real-time FPS/GPU/CPU overlay for games
 
     # VPN
+    ookla-speedtest            # `speedtest`: Ookla speed test CLI (compare VPNs)
     wireguard-tools            # WireGuard CLI (kernel module built-in; NM handles GUI)
     openvpn                    # OpenVPN tunnel client
     networkmanager-openvpn     # OpenVPN plugin for NetworkManager GUI
@@ -334,6 +335,7 @@ in
     wayle                      # Status bar / desktop shell (replaced archived hyprpanel)
     rofi                       # App launcher + window switcher
     hyprpaper                  # Wallpaper daemon
+    hyprland-per-window-layout # Remembers the keyboard layout per window (us/ru)
     hyprlock                   # Lock screen
     hypridle                   # Idle management (triggers lock/suspend)
     wl-clipboard               # Wayland clipboard (wl-copy/wl-paste)

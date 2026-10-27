@@ -64,6 +64,9 @@ for f in user.lua hypridle.conf hyprlock.conf hyprpaper.conf cheatsheet.sh toggl
   ln -sf "$REPO/config/hypr/$f" "$HOME/.config/hypr/$f"
 done
 
+mkdir -p "$HOME/.config/hyprland-per-window-layout"
+ln -sf "$REPO/config/hyprland-per-window-layout/options.toml" "$HOME/.config/hyprland-per-window-layout/options.toml"
+
 mkdir -p "$HOME/.config/ivpn-bypass"
 ln -sf "$REPO/config/ivpn-bypass/apps" "$HOME/.config/ivpn-bypass/apps"
 
