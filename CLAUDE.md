@@ -300,6 +300,16 @@ works fine. Claude's WebFetch/WebSearch don't go through it.
   `programs.nix` (SDL's X11/GTK/Pulse/D-Bus + CEF's nss/atk/gbm/...).
   `steam-run` lacks nss, so it doesn't work. CEF's "eglInitialize SwANGLE
   failed" log spam is harmless. Menu entry `unreal-editor.desktop` (outside git).
+- Run the editor with **`SDL_VIDEODRIVER=x11`** (menu entry does). Native
+  Wayland: apps can't place their own windows, so UE's dialogs landed
+  off-screen (x≈11000) and its toast window showed as an empty blurred box.
+  Under XWayland it places them itself and scales the UI correctly at 4K.
+- UE's shell scripts start with `#!/bin/bash` (absent on NixOS): run them as
+  `bash Engine/Build/BatchFiles/Linux/Build.sh ...`. UnrealBuildTool's
+  bundled .NET needs ICU (in `unrealRuntimeLibs`).
+- Project MMOKit: Linux copy `~/code/MMOKit` (origin = GitLab
+  `Glabrezu/mmokitv2`, remote `windows` = the D: copy, which stays on
+  the Windows source-built engine). EngineAssociation "5.8".
 
 ## AI tools
 

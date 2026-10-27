@@ -14,6 +14,8 @@
 --   Super+arrows         = move focus
 --   Super+Shift+arrows   = swap tile positions
 --   Super+Ctrl+arrows    = resize tiles
+--   Super+Alt+arrows     = nudge floating window (40px)
+--   Super+Alt+C          = center floating window
 --   Super+drag           = move floating window
 --   Super+right-drag     = resize floating window
 --
@@ -384,7 +386,11 @@ for _, arrow in ipairs({
     hl.bind(mainMod .. " + SHIFT + " .. arrow.key,   hl.dsp.window.move({ direction = arrow.dir }))
     hl.bind(mainMod .. " + CTRL + " .. arrow.key,
         hl.dsp.window.resize({ x = arrow.dx, y = arrow.dy, relative = true }), { repeating = true })
+    -- Floating windows (e.g. Unreal's dialogs that open under the bar)
+    hl.bind(mainMod .. " + ALT + " .. arrow.key,
+        hl.dsp.window.move({ x = arrow.dx, y = arrow.dy, relative = true }), { repeating = true })
 end
+hl.bind(mainMod .. " + ALT + C", hl.dsp.window.center())
 
 -- Switch workspaces with mainMod + [0-9]
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]

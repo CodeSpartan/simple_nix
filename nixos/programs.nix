@@ -14,6 +14,7 @@ let
     pango cairo gtk3 libpulseaudio fontconfig freetype libayatana-appindicator
     libxcb libx11 libxcomposite libxdamage libxext libxfixes libxrandr
     libxcursor libxi libxscrnsaver libxtst libxrender
+    icu openssl krb5   # bundled .NET (UnrealBuildTool) -- dies without ICU
   ];
   # wgpu-utils also ships parsers, examples, xtask helpers and a bug-repro that
   # would clutter PATH. Expose only the two general-purpose CLIs. wgpu-info's
