@@ -26,7 +26,7 @@
 --   Alt+Tab              = window picker (rofi)
 --
 -- Utilities:
---   Super+Space          = switch keyboard (US/RU)
+--   Super+Space / Ctrl+Shift = switch keyboard (US/RU)
 --   Super+P              = toggle pseudo tiling
 --   Super+L              = lock screen
 --   Super+/              = keybind cheatsheet
@@ -127,8 +127,8 @@ end
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 
 -- NOTE: keep cursor size in sync with cursorSize in nixos/host.nix
-hl.env("XCURSOR_SIZE", "32")
-hl.env("HYPRCURSOR_SIZE", "32")
+hl.env("XCURSOR_SIZE", "24")
+hl.env("HYPRCURSOR_SIZE", "24")
 -- NOTE: GDK_SCALE must be integer; GDK_DPI_SCALE = monitorScale / GDK_SCALE
 -- Adjust both when changing monitor scale (hl.monitor above)
 hl.env("GDK_SCALE", "2")
@@ -247,7 +247,7 @@ hl.config({
         kb_layout  = "us,ru",
         kb_variant = "",
         kb_model   = "",
-        kb_options = "grp:win_space_toggle",
+        kb_options = "grp:win_space_toggle",   -- Ctrl+Shift switching is the release binds below
         kb_rules   = "",
 
         follow_mouse = 1,
@@ -311,6 +311,19 @@ hl.bind(mainMod .. " + P",         hl.dsp.window.pseudo())                    --
 hl.bind(mainMod .. " + J",         hl.dsp.layout("togglesplit"))              -- dwindle
 hl.bind(mainMod .. " + M",         hl.dsp.exec_cmd(configDir .. "/toggle-layout.sh"))
 hl.bind(mainMod .. " + N",         hl.dsp.exec_cmd("kitty --class=notif-log sh -c 'wayle notify list | less -R'"))
+
+-- Ctrl+Shift switches keyboard layout on *release*, like Windows. XKB's own
+-- grp:ctrl_shift_toggle fires on press, so Ctrl+Shift+C/V/T also flipped the
+-- layout. Release binds on the modifier keys themselves; whichever of the two
+-- is let go first triggers it. The released key still counts as held at that
+-- moment, so the mod mask is CTRL + SHIFT (like the documented SUPER + SUPER_L).
+local next_layout = hl.dsp.exec_cmd("hyprctl switchxkblayout all next")
+for _, k in ipairs({ "Shift_L", "Shift_R" }) do
+    hl.bind("CTRL + SHIFT + " .. k, next_layout, { release = true })
+end
+for _, k in ipairs({ "Control_L", "Control_R" }) do
+    hl.bind("CTRL + SHIFT + " .. k, next_layout, { release = true })
+end
 
 -- Black screen after a monitor replug: aquamarine 0.15.0 leaves the output at 0x0 and
 -- never re-applies the monitor rule (hyprwm/aquamarine#382). A reload re-applies it.

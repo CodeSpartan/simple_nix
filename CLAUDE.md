@@ -88,8 +88,17 @@ from that era no longer applies.
 Upstream migrated to a Lua config: `~/.config/hypr/hyprland.lua`
 (home-manager) just `dofile`s `config/hypr/user.lua`, which is the real
 config. `config/hypr/user.conf` is **not linked or loaded** anymore.
-Monitor scale (2), cursor size (32), `GDK_SCALE`/`GDK_DPI_SCALE` and the
-NVIDIA xwayland/cursor workarounds all live in `user.lua`.
+Monitor scale (2), cursor size (24 -- the standard size; Hyprland applies
+the scale itself), `GDK_SCALE`/`GDK_DPI_SCALE` and the NVIDIA
+xwayland/cursor workarounds all live in `user.lua`.
+
+Layout switching: Super+Space (XKB `grp:win_space_toggle`) and Ctrl+Shift
+**on release** (Hyprland release binds in `user.lua`, not XKB's
+`grp:ctrl_shift_toggle`, which fires on press and so also flipped the
+layout on Ctrl+Shift+C/V). A release bind on a modifier needs that modifier
+in its own mask: `CTRL + SHIFT + Shift_L`, not `CTRL + Shift_L`. Keys
+simulated with `wtype` don't trigger Hyprland binds at all -- bind changes
+need a real keypress from the user to test.
 
 ## Wayle (status bar)
 
