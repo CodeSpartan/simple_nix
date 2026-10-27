@@ -21,6 +21,7 @@
 --   Super+1-9            = jump to workspace
 --   Super+Shift+1-9      = move window to workspace
 --   Super+scroll          = cycle workspaces
+--   Super+`              = show desktop (press again to go back)
 --   Super+S              = toggle scratchpad
 --   Super+M              = toggle layout (dwindle/master)
 --   Alt+Tab              = window picker (rofi)
@@ -370,6 +371,19 @@ for i = 1, 10 do
     hl.bind(mainMod .. " + " .. key,           hl.dsp.focus({ workspace = i }))
     hl.bind(mainMod .. " + SHIFT + " .. key,   hl.dsp.window.move({ workspace = i }))
 end
+
+-- Show desktop: Super+` jumps to an empty workspace named "desktop" (just the
+-- wallpaper); pressing it again goes back to the workspace you came from.
+local desktop_return = nil
+hl.bind(mainMod .. " + grave", function()
+    local ws = hl.get_active_workspace()
+    if ws and ws.name == "desktop" then
+        hl.dispatch(hl.dsp.focus({ workspace = desktop_return or "previous" }))
+    else
+        desktop_return = ws and ws.id
+        hl.dispatch(hl.dsp.focus({ workspace = "name:desktop" }))
+    end
+end)
 
 -- Scratchpad (hidden overlay workspace)
 hl.bind(mainMod .. " + S",        hl.dsp.workspace.toggle_special("magic"))
