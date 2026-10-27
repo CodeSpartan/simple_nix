@@ -112,6 +112,14 @@ in
     };
   };
 
+  # AppImages (e.g. Epic Games Launcher Preview, ~/Applications/) expect a
+  # normal Linux file layout; this runs them in one (appimage-run) and lets
+  # them be started directly, like on Ubuntu.
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
+
   # --- Mission Center extras ---
   # Mission Center offers a "missioncenter-magpie-setup" script (pkexec) that
   # setcaps nethogs and writes /etc/udev/rules.d -- neither works on NixOS
