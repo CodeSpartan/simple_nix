@@ -10,3 +10,4 @@ chrome
 steam
 max         # MAX messenger (Flatpak ru.max.MAX); max.ru doesn't answer via the VPN exit
 yandex-music  # Yandex Music (nixpkgs); Electron -- the launcher is caught, electron inherits
+qbittorrent   # torrents: around both iVPN and v2rayN (v2rayN keeps its own list)

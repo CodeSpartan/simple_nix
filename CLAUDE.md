@@ -335,7 +335,8 @@ the iVPN bypass list has no effect -- v2rayN has its own copy, kept by hand:
   `guiNConfig.json` (DNS etc.) is rewritten by the running app -- change
   those settings in the UI. Back up the DB before editing.
 - Active preset "RU-Bypass Russia (Whitelist)" (was the stock China one):
-  direct for processes `chrome steam steamwebhelper max max-service`,
+  direct for processes `chrome steam steamwebhelper max max-service
+  qbittorrent`,
   `geosite:yandex`, private nets, Yandex DNS, `geosite:category-ru`,
   `geoip:ru`; Google + everything else via proxy; UDP 443 blocked. Direct/
   bootstrap DNS 77.88.8.8. Process rules match the exe basename per socket
