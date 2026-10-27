@@ -5,6 +5,7 @@
   services.xserver.enable = true;
   services.displayManager.sddm.enable = true;
   services.displayManager.sddm.wayland.enable = true;
+  services.displayManager.sddm.settings.General.Numlock = "on";   # Num Lock on at the login screen
   services.displayManager.defaultSession = "hyprland-uwsm";
   # Plasma as fallback DE, system settings, AND Qt theming (Breeze) for Hyprland.
   # Removing Plasma breaks: Qt theme (theming.nix kde/breeze), Dolphin "Open With"
