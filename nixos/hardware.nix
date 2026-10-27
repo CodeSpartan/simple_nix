@@ -1,5 +1,14 @@
 { config, lib, pkgs, host, ... }:
 
+let
+  # NTFS data drive, see the fileSystems entries below.
+  ntfs = uuid: {
+    device = "/dev/disk/by-uuid/${uuid}";
+    fsType = "ntfs3";
+    options = [ "uid=1000" "gid=100" "windows_names" "noatime"
+                "nofail" "x-systemd.device-timeout=10s" "x-gvfs-show" ];
+  };
+in
 {
   # --- Boot ---
   boot.loader.systemd-boot.enable = lib.mkForce false;   # Lanzaboote replaces systemd-boot install
@@ -54,6 +63,17 @@
   # Btrfs -- reduces SSD writes (noatime) and saves space (zstd compression)
   fileSystems."/".options = [ "noatime" "compress=zstd" ];
   fileSystems."/home".options = [ "noatime" "compress=zstd" ];
+
+  # NTFS data drives, mounted at boot with the in-kernel ntfs3 driver.
+  #  - nofail + short timeout: a missing/unmountable drive never blocks boot.
+  #  - ntfs3 refuses to mount a volume Windows left "dirty" (Fast Startup /
+  #    hibernation) -- that's a safety feature; disable Fast Startup in
+  #    Windows if /mnt/cdrive doesn't show up.
+  #  - windows_names: refuse file names Windows can't open.
+  #  - x-gvfs-show: list them in the file manager sidebar.
+  fileSystems."/mnt/cdrive" = ntfs "5E22E87B79FB8B5A";   # Samsung 990 Pro 1 -- Windows C:
+  fileSystems."/mnt/ddrive" = ntfs "01DD6502633B8D10";   # Samsung 990 Pro 2
+  fileSystems."/mnt/edrive" = ntfs "5E1E77E0C57314E1";   # WD Blue 4TB HDD
 
   # --- GPU ---
   hardware.graphics = {
