@@ -289,6 +289,18 @@ Side effect worth knowing: some hosts are unreachable through the VPN exit
 (crates.io's REST API → 403, open-meteo → TLS timeout). Cargo's registry
 works fine. Claude's WebFetch/WebSearch don't go through it.
 
+## Epic Games Launcher / Unreal Engine
+
+- Epic Games Launcher (Preview) is an AppImage in `~/Applications/`, run via
+  `programs.appimage` (+binfmt); menu entry in `~/.local/share/applications/`
+  (outside git). It **can't install Unreal Engine on Linux** ("No build for
+  app UE_5.8 on platform Linux" in its log; the UI just says "try again").
+- Unreal Engine 5.8.4 = prebuilt zip from unrealengine.com/linux, unpacked to
+  `~/code/UE` (73GB). Runs directly via nix-ld: `unrealRuntimeLibs` in
+  `programs.nix` (SDL's X11/GTK/Pulse/D-Bus + CEF's nss/atk/gbm/...).
+  `steam-run` lacks nss, so it doesn't work. CEF's "eglInitialize SwANGLE
+  failed" log spam is harmless. Menu entry `unreal-editor.desktop` (outside git).
+
 ## AI tools
 
 `claude` and `codex` live in `~/.local/bin`, installed by

@@ -6,6 +6,15 @@ let
   # Non-Nix desktop/game binaries dlopen these at runtime (via nix-ld):
   # Wayland + xkbcommon (display/input), Vulkan + libglvnd (GPU loaders), alsa-lib (audio), udev (devices).
   desktopRuntimeLibs = with pkgs; [ alsa-lib wayland libxkbcommon udev vulkan-loader libglvnd ];
+  # Unreal Engine's prebuilt Linux editor (~/code/UE, zip from
+  # unrealengine.com/linux): libraries it loads at runtime (SDL: X11, GTK,
+  # PulseAudio, D-Bus) plus what its built-in Chromium (CEF) links against.
+  unrealRuntimeLibs = with pkgs; [
+    nss nspr glib atk at-spi2-atk at-spi2-core dbus libdrm libgbm expat
+    pango cairo gtk3 libpulseaudio fontconfig freetype libayatana-appindicator
+    libxcb libx11 libxcomposite libxdamage libxext libxfixes libxrandr
+    libxcursor libxi libxscrnsaver libxtst libxrender
+  ];
   # wgpu-utils also ships parsers, examples, xtask helpers and a bug-repro that
   # would clutter PATH. Expose only the two general-purpose CLIs. wgpu-info's
   # wrapper references its target by absolute store path, so symlinks suffice.
@@ -97,7 +106,7 @@ in
   # --- Development ---
   programs.direnv.enable = true;        # Auto-load .envrc per-directory environments
   programs.nix-ld.enable = true;        # Dynamic linker for non-Nix binaries (Mason, uv, pip wheels)
-  programs.nix-ld.libraries = desktopRuntimeLibs;
+  programs.nix-ld.libraries = desktopRuntimeLibs ++ unrealRuntimeLibs;
 
   # --- Gaming ---
   programs.gamemode.enable = true;      # CPU governor + scheduler optimization while gaming
