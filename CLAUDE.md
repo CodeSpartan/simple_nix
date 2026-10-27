@@ -194,6 +194,12 @@ initiative**, even to test something — disconnecting once briefly left the
 firewall/kill-switch off. Ask first. The daemon (`ivpn-service`) now starts
 at boot (the repo's no-autostart override was removed at the user's request).
 
+**Per-app bypass** (`nixos/ivpn-bypass.nix` + `.py`): a root service watches
+process starts and moves any program named in `~/.config/ivpn-bypass/apps`
+(linked from `config/ivpn-bypass/apps`, re-read live) into iVPN's split-tunnel
+cgroup `/sys/fs/cgroup/net_cls/ivpn-exclude` -- what `ivpn exclude` does. Needs
+`ivpn splittun -on` (normal, not inverse mode). Logs: `journalctl -u ivpn-bypass`.
+
 Side effect worth knowing: some hosts are unreachable through the VPN exit
 (crates.io's REST API → 403, open-meteo → TLS timeout). Cargo's registry
 works fine. Claude's WebFetch/WebSearch don't go through it.

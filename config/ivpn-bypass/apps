@@ -1,0 +1,10 @@
+# Apps that always go around iVPN (directly), however they are started.
+# One program name per line; case doesn't matter. Saved changes apply within
+# about a second -- no rebuild. Removing a name puts that app back on the VPN.
+#
+# The name is the program's process name, as shown by e.g.
+#   ps -eo comm | sort -u
+# (Nix's ".foo-wrapped" names are matched as just "foo".)
+#
+chrome
+steam

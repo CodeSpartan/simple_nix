@@ -62,6 +62,9 @@ for f in user.lua hypridle.conf hyprlock.conf hyprpaper.conf cheatsheet.sh toggl
   ln -sf "$REPO/config/hypr/$f" "$HOME/.config/hypr/$f"
 done
 
+mkdir -p "$HOME/.config/ivpn-bypass"
+ln -sf "$REPO/config/ivpn-bypass/apps" "$HOME/.config/ivpn-bypass/apps"
+
 echo "==> Symlinking wallpaper..."
 mkdir -p "$HOME/Pictures"
 if [[ -f "$REPO/wallpapers/wallpaper.png" ]]; then

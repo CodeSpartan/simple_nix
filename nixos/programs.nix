@@ -59,6 +59,8 @@ in
 
   # --- System Packages ---
   environment.systemPackages = with pkgs; [
+    google-chrome              # Chrome browser (bypasses iVPN: see config/ivpn-bypass/apps)
+
     # Core utilities
     git-filter-repo gh glab wget curl unzip p7zip file fastfetch optipng
     bc                         # Arbitrary-precision command-line calculator

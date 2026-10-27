@@ -9,6 +9,7 @@
     ./programs.nix
     ./home
     ./update-check.nix
+    ./ivpn-bypass.nix
   ];
 
   # --- Networking ---
