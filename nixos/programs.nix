@@ -249,6 +249,7 @@ in
 
     # Desktop apps
     brave vscode vlc telegram-desktop yt-dlp qbittorrent obsidian
+    yandex-music               # Official Yandex Music app, repackaged for Linux
     mangohud                   # Real-time FPS/GPU/CPU overlay for games
 
     # VPN
