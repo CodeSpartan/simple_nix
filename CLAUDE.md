@@ -127,6 +127,15 @@ in its own mask: `CTRL + SHIFT + Shift_L`, not `CTRL + Shift_L`. Keys
 simulated with `wtype` don't trigger Hyprland binds at all -- bind changes
 need a real keypress from the user to test.
 
+Apps' own fullscreen/maximize requests are blocked by `suppress-maximize-events`
+(VLC exempted via `negative:` in its match). A later rule with a narrower
+`suppress_event` does **not** override it -- exempt apps in that match.
+Telegram's image viewer is forced fullscreen by a rule; click-on-background
+to close doesn't work, since Telegram stays in its own "windowed" mode
+(saved in its settings) -- tried, user dropped it. Testing app fullscreen:
+`wtype` keys don't reach VLC (XWayland); `vlc --fullscreen <file>` sends the
+same request.
+
 Per-window layout memory (like Windows): `hyprland-per-window-layout`,
 autostarted in `user.lua`; config `config/hyprland-per-window-layout/
 options.toml` (linked by `link.sh`) sets per-app defaults for new windows

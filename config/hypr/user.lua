@@ -494,10 +494,21 @@ hl.window_rule({
 })
 
 -- General window rules
+-- Apps can't fullscreen/maximize themselves -- except VLC, so its F key and
+-- double-click work. ("negative:" inverts the regex. A later rule with a
+-- narrower suppress_event does NOT override this one; tested.)
 hl.window_rule({
     name           = "suppress-maximize-events",
-    match          = { class = ".*" },
+    match          = { class = "negative:^(vlc)$" },
     suppress_event = "fullscreen maximize",
+})
+
+-- Telegram's photo/video viewer: open fullscreen. It asks for fullscreen
+-- itself, but suppress-maximize-events above ignores that request.
+hl.window_rule({
+    name       = "telegram-media-viewer",
+    match      = { class = "^org.telegram.desktop$", title = "^Media viewer$" },
+    fullscreen = true,
 })
 
 -- Keep IVPN's main window tiled and let it fill the tile.
