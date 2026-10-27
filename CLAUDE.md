@@ -186,9 +186,17 @@ switchxkblayout all <n>` and `hl.dsp.focus` do emit the events it uses.
 - **Suspend is dangerous**: S3 resume with the open driver gives `Xid 13`
   graphics exceptions and a dead display (hard reset needed). The repo masks
   all sleep targets in `hardware.nix`; Plasma's own auto-sleep is also off.
-- **Log out is broken** (2026-10-27): Hyprland segfaulted on exit, SDDM
-  saw "Process crashed" and never brought the greeter back -- black text
-  screen, then a hang. Restart with `systemctl reboot` instead until fixed.
+- **Log out** broke (2026-10-27), two causes, both fixed 2026-10-28:
+  1. wayle's default logout command `loginctl terminate-session` SIGTERMs
+     the whole session incl. sddm-helper; SDDM logs "Process crashed" and
+     never restarts the greeter (black text console). `config.toml` now
+     sets `dropdown-logout-command = "uwsm stop"` (session runs under uwsm).
+  2. Hyprland segfaulted at exit in the fullscreen-DND Lua handler:
+     `window.destroy` fires from window teardown after workspaces are freed,
+     and `hl.get_workspace_windows()` then crashes. Handler no longer
+     listens to it. (`hyprland.shutdown` only fires on the exit dispatcher,
+     not on SIGTERM, so it's no use as a guard.) Crash dumps:
+     `coredumpctl list` / `coredumpctl info <pid>`.
 - A hard reset while an NTFS drive is mounted leaves it "dirty"; ntfs3 then
   refuses to mount it (`nofail`, so boot continues and `/mnt/ddrive` is just
   empty). Fix: `chkdsk X: /f` in Windows, or

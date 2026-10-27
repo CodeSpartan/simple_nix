@@ -92,6 +92,10 @@ blue = "#59C2FF"
 [modules.dashboard]
 icon-color = "accent"
 dropdown-lock-command = "loginctl lock-session"
+# Default `loginctl terminate-session` SIGTERMs the whole session, sddm-helper
+# included; SDDM then logs "Process crashed" and never shows the login screen
+# again (black text console). The session runs under uwsm, so stop it cleanly.
+dropdown-logout-command = "uwsm stop"
 
 [modules.hyprland-workspaces]
 # HyprPanel: hideUnoccupied = true -> min-workspace-count 0 shows only

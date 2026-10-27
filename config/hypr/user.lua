@@ -139,7 +139,11 @@ local function update_fullscreen_dnd()
     end
 end
 
-for _, ev in ipairs({ "window.fullscreen", "window.active", "window.close", "window.destroy",
+-- No "window.destroy": Hyprland fires it from window teardown at exit, after
+-- the workspaces are already freed, and hl.get_workspace_windows() then
+-- segfaults (0.56.2) -- that crash broke logging out. "window.close" already
+-- covers a fullscreen window going away.
+for _, ev in ipairs({ "window.fullscreen", "window.active", "window.close",
                       "window.move_to_workspace", "workspace.active", "monitor.focused" }) do
     hl.on(ev, update_fullscreen_dnd)
 end
