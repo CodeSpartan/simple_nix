@@ -10,6 +10,21 @@ let
   };
 in
 {
+  # --- Keyboard ---
+  # ISO keyboard (Akko): the extra key left of Z types "\" like on Windows,
+  # instead of xkb's "< >". Remapped below the layout (HID usage 0x70064,
+  # "Non-US \ |" -> the regular backslash key), so every layout treats it as
+  # the \ key: US gives \ |, RU gives \ /. USB (b0003) and Bluetooth (b0005)
+  # keyboards. Applies on reboot/replug, or right away with
+  #   sudo udevadm trigger --subsystem-match=input --action=change
+  services.udev.extraHwdb = ''
+    evdev:input:b0003*
+     KEYBOARD_KEY_70064=backslash
+
+    evdev:input:b0005*
+     KEYBOARD_KEY_70064=backslash
+  '';
+
   # --- Boot ---
   boot.loader.systemd-boot.enable = lib.mkForce false;   # Lanzaboote replaces systemd-boot install
   boot.loader.systemd-boot.configurationLimit = 15;   # Each UKI is ~50-80MB, keep ESP usage under control
