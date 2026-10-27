@@ -84,6 +84,11 @@
     alsa.support32Bit = true;           # 32-bit ALSA support (games)
     pulse.enable = true;                # PulseAudio compatibility
     jack.enable = true;                 # JACK compatibility (pro audio apps)
+    # No X11 bell module: it stays connected to XWayland, and when XWayland
+    # exits on log out its X11 error handler segfaults all of PipeWire. The
+    # instant restart races the USB interface being released, so the UMC202HD
+    # output went missing after logging back in.
+    extraConfig.pipewire."99-no-x11-bell"."context.properties"."module.x11.bell" = false;
   };
 
   # Nerd Fonts -- required for terminal/neovim icons and powerline glyphs
