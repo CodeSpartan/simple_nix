@@ -124,6 +124,7 @@ icon-name = "ld-sun-symbolic"
 icon-map = { "clear-day" = "ld-sun-symbolic", "clear-night" = "ld-moon-symbolic", "partly-day" = "ld-cloud-sun-symbolic", "partly-night" = "ld-cloud-moon-symbolic", "cloudy" = "ld-cloud-symbolic", "fog" = "ld-cloud-fog-symbolic", "drizzle" = "ld-cloud-drizzle-symbolic", "rain" = "ld-cloud-rain-symbolic", "sleet" = "ld-cloud-hail-symbolic", "snow" = "ld-cloud-snow-symbolic", "thunder" = "ld-cloud-lightning-symbolic", "default" = "ld-sun-symbolic" }
 icon-color = "yellow"
 label-color = "yellow"
+left-click = "$HOME/.config/hypr/nightlight.sh"   # toggle night light (4500K)
 
 # `{{ percent }}` renders zero-padded to two digits ("01%"); `| int` strips it.
 [modules.cpu]

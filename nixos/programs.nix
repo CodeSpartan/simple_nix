@@ -281,6 +281,7 @@ in
     # Desktop utilities
     imv                        # Fast Wayland-native image viewer
     file-roller                # Archive manager GUI (zip/tar/7z)
+    hyprsunset                 # Night light (toggled by clicking the bar weather; config/hypr/nightlight.sh)
     mission-center             # System monitor (CPU/GPU/RAM/disk, GTK4 Wayland native)
 
     # Desktop services

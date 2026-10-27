@@ -87,6 +87,7 @@ hl.on("hyprland.start", function()
     -- Essential services
     hl.exec_cmd("wayle shell")
     hl.exec_cmd("hyprpaper")
+    hl.exec_cmd("hyprsunset -i")   -- night light daemon, starts off; toggled by nightlight.sh
     -- hl.exec_cmd("hypridle")  -- autolock disabled
     hl.exec_cmd("nm-applet --indicator")
     hl.exec_cmd("blueman-applet")
