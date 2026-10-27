@@ -14,6 +14,48 @@ let
     ln -s ${pkgs.wgpu-utils}/bin/naga $out/bin/naga
     ln -s ${pkgs.wgpu-utils}/bin/wgpu-info $out/bin/wgpu-info
   '';
+
+  # VLC 3 is Qt5 and runs under XWayland (its video embedding needs X11).
+  # With xwayland force_zero_scaling, XWayland apps must scale themselves, and
+  # Qt ignores GDK_SCALE -- so VLC drew its UI at 1x. Wrap it with
+  # QT_SCALE_FACTOR=2 (this machine's monitor scale). Not an overlay: that
+  # would rebuild everything linking libvlc (e.g. KDE's phonon backend).
+  # The .desktop files call the original by absolute path, so repoint them.
+  #
+  # Also made to look like VLC on Windows: light (Qt's Fusion style with the
+  # generic theme, not the KDE dark scheme -- VLC has no theme option of its
+  # own) and Segoe UI 9pt menus (Qt's generic theme asks fontconfig for
+  # "Sans Serif" 9pt; a VLC-only fontconfig file points that at Segoe UI,
+  # copied from the Windows drive -- see CLAUDE.md). The alias goes before the
+  # system include so the system's Inter preference doesn't win.
+  vlcFonts = pkgs.writeText "vlc-fonts.conf" ''
+    <?xml version="1.0"?>
+    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+    <fontconfig>
+      <alias binding="strong"><family>Sans Serif</family><prefer><family>Segoe UI</family></prefer></alias>
+      <include ignore_missing="yes">/etc/fonts/fonts.conf</include>
+    </fontconfig>
+  '';
+  vlcScaled = pkgs.symlinkJoin {
+    name = "vlc-${pkgs.vlc.version}-scaled";
+    inherit (pkgs.vlc) version;
+    # vlc's meta asks for its "man" output too; this join only has "out".
+    meta = builtins.removeAttrs pkgs.vlc.meta [ "outputsToInstall" ];
+    paths = [ pkgs.vlc ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      for b in vlc qvlc; do
+        rm "$out/bin/$b"
+        makeWrapper "${pkgs.vlc}/bin/$b" "$out/bin/$b" --set QT_SCALE_FACTOR 2 \
+          --set QT_QPA_PLATFORMTHEME generic --set QT_STYLE_OVERRIDE Fusion \
+          --set FONTCONFIG_FILE ${vlcFonts}
+      done
+      for d in "$out"/share/applications/*.desktop; do
+        src=$(readlink -f "$d"); rm "$d"
+        sed "s|${pkgs.vlc}/bin/|$out/bin/|g" "$src" > "$d"
+      done
+    '';
+  };
 in
 
 {
@@ -248,7 +290,7 @@ in
     pre-commit                 # Git pre-commit hook framework
 
     # Desktop apps
-    brave vscode vlc telegram-desktop yt-dlp qbittorrent obsidian
+    brave vscode vlcScaled telegram-desktop yt-dlp qbittorrent obsidian
     yandex-music               # Official Yandex Music app, repackaged for Linux
     mangohud                   # Real-time FPS/GPU/CPU overlay for games
 
