@@ -65,6 +65,13 @@ let
   v2raynPatched = pkgs.v2rayn.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [ ./overlays/v2rayn-skip-process-rules-in-xray.patch ];
   });
+  # Middle-click autoscroll (the little scroll widget, as on Windows). Off by
+  # default on Linux, where middle-click pastes; this Blink flag turns it on.
+  # Middle-click in text fields still pastes, on links still opens a tab.
+  braveAutoscroll = pkgs.brave.override {
+    commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
+  };
+
   # v2rayN is an Avalonia (.NET) app on XWayland; same force_zero_scaling
   # story as VLC, so it drew at 1x. Avalonia's own scale knob fixes it.
   # Its .desktop file runs plain `v2rayN` from PATH, so no repointing.
@@ -313,7 +320,7 @@ in
     pre-commit                 # Git pre-commit hook framework
 
     # Desktop apps
-    brave vscode vlcScaled telegram-desktop yt-dlp qbittorrent obsidian
+    braveAutoscroll vscode vlcScaled telegram-desktop yt-dlp qbittorrent obsidian
     yandex-music               # Official Yandex Music app, repackaged for Linux
     mangohud                   # Real-time FPS/GPU/CPU overlay for games
 
