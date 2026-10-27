@@ -267,6 +267,28 @@ and runs `flatpak update`; anything else is manual
 (`flatpak install --user flathub <app-id>`, Flathub exists as both a system
 and a user remote).
 
+**MAX messenger** is the unofficial Flathub wrapper `ru.max.MAX` (user
+install; not in nixpkgs, the official `.deb`/apt repo doesn't apply). max.ru
+doesn't answer through the iVPN exit, so `max` is in the bypass list, and its
+install/update download needs `flatpak` added to that list *temporarily*
+(children inherit the bypass -- leaving it would put every Flatpak app,
+Discord included, around the VPN). Its bundled Qt is X11-only, so with
+`force_zero_scaling` it rendered at 1x; fixed by a per-app
+`flatpak override --user --env=QT_SCALE_FACTOR=2 ru.max.MAX`.
+
+## Brave
+
+Profile was migrated from Windows (2026-10-27) by copying the profile folder
+off `/mnt/cdrive`; passwords came via CSV export (Windows-encrypted, can't be
+read from Linux). Lessons: Brave flags copied extensions "corrupted"
+(prefs are signed per machine), and **Repair = uninstall + reinstall, which
+wipes the extension's data** -- restore `Local Extension Settings/<id>` (and
+`Sync Extension Settings`, `IndexedDB/chrome-extension_<id>_*`) afterwards
+with Brave fully quit. Brave keeps running with no windows while a PWA
+(WhatsApp) is open -- check `pgrep -x brave`, not `pgrep -f`.
+Userscripts (Tampermonkey) are kept in `config/userscripts/` -- e.g.
+`eda-yandex-light.user.js` forces eda.yandex.ru to its light theme.
+
 ## `~/Desktop/message to vitalii.txt`
 
 Brief running log of upstream-worthy findings for Vitalii (install.sh,
