@@ -8,7 +8,7 @@
   regionalLocale = "ru_RU.UTF-8";    # metric, 24h clock
   tmpfsSize = "16G";                 # ~half of RAM for build tmpfs
   steamScaling = "2";            # HiDPI scaling for Steam (match monitor scale)
-  cursorSize = 32;                   # cursor size (scale with DPI: 16@1x, 24@1.5x, 32@2x)
+  cursorSize = 24;                   # logical px; Hyprland multiplies by monitor scale, so 24 = standard size at any scale
   nvidia = true;                      # set false on AMD/Intel GPU machines
   repoDir = "/home/vervain/code/simple_nix";   # local clone path for the update check; must match username above
   updateCheck = true;                 # fetch origin/main nightly and notify; never pull or rebuild
