@@ -258,7 +258,12 @@ grim /path/in/scratchpad/screenshot.png   # then Read it; crop with imagemagick
   interactive password/browser prompt **cannot** run from this tool — hand
   back exact commands (the user can run them with the `!` prefix).
 
-## v2rayN (proxy client)
+## v2rayN (proxy client) — do not touch without explicit permission
+
+Same rule as iVPN: **never stop, restart, toggle Tun/system proxy, switch
+servers or edit v2rayN's config/DB on your own initiative** -- ask first.
+Reading its logs/config and the sing-box status API (`127.0.0.1:10814`,
+`/connections`) is fine.
 
 `v2raynScaled` in `programs.nix` (Avalonia app; wrapped with
 `AVALONIA_GLOBAL_SCALE_FACTOR=2` or it renders at 1x). It only looks for
