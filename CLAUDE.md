@@ -342,6 +342,13 @@ wipes the extension's data** -- restore `Local Extension Settings/<id>` (and
 `Sync Extension Settings`, `IndexedDB/chrome-extension_<id>_*`) afterwards
 with Brave fully quit. Brave keeps running with no windows while a PWA
 (WhatsApp) is open -- check `pgrep -x brave`, not `pgrep -f`.
+Brave Sync (2026-10-27): the copied profile carried Windows' sync device ID
+(`sync.transport_data_per_account` in `Preferences`, kept per sync chain, so
+"Leave Sync Chain" + rejoin reuses it) -- both PCs looked like one device.
+Fixed by removing it with Brave closed. **Don't delete `Default/Sync Data/`**:
+besides sync state it holds the installed-PWA registry (deleting it
+unregistered WhatsApp; reinstalling from web.whatsapp.com kept the login).
+Windows Brave still needs to rejoin the chain from its side.
 Windows fonts (Tahoma, Verdana, Georgia, Arial, Times, Consolas, Segoe UI,
 Calibri, ...) were copied from `/mnt/cdrive/Windows/Fonts` into
 `~/.local/share/fonts/windows` (+ `fc-cache -f`) -- outside git; redo after a
