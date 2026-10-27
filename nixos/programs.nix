@@ -57,17 +57,25 @@ let
     '';
   };
 
+  # In Tun mode sing-box owns the tunnel and hands proxied traffic to xray,
+  # but v2rayN still copied "Process" routing rules into xray's config; xray
+  # can't see sing-box's (root) sockets, so it logged "no process found"
+  # for every connection. The patch leaves such rules out of xray's config
+  # in that setup (they could never match there; sing-box applies them).
+  v2raynPatched = pkgs.v2rayn.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ./overlays/v2rayn-skip-process-rules-in-xray.patch ];
+  });
   # v2rayN is an Avalonia (.NET) app on XWayland; same force_zero_scaling
   # story as VLC, so it drew at 1x. Avalonia's own scale knob fixes it.
   # Its .desktop file runs plain `v2rayN` from PATH, so no repointing.
   v2raynScaled = pkgs.symlinkJoin {
-    name = "v2rayn-${pkgs.v2rayn.version}-scaled";
-    inherit (pkgs.v2rayn) version meta;
-    paths = [ pkgs.v2rayn ];
+    name = "v2rayn-${v2raynPatched.version}-scaled";
+    inherit (v2raynPatched) version meta;
+    paths = [ v2raynPatched ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       rm "$out/bin/v2rayN"
-      makeWrapper "${pkgs.v2rayn}/bin/v2rayN" "$out/bin/v2rayN" \
+      makeWrapper "${v2raynPatched}/bin/v2rayN" "$out/bin/v2rayN" \
         --set AVALONIA_GLOBAL_SCALE_FACTOR 2
     '';
   };

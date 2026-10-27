@@ -285,6 +285,10 @@ the iVPN bypass list has no effect -- v2rayN has its own copy, kept by hand:
   `geoip:ru`; Google + everything else via proxy; UDP 443 blocked. Direct/
   bootstrap DNS 77.88.8.8. Process rules match the exe basename per socket
   (no child inheritance), so Electron apps (yandex-music) need domain rules.
+- `nixos/overlays/v2rayn-skip-process-rules-in-xray.patch`: v2rayN copied
+  Process rules into xray's config too; behind the sing-box TUN xray can't
+  see the (root) sockets and logged "no process found" per connection. The
+  patch drops those rules from xray only in that setup. Upstream-worthy.
 - Verify with the sing-box API: `curl 127.0.0.1:10814/connections`
   (process, outbound, matched rule per connection).
 

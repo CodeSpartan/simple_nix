@@ -1,0 +1,21 @@
+diff --git a/v2rayN/ServiceLib/Services/CoreConfig/V2ray/V2rayRoutingService.cs b/v2rayN/ServiceLib/Services/CoreConfig/V2ray/V2rayRoutingService.cs
+index 69dc963..da661b4 100644
+--- a/v2rayN/ServiceLib/Services/CoreConfig/V2ray/V2rayRoutingService.cs
++++ b/v2rayN/ServiceLib/Services/CoreConfig/V2ray/V2rayRoutingService.cs
+@@ -59,6 +59,16 @@ public partial class CoreConfigV2rayService
+                             continue;
+                         }
+ 
++                        // TUN handled by the sing-box pre-core: every connection
++                        // reaches this core from sing-box, so a process match can
++                        // never succeed -- it only logs "no process found".
++                        if (!context.IsTunEnabled
++                            && context.AppConfig.TunModeItem.EnableTun
++                            && item.Process?.Count > 0)
++                        {
++                            continue;
++                        }
++
+                         var item2 = JsonUtils.Deserialize<RulesItem4Ray>(JsonUtils.Serialize(item));
+                         GenRoutingUserRule(item2);
+                     }
