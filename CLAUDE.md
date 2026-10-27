@@ -118,6 +118,12 @@ NVIDIA xwayland/cursor workarounds all live in `user.lua`.
   (bypassing iVPN doesn't help). Location is still `location` in
   `local.toml`; the script geocodes it via OSM Nominatim and caches it in
   `~/.cache/wayle-weather/`.
+- No notification popups over true fullscreen: `user.lua` turns wayle's Do
+  Not Disturb on (D-Bus `SetDnd`) while the focused workspace has a
+  fullscreen window, off after -- unless DND was already on by hand. Needed
+  because Hyprland doesn't hide top-layer surfaces mapped *after* a window
+  went fullscreen. Gotcha found doing it: `hl.exec_cmd` strings starting with
+  `[` are parsed as `[window rules]`, so use `test`, not `[ ]`.
 - Bar dates are English via `nixos/overlays/wayle-english-dates.nix`, which
   wraps the `wayle` binary with `LC_TIME=en_US.UTF-8` (system LC_TIME stays
   ru_RU). Wrapping the binary, not Hyprland's launch line, because

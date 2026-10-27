@@ -85,6 +85,40 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("lxqt-policykit-agent")
 end)
 
+-- No notification popups over true fullscreen (Super+Shift+F, games).
+-- Hyprland only hides top-layer surfaces that already exist when a window
+-- goes fullscreen, so a popup that appears later still draws on top. Instead,
+-- switch wayle's Do Not Disturb on while the focused workspace has a true
+-- fullscreen window (mode 2/3; maximize = 1 doesn't count). Missed
+-- notifications still go to the bell list. If DND was already on by hand,
+-- leave it alone: the marker file records that *we* turned it on.
+local dnd_marker = "$XDG_RUNTIME_DIR/hypr-fullscreen-dnd"
+local dnd_call = "busctl --user call com.wayle.Notifications1 /com/wayle/Notifications com.wayle.Notifications1 SetDnd b "
+-- `test`, not `[ ]`: Hyprland reads a leading [...] in exec as window rules.
+local dnd_on_cmd = "test \"$(busctl --user get-property com.wayle.Notifications1 /com/wayle/Notifications com.wayle.Notifications1 Dnd)\" = 'b false' && "
+    .. dnd_call .. "true && touch " .. dnd_marker
+local dnd_off_cmd = "test -e " .. dnd_marker .. " && rm -f " .. dnd_marker .. " && " .. dnd_call .. "false"
+local fullscreen_dnd = false
+
+local function update_fullscreen_dnd()
+    local ws = hl.get_active_workspace()
+    local fs = false
+    if ws then
+        for _, w in ipairs(hl.get_workspace_windows(ws)) do
+            if (w.fullscreen or 0) >= 2 then fs = true break end
+        end
+    end
+    if fs ~= fullscreen_dnd then
+        fullscreen_dnd = fs
+        hl.exec_cmd(fs and dnd_on_cmd or dnd_off_cmd)
+    end
+end
+
+for _, ev in ipairs({ "window.fullscreen", "window.active", "window.close", "window.destroy",
+                      "window.move_to_workspace", "workspace.active", "monitor.focused" }) do
+    hl.on(ev, update_fullscreen_dnd)
+end
+
 
 -------------------------------
 ---- ENVIRONMENT VARIABLES ----

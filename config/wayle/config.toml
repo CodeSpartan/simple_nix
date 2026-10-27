@@ -242,6 +242,10 @@ label-color = "blue"
 [modules.notifications]
 icon-color = "blue"
 label-color = "blue"
+# "top" (the bar's layer) instead of "overlay": a popup already on screen
+# gets hidden when a window goes fullscreen. New popups during fullscreen are
+# stopped by the fullscreen -> Do Not Disturb hook in config/hypr/user.lua.
+popup-layer = "top"
 
 # --- Wallpaper ---
 # hyprpaper owns the wallpaper (config/hypr/hyprpaper.conf); keep Wayle's
