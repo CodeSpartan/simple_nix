@@ -35,6 +35,25 @@ in
     };
   };
 
+  # --- Mission Center extras ---
+  # Mission Center offers a "missioncenter-magpie-setup" script (pkexec) that
+  # setcaps nethogs and writes /etc/udev/rules.d -- neither works on NixOS
+  # (read-only store, generated /etc, no /usr/bin/chmod), so it fails on
+  # every retry. Same two things, done declaratively:
+  #  - per-process network usage: nethogs with the capabilities it needs,
+  #    via a /run/wrappers/bin wrapper (first on PATH).
+  #  - CPU power draw: make RAPL energy counters readable (root-only by
+  #    default since the 2020 PLATYPUS side-channel; fine on a one-user box).
+  security.wrappers.nethogs = {
+    source = "${pkgs.nethogs}/bin/nethogs";
+    capabilities = "cap_net_admin,cap_net_raw,cap_dac_read_search,cap_sys_ptrace+pe";
+    owner = "root";
+    group = "root";
+  };
+  services.udev.extraRules = ''
+    SUBSYSTEM=="powercap", KERNEL=="intel-rapl*", RUN+="${pkgs.coreutils}/bin/chmod a+r /sys/%p/energy_uj"
+  '';
+
   # --- Services ---
   # Rootless Docker can't resolve DNS because NixOS's resolv.conf symlink chain
   # goes through /nix/store, which slirp4netns sandboxes away.
