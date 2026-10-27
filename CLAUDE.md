@@ -25,10 +25,19 @@ from that era no longer applies.
   BIOS steps describe; menu names differ (see Secure Boot below).
 - Monitor: LG ULTRAGEAR+ 4K@144, scale **2** — set in `config/hypr/user.lua`.
   ICC calibration profile `config/hypr/lg-ultragear-srgb-d65.icm` (made for
-  the monitor's **sRGB picture mode**) applied via a `desc:` monitor rule.
-  Hyprland reports nothing about ICC (no status field, no log line) and
-  `hyprctl eval hl.monitor(...)` doesn't apply monitor rules -- A/B test by
-  editing user.lua + `hyprctl reload`, and judge by eye.
+  the monitor's **sRGB picture mode**; its big part is the `vcgt` calibration
+  curve = white balance). **Not** given to Hyprland as `icc`: Hyprland's ICC
+  conversion crushes shadows -- dark-room test 2026-10-27: bars visible from
+  16 with it, from 6 without (= Windows), and still 16-20 with no-op
+  sRGB/gamma2.2 copies of the profile, so it's Hyprland, not the profile.
+  Instead `vcgt-loader` (own tiny C tool, `nixos/pkgs/vcgt-loader/`,
+  autostarted in `user.lua`) puts just the curve in the GPU gamma table via
+  wlr-gamma-control -- what Windows does. It must keep running (curve drops
+  when it exits). Gotchas: removing `icc` + `hyprctl reload` leaves the old
+  curve loaded *and* Hyprland then refuses gamma control ("Monitor has gamma
+  ramps in use (ICC?)") until it restarts. Check what the GPU has loaded:
+  `drm_info` (GAMMA_LUT blob id) + read the blob with libdrm. Test images:
+  `/mnt/ddrive/blacktest/`; judge by eye in a dark room.
 - Network: two onboard ethernet ports. `enp35s0` (Realtek, `r8169`) is the
   one in use. `eno1` (Killer/Atheros, `alx`) is unused and its driver is
   **blacklisted** in `nixos/hardware.nix` (see Wayle below for why).
@@ -177,6 +186,13 @@ switchxkblayout all <n>` and `hl.dsp.focus` do emit the events it uses.
 - **Suspend is dangerous**: S3 resume with the open driver gives `Xid 13`
   graphics exceptions and a dead display (hard reset needed). The repo masks
   all sleep targets in `hardware.nix`; Plasma's own auto-sleep is also off.
+- **Log out is broken** (2026-10-27): Hyprland segfaulted on exit, SDDM
+  saw "Process crashed" and never brought the greeter back -- black text
+  screen, then a hang. Restart with `systemctl reboot` instead until fixed.
+- A hard reset while an NTFS drive is mounted leaves it "dirty"; ntfs3 then
+  refuses to mount it (`nofail`, so boot continues and `/mnt/ddrive` is just
+  empty). Fix: `chkdsk X: /f` in Windows, or
+  `sudo nix-shell -p ntfs3g --run "ntfsfix -d /dev/<part>"` + `sudo mount`.
 - After a forced power-off mid-build the Nix store can hold 0-byte corrupt
   paths (builds fail with "gzip: unexpected end of file"). Fix:
   `sudo nix-store --verify --check-contents --repair`.

@@ -66,7 +66,10 @@ hl.monitor({
     mode     = "highrr",
     position = "auto",
     scale    = 2,
-    icc      = configDir .. "/lg-ultragear-srgb-d65.icm",
+    -- No `icc` here: Hyprland's ICC conversion crushes everything below
+    -- level 16 to black, even with a no-op copy of the profile (dark-room
+    -- tests 2026-10-27; Windows shows from 6). The profile's calibration
+    -- curve is loaded by vcgt-loader in AUTOSTART instead, like Windows does.
 })
 
 
@@ -89,6 +92,9 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("wayle shell")
     hl.exec_cmd("hyprpaper")
     hl.exec_cmd("hyprsunset -i")   -- night light daemon, starts off; toggled by nightlight.sh
+    -- Monitor calibration curve (white balance) from the LG's ICC profile,
+    -- without Hyprland's ICC conversion -- see the monitor rule above.
+    hl.exec_cmd("vcgt-loader " .. configDir .. "/lg-ultragear-srgb-d65.icm 'LG ULTRAGEAR'")
     -- hl.exec_cmd("hypridle")  -- autolock disabled
     hl.exec_cmd("nm-applet --indicator")
     hl.exec_cmd("blueman-applet")

@@ -68,6 +68,8 @@ let
   # Middle-click autoscroll (the little scroll widget, as on Windows). Off by
   # default on Linux, where middle-click pastes; this Blink flag turns it on.
   # Middle-click in text fields still pastes, on links still opens a tab.
+  # Loads the monitor's ICC calibration curve (see config/hypr/user.lua).
+  vcgtLoader = pkgs.callPackage ./pkgs/vcgt-loader { };
   braveAutoscroll = pkgs.brave.override {
     commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
   };
@@ -364,6 +366,7 @@ in
     imv                        # Fast Wayland-native image viewer
     file-roller                # Archive manager GUI (zip/tar/7z)
     hyprsunset                 # Night light (toggled by clicking the bar weather; config/hypr/nightlight.sh)
+    vcgtLoader                 # Monitor calibration curve without Hyprland's ICC (nixos/pkgs/vcgt-loader)
     mission-center             # System monitor (CPU/GPU/RAM/disk, GTK4 Wayland native)
 
     # Desktop services
