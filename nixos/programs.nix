@@ -71,6 +71,9 @@ let
   braveAutoscroll = pkgs.brave.override {
     commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
   };
+  chromeAutoscroll = pkgs.google-chrome.override {
+    commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
+  };
 
   # v2rayN is an Avalonia (.NET) app on XWayland; same force_zero_scaling
   # story as VLC, so it drew at 1x. Avalonia's own scale knob fixes it.
@@ -151,7 +154,7 @@ in
 
   # --- System Packages ---
   environment.systemPackages = with pkgs; [
-    google-chrome              # Chrome browser (bypasses iVPN: see config/ivpn-bypass/apps)
+    chromeAutoscroll           # Chrome browser, middle-click autoscroll on (bypasses iVPN: see config/ivpn-bypass/apps)
 
     # Core utilities
     git-filter-repo gh glab wget curl unzip p7zip file fastfetch optipng
