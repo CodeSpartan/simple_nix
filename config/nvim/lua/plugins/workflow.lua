@@ -36,7 +36,7 @@ return {
   },
   {
     "rmagatti/auto-session",
-    event = { "BufReadPre", "BufNewFile" },
+    lazy = false, -- must load at startup to auto-restore a session
     cmd = "AutoSession",
     opts = require "configs.auto_session",
   },
