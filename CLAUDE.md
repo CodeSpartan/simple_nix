@@ -68,6 +68,9 @@ inherited from Vitalii stays -- don't trim it.
   bind changes need a real keypress from the user.
 - `suppress-maximize-events` blocks apps' own fullscreen requests; exempt apps
   in *that* rule's match (`negative:`), a later narrower rule doesn't override.
+- `hl.dsp.dpms("on")` ignores the string and **toggles** -- use
+  `hl.dsp.dpms({action="on"})` / `{action="off"}`. hypridle (autostarted)
+  turns the monitor off after 15 min, no lock.
 - `hl.exec_cmd` strings starting with `[` are parsed as window rules -- use
   `test`, not `[ ]`.
 - Per-window keyboard layout: `hyprland-per-window-layout`, config in
