@@ -133,6 +133,9 @@ via Save Changes and Reset. `sbctl enroll-keys` "File is immutable" → `chattr
 - Pull upstream by **cherry-pick**, never merge. `host.nix`, `hardware.nix`,
   `security.nix`, `secrets/`, `hypr/user.lua` diverge on purpose. Skip
   NordVPN, Razer, and his secrets.
+- Upstream reviewed through **`de6e925`** (2026-10-29): everything up to it was
+  picked, partly picked, or skipped. Next time only look at
+  `git log --oneline de6e925..upstream/main`, then update this hash.
 - Upstream PRs: build in a clean `git worktree` off `upstream/main`.
 - HTTPS git from Claude's shell can pop a password dialog on the desktop --
   prefix `GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=true`.
