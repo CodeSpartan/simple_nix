@@ -453,6 +453,15 @@ If another app misbehaves only when opened from Brave, suspect the same.
 Userscripts (Tampermonkey) are kept in `config/userscripts/` -- e.g.
 `eda-yandex-light.user.js` forces eda.yandex.ru to its light theme.
 
+## Wallpaper
+
+hyprpaper shows `~/Pictures/wallpaper.png` -> `wallpapers/wallpaper.png`
+(linked by `link.sh`), committed via **Git LFS** (`.gitattributes`: `*.png`),
+despite the README calling it gitignored. Currently the user's Dark Souls
+image (from `~/Downloads/wallpapers/dark_souls.jpg`, converted to PNG at
+2160px height). Apply a new one: `pkill -x hyprpaper; hyprpaper &`
+(or `hyprctl hyprpaper` IPC). Check: `hyprctl hyprpaper listactive`.
+
 ## Image viewer (nomacs)
 
 **nomacs** replaced imv (2026-10-28; user wanted IrfanView-like). Gwenview
