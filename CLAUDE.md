@@ -4,486 +4,230 @@ Guidance for Claude Code when working in this repo / on this machine.
 
 ## Who's using this
 
-The user is a **first-time Linux user** — this is their first NixOS install,
-their only prior experience is Ubuntu-on-a-server-through-Claude. Don't
-assume familiarity with Linux/Nix concepts, jargon, or muscle memory (sudo,
-systemd, symlinks, etc.). Explain what a command does before/while running
-it, not just that it worked. Prefer showing the exact commands they'd need
-to run themselves over assuming they know the equivalent.
+The user is a **first-time Linux user** (first NixOS install; before that only
+Ubuntu-on-a-server through Claude). Don't assume Linux/Nix familiarity
+(sudo, systemd, symlinks...). Explain what a command does, and give the exact
+commands they'd run themselves.
 
-They program but don't do ML (yet) — the CUDA/cuDNN/Nsight/Jupyter stack
-inherited from Vitalii stays anyway, they may learn ML later. Don't trim it.
+They program but don't do ML (yet). The CUDA/cuDNN/Nsight/Jupyter stack
+inherited from Vitalii stays -- don't trim it.
 
 ## This machine
 
-Desktop, set up fresh 2026-10-26. Replaces the old Intel/no-GPU laptop this
-fork first ran on — that laptop is **retired**. Any "weak hardware" framing
-from that era no longer applies.
-
-- AMD Ryzen 9 3900X (12c/24t), 32GB RAM, NVIDIA RTX 4080 SUPER, btrfs root.
-- **MSI** motherboard (AMI firmware) — *not* the ASRock board the README's
-  BIOS steps describe; menu names differ (see Secure Boot below).
-- Monitor: LG ULTRAGEAR+ 4K@144, scale **2** — set in `config/hypr/user.lua`.
-  ICC calibration profile `config/hypr/lg-ultragear-srgb-d65.icm` (made for
-  the monitor's **sRGB picture mode**; its big part is the `vcgt` calibration
-  curve = white balance). **Not** given to Hyprland as `icc`: Hyprland's ICC
-  conversion crushes shadows -- dark-room test 2026-10-27: bars visible from
-  16 with it, from 6 without (= Windows), and still 16-20 with no-op
-  sRGB/gamma2.2 copies of the profile, so it's Hyprland, not the profile.
-  Instead `vcgt-loader` (own tiny C tool, `nixos/pkgs/vcgt-loader/`,
-  autostarted in `user.lua`) puts just the curve in the GPU gamma table via
-  wlr-gamma-control -- what Windows does. It must keep running (curve drops
-  when it exits). Gotchas: removing `icc` + `hyprctl reload` leaves the old
-  curve loaded *and* Hyprland then refuses gamma control ("Monitor has gamma
-  ramps in use (ICC?)") until it restarts. Check what the GPU has loaded:
-  `drm_info` (GAMMA_LUT blob id) + read the blob with libdrm. Test images:
-  `/mnt/ddrive/blacktest/`; judge by eye in a dark room.
-- Network: two onboard ethernet ports. `enp35s0` (Realtek, `r8169`) is the
-  one in use. `eno1` (Killer/Atheros, `alx`) is unused and its driver is
-  **blacklisted** in `nixos/hardware.nix` (see Wayle below for why).
-  Intel wifi (`wlp36s0`, `iwlwifi`) is present but its radio is off; it is
-  deliberately *not* blacklisted — the user wants wifi available.
-- This is a fork of a friend's (Vitalii's) config, originally tuned for *his*
-  machine (~32GB, 4K, NVIDIA) — this box is close to that spec, so
-  upstream's un-tuned defaults (`nvidia = true`, `cores = 0`,
-  `max-jobs = "auto"`, `linuxPackages_latest`) are correct here.
+- Desktop: Ryzen 9 3900X, 32GB, RTX 4080 SUPER, btrfs root. Fork of a friend's
+  (Vitalii's) config for a similar box, so upstream defaults (`nvidia = true`,
+  `cores = 0`, `linuxPackages_latest`, ...) fit. The old laptop is retired --
+  ignore "weak hardware" leftovers.
+- **MSI** board (AMI firmware), not the ASRock the README's BIOS steps describe.
+- Monitor LG ULTRAGEAR+ 4K@144, scale 2 (`config/hypr/user.lua`). Calibration
+  `config/hypr/lg-ultragear-srgb-d65.icm` (for the monitor's sRGB mode) is
+  **not** given to Hyprland as `icc` -- Hyprland's ICC path crushes shadows.
+  Instead `vcgt-loader` (`nixos/pkgs/vcgt-loader/`, autostarted in `user.lua`)
+  loads just its calibration curve into the GPU gamma table; it must keep
+  running. If `icc` is ever set and removed, Hyprland refuses gamma control
+  ("gamma ramps in use") until restarted.
+- Ethernet `enp35s0` in use. `eno1`'s driver `alx` is blacklisted (see Wayle).
+  Wifi `iwlwifi` stays enabled on purpose.
 
 ## TODO
 
-- `config/hypr/user.conf` is dead (see Hyprland below) — could be deleted.
+- `config/hypr/user.conf` is dead (see Hyprland) -- could be deleted.
 
-## Mouse
+## Where to make a change
 
-Logitech **G300s** (wired, USB `046d:c246`). Configured with **Piper** +
-`services.ratbagd.enable` (`programs.nix`): button remaps/macros, DPI levels,
-polling rate, LED, 3 profiles. Settings are saved in the mouse's onboard
-memory, so they persist without Piper running (and carry over to Windows).
-Solaar doesn't support this mouse (it's for wireless receivers).
+- **`nixos/*.nix`** → edit here, then `./install.sh` (rebuild + `link.sh` +
+  flatpak update). `/etc/nixos` is unused; ignore it.
+- **Plain dotfiles** (`config/hypr/user.lua`, kitty, rofi, wayle, ...) are
+  symlinked live by `link.sh` -- reload the app (`hyprctl reload`,
+  `wayle panel restart`), no rebuild.
+- **home-manager files** (`nixos/home/*.nix`: git/ssh config, mc, KDE theming)
+  are read-only Nix store links -- change the source, then `./install.sh`.
+- Kernel-module blacklists apply only at boot. A rebuilt app keeps running the
+  old binary until restarted.
 
-Pointer acceleration copies Windows' "Enhance pointer precision" (the user
-had it on, slider 16/20): a libinput **custom curve** in `user.lua`'s
-`accel_profile`, generated by `scripts/windows-mouse-curve.py` (based on
-Yinon Burgansky's conversion gist -- an approximation; the Windows math is
-reverse-engineered). The model assumes 1000 Hz and no `MOUSE_DPI` hwdb
-entry; changing DPI/polling in Piper changes the feel. With the custom
-profile, `sensitivity` does nothing -- regenerate with another slider value
-instead. Live test: `hyprctl eval 'hl.config({ input = { accel_profile = "..." } })'`
-(`hyprctl keyword` doesn't work with the Lua config).
+## install.sh
 
-## Repo vs. system config — where to make a change
-
-- **`nixos/*.nix`** (packages, services, hardware, users) → edit in this
-  repo, then `./install.sh` (rebuild + relink dotfiles + flatpak update).
-  Never hand-edit `/etc/nixos` — it's not used; everything points at this
-  flake. (`/etc/nixos/configuration.nix` still holds a stale hand-patch from
-  install day; ignore it.)
-- **Plain dotfiles** (`config/hypr/user.lua`, kitty, rofi, wayle) → symlinked
-  live by `link.sh`. Edit in the repo; takes effect after an app reload
-  (`hyprctl reload`, `wayle panel restart`) — **no `./install.sh` needed.**
-- **home-manager-managed dotfiles** (git config, ssh config, mc, kde theming
-  — `nixos/home/*.nix`) → **read-only symlinks into the Nix store**. Can't
-  hand-edit `~/.gitconfig`/`~/.ssh/config`; change the source, then
-  `./install.sh`.
-- Kernel-module blacklists (`boot.blacklistedKernelModules`) only take effect
-  at boot — a running module stays loaded after `./install.sh` until reboot
-  (or `sudo modprobe -r <module>`).
-- After a rebuild that changes a running app (e.g. wayle), the old process
-  keeps the old binary — restart the app, no reboot needed.
-
-## install.sh behaviour
-
-- Uses Vitalii's fix for a real failure mode: `nixos-rebuild switch` exits
-  **4** when the new generation activated but some unrelated unit failed
-  (e.g. `fwupd-refresh`). Exit 4 → warn and continue; any other non-zero →
-  abort. Before that fix, `set -e` killed the script before `link.sh`, so
-  no dotfiles got linked and Hyprland booted into emergency mode with a
-  misleading "cannot open user.lua".
-- If dotfiles ever look missing after a rebuild, just run `./link.sh`.
-- Installs/updates **Discord** via *system* Flatpak (Blender from upstream's
-  version deliberately dropped). Discord also exists as a *user* Flatpak
-  from install day — both coexist on purpose; leave them.
-- `nixos/hardware-configuration.nix` is gitignored. `install.sh` stages it
-  temporarily so the flake can see it; if a run dies early it can be left
-  staged — check `git status` before committing so it isn't committed.
-- Never run the whole script with `sudo ./install.sh` — it calls sudo itself
-  where needed; running it as root breaks git's ownership checks and leaves
-  root-owned files in `.git/objects` (fix: `sudo chown -R vervain:users
-  ~/code/simple_nix` — primary group is `users`, not `vervain`).
+- `nixos-rebuild` exit **4** (new generation active, some unrelated unit
+  failed) is tolerated on purpose; anything else aborts. If dotfiles look
+  missing after a rebuild, run `./link.sh`.
+- It stages the gitignored `nixos/hardware-configuration.nix` for the flake;
+  after an aborted run check `git status` so it isn't committed.
+- Never `sudo ./install.sh` -- it calls sudo itself; as root it leaves
+  root-owned files in `.git` (fix: `sudo chown -R vervain:users ~/code/simple_nix`).
+- Discord exists as both system (managed by install.sh) and user Flatpak --
+  leave both.
 
 ## Hyprland
 
-Upstream migrated to a Lua config: `~/.config/hypr/hyprland.lua`
-(home-manager) just `dofile`s `config/hypr/user.lua`, which is the real
-config. `config/hypr/user.conf` is **not linked or loaded** anymore.
-Monitor scale (2), cursor size (24 -- the standard size; Hyprland applies
-the scale itself), `GDK_SCALE`/`GDK_DPI_SCALE` and the NVIDIA
-xwayland/cursor workarounds all live in `user.lua`.
+- Real config is `config/hypr/user.lua` (`~/.config/hypr/hyprland.lua` just
+  `dofile`s it). `hyprctl keyword` doesn't work with the Lua config; use
+  `hyprctl eval 'hl.config({...})'`.
+- Ctrl+Shift layout switch is a **release** bind; a release bind on a modifier
+  needs it in its own mask (`CTRL + SHIFT + Shift_L`).
+- `wtype` keys never trigger Hyprland binds (and don't reach XWayland apps) --
+  bind changes need a real keypress from the user.
+- `suppress-maximize-events` blocks apps' own fullscreen requests; exempt apps
+  in *that* rule's match (`negative:`), a later narrower rule doesn't override.
+- `hl.exec_cmd` strings starting with `[` are parsed as window rules -- use
+  `test`, not `[ ]`.
+- Per-window keyboard layout: `hyprland-per-window-layout`, config in
+  `config/hyprland-per-window-layout/options.toml`. Kill it with
+  `pkill -x hyprland-per-wi` (`pgrep/pkill -f` also matches your own shell --
+  true for any app).
 
-Layout switching: Super+Space (XKB `grp:win_space_toggle`) and Ctrl+Shift
-**on release** (Hyprland release binds in `user.lua`, not XKB's
-`grp:ctrl_shift_toggle`, which fires on press and so also flipped the
-layout on Ctrl+Shift+C/V). A release bind on a modifier needs that modifier
-in its own mask: `CTRL + SHIFT + Shift_L`, not `CTRL + Shift_L`. Keys
-simulated with `wtype` don't trigger Hyprland binds at all -- bind changes
-need a real keypress from the user to test.
+## Mouse
 
-Apps' own fullscreen/maximize requests are blocked by `suppress-maximize-events`
-(VLC exempted via `negative:` in its match). A later rule with a narrower
-`suppress_event` does **not** override it -- exempt apps in that match.
-Telegram's image viewer is forced fullscreen by a rule; click-on-background
-to close doesn't work, since Telegram stays in its own "windowed" mode
-(saved in its settings) -- tried, user dropped it. Testing app fullscreen:
-`wtype` keys don't reach VLC (XWayland); `vlc --fullscreen <file>` sends the
-same request.
-
-Per-window layout memory (like Windows): `hyprland-per-window-layout`,
-autostarted in `user.lua`; config `config/hyprland-per-window-layout/
-options.toml` (linked by `link.sh`) sets per-app defaults for new windows
-(MAX → ru). It learns keyboards only from layout-change events, so the
-keyboard is named in `keyboards` -- otherwise it does nothing until the
-first switch after login. Testable without keypresses: `hyprctl
-switchxkblayout all <n>` and `hl.dsp.focus` do emit the events it uses.
-`pkill -x hyprland-per-wi` (comm is truncated; `-f` matches your own shell).
+Logitech G300s, configured with Piper (settings live in the mouse's memory).
+Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
+`user.lua` generated by `scripts/windows-mouse-curve.py` (assumes 1000 Hz).
+`sensitivity` does nothing with it -- regenerate the curve instead.
 
 ## Wayle (status bar)
 
-- **`~/.config/wayle/local.toml` must exist.** `config.toml` does
-  `imports = ["local.toml"]`; despite its own comment, a missing import makes
-  wayle drop the **whole** config and fall back to its stock bar. It holds
-  the weather location (`Saint Petersburg, Russia`) and is outside git on
-  purpose. Template: `config/wayle/local.toml.example`.
-- Network module said "Disconnected" while online. Two bugs:
-  1. wayle-shell preferred a merely-present wifi device over wired when NM's
-     primary connection is VPN/WireGuard (always, here) — **patched** in
-     `nixos/overlays/wayle-network-prefer-wired.patch`.
-  2. The external `wayle-network` crate picks the *first* ethernet device NM
-     enumerates, not the active one; `eno1` was listed first. Patching that
-     crate via Cargo `[patch]` doesn't work with nixpkgs' `cargoHash`
-     vendoring (would need `cargoLock` + `outputHashes`) — so instead `alx`
-     is blacklisted to remove `eno1`. If that port is ever needed, remove the
-     blacklist and the bar will say "Disconnected" again (cosmetic only).
-- Known, harmless: a once-a-second `missing field overFullscreen` log spam
-  (wayle vs newer Hyprland IPC); two identical iVPN tray icons (bug in
-  iVPN's Electron app — both come from the same PID; leave it).
-- Weather is a **custom module** (`config/wayle/weather.sh`, MET Norway
-  `api.met.no`, no key), not wayle's built-in one. The built-in's keyless
-  provider open-meteo is unreachable here by any route: its forecast host is
-  on Hetzner, which the ISP blocks, and it also refuses the iVPN exit
-  (bypassing iVPN doesn't help). Location is still `location` in
-  `local.toml`; the script geocodes it via OSM Nominatim and caches it in
-  `~/.cache/wayle-weather/`.
-- No notification popups over true fullscreen: `user.lua` turns wayle's Do
-  Not Disturb on (D-Bus `SetDnd`) while the focused workspace has a
-  fullscreen window, off after -- unless DND was already on by hand. Needed
-  because Hyprland doesn't hide top-layer surfaces mapped *after* a window
-  went fullscreen. Gotcha found doing it: `hl.exec_cmd` strings starting with
-  `[` are parsed as `[window rules]`, so use `test`, not `[ ]`.
-- Bar dates are English via `nixos/overlays/wayle-english-dates.nix`, which
-  wraps the `wayle` binary with `LC_TIME=en_US.UTF-8` (system LC_TIME stays
-  ru_RU). Wrapping the binary, not Hyprland's launch line, because
-  `wayle panel restart` starts the new bar from the caller's environment.
-- wayle is built from a PR branch (`nixos/overlays/wayle-pr255*.nix`). Its
-  `postPatch` still disables LTO for the old 7.5GB laptop — harmless here.
+- **`~/.config/wayle/local.toml` must exist** (outside git; template
+  `config/wayle/local.toml.example`). If it's missing wayle drops the *whole*
+  config and shows its stock bar.
+- `alx` is blacklisted because wayle's network module picks the first
+  ethernet device (`eno1`) and shows "Disconnected". Un-blacklisting brings
+  that back (cosmetic).
+- Weather is a custom module (`config/wayle/weather.sh`, MET Norway) because
+  the built-in provider (open-meteo) is unreachable from here.
+- Harmless: `missing field overFullscreen` log spam; two iVPN tray icons.
+- Logs: `~/.local/state/wayle/wayle-shell.<date>.log`. Restart with
+  `wayle panel restart`, not kill + relaunch.
 
-## NVIDIA / kernel / sleep
+## NVIDIA / kernel / power
 
-- The raw installer used **nouveau**, which froze/corrupted the screen on the
-  4080 SUPER. The flake's `nvidia-open` driver fixes it.
-- Kernel/driver pairing comes from `flake.lock`'s pinned nixpkgs; a plain
-  channel once paired kernel 7.3 with an `nvidia-open` that didn't compile.
-  If a nixpkgs bump breaks the nvidia build, suspect that pairing first.
-- **Suspend is dangerous**: S3 resume with the open driver gives `Xid 13`
-  graphics exceptions and a dead display (hard reset needed). The repo masks
-  all sleep targets in `hardware.nix`; Plasma's own auto-sleep is also off.
-- **Log out** broke (2026-10-27), two causes, both fixed 2026-10-28:
-  1. wayle's default logout command `loginctl terminate-session` SIGTERMs
-     the whole session incl. sddm-helper; SDDM logs "Process crashed" and
-     never restarts the greeter (black text console). `config.toml` now
-     sets `dropdown-logout-command = "uwsm stop"` (session runs under uwsm).
-  2. Hyprland segfaulted at exit in the fullscreen-DND Lua handler:
-     `window.destroy` fires from window teardown after workspaces are freed,
-     and `hl.get_workspace_windows()` then crashes. Handler no longer
-     listens to it. (`hyprland.shutdown` only fires on the exit dispatcher,
-     not on SIGTERM, so it's no use as a guard.) Crash dumps:
-     `coredumpctl list` / `coredumpctl info <pid>`.
-- A hard reset while an NTFS drive is mounted leaves it "dirty"; ntfs3 then
-  refuses to mount it (`nofail`, so boot continues and `/mnt/ddrive` is just
-  empty). Fix: `chkdsk X: /f` in Windows, or
-  `sudo nix-shell -p ntfs3g --run "ntfsfix -d /dev/<part>"` + `sudo mount`.
-- After a forced power-off mid-build the Nix store can hold 0-byte corrupt
-  paths (builds fail with "gzip: unexpected end of file"). Fix:
+- Kernel/driver pairing comes from `flake.lock`; if a nixpkgs bump breaks the
+  `nvidia-open` build, suspect that pairing.
+- **Suspend kills the display** (Xid 13, hard reset). All sleep targets are
+  masked in `hardware.nix` -- keep it that way.
+- Log out must use `uwsm stop` (wayle's `dropdown-logout-command`);
+  `loginctl terminate-session` kills SDDM's greeter too. In `user.lua` event
+  handlers, don't query workspaces from `window.destroy` -- it crashes
+  Hyprland at exit.
+- After a hard reset an NTFS drive can be "dirty" and `/mnt/ddrive` is empty:
+  `sudo nix-shell -p ntfs3g --run "ntfsfix -d /dev/<part>"`, then mount.
+- Builds failing with "gzip: unexpected end of file" after a power cut:
   `sudo nix-store --verify --check-contents --repair`.
 
-## Secure Boot
+## Secure Boot (Lanzaboote, enabled)
 
-Done and verified (`bootctl status` → `Secure Boot: enabled (user)`,
-Lanzaboote stub active). MSI-specific lessons, in case keys are ever reset:
-- In BIOS (Advanced → Windows OS Configuration → Secure Boot → Key
-  Management), **"Provision Factory Default keys" must stay Disabled** —
-  when enabled, the firmware silently reinstalls the factory keys on every
-  boot, undoing any delete. Deleting just the PK is enough to enter Setup
-  Mode once that's off.
-- Exit with **Save & Exit → Save Changes and Reset**; a "reset without
-  saving?" prompt discards the change.
-- `sbctl enroll-keys` may fail with "File is immutable" for efivars — clear
-  it with `sudo nix-shell -p e2fsprogs --run "chattr -i <files>"`.
-- `sbctl` flags firmware quirk FQ0001 on this board; expected.
-- Windows boots fine (Microsoft certs enrolled via `--microsoft`); use F11
-  at POST to pick it. BitLocker will ask for its recovery key once after the
-  key change.
-- Old Ubuntu/Fedora entries are still in the firmware boot list — leftovers.
+If keys ever need re-enrolling on this MSI board: in BIOS Secure Boot → Key
+Management, **"Provision Factory Default keys" must be Disabled** (otherwise
+factory keys come back every boot); delete the PK to enter Setup Mode; exit
+via Save Changes and Reset. `sbctl enroll-keys` "File is immutable" → `chattr
+-i` the efivars. Windows boots via F11 at POST.
 
-## Git remotes / GitHub
+## Git
 
-- `origin` → `git@github.com:CodeSpartan/simple_nix.git` (user's fork, SSH —
-  HTTPS has no stored credentials, pushes over it fail).
-- `upstream` → `https://github.com/Lallapallooza/simple_nix.git` (Vitalii's;
-  read-only in practice — pull fixes from here, don't push).
-- `gh` is authenticated as `CodeSpartan` with `git_protocol ssh`.
-- Pulling upstream: `git fetch upstream`, `git log HEAD..upstream/main`, then
-  **cherry-pick** what's wanted — never a blind merge. `host.nix`,
-  `hardware.nix`, `security.nix`, `secrets/` and `hypr/user.lua` are
-  machine-specific (username, scale, locale, alx blacklist, secrets) and
-  diverge on purpose. Skip upstream's NordVPN, Razer/openrazer and personal
-  secrets (e.g. `vastai.age`). Vitalii is reachable by the user on Discord.
-- PRs **upstream**: build in a clean `git worktree` off `upstream/main`, never
-  from this working tree.
-- Cloning over HTTPS from Claude's shell can pop a GUI password prompt
-  (ksshaskpass) on the user's desktop — prefix with
-  `GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=true` (NixOS has no `/bin/true`).
+- `origin` = user's fork `git@github.com:CodeSpartan/simple_nix.git` (SSH
+  only). `upstream` = Vitalii's `Lallapallooza/simple_nix` -- never push.
+- Pull upstream by **cherry-pick**, never merge. `host.nix`, `hardware.nix`,
+  `security.nix`, `secrets/`, `hypr/user.lua` diverge on purpose. Skip
+  NordVPN, Razer, and his secrets.
+- Upstream PRs: build in a clean `git worktree` off `upstream/main`.
+- HTTPS git from Claude's shell can pop a password dialog on the desktop --
+  prefix `GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=true`.
+- `*.png` goes through Git LFS.
 
 ## Secrets (agenix)
 
-- Personal age key: `~/.config/age/keys.txt` — **generated fresh on this
-  machine 2026-10-27**; the old laptop's key was lost, so its secrets were
-  undecryptable and dropped. The user should keep a copy of this private key
-  in a password manager — without it, the secrets below can't be decrypted
-  on a reinstall.
-- Secrets: `id_ed25519_github`, `id_ed25519_gitlab` — SSH keys generated on
-  this machine, public halves registered on GitHub (`CodeSpartan`) and GitLab
-  (`@Glabrezu`); decrypted to `/run/agenix/` and used via `~/.ssh/config`.
-  agenix decrypts at activation, so new secrets work right after
-  `./install.sh`, no reboot.
-- Add more with `./scripts/add-secret.sh <name>` (reads the value from
-  stdin). Never read private key material into Claude's context — generate
-  to a file and pipe it in (`cat key | ./scripts/add-secret.sh name`), then
-  shred the plaintext.
-- Never try to decrypt or use Vitalii's secrets (`vastai.age` etc.) — wrong
-  key, and not this user's credentials.
+- Age key `~/.config/age/keys.txt` -- without it the secrets can't be
+  decrypted on a reinstall; the user should keep a copy in a password manager.
+- SSH keys for GitHub/GitLab are secrets, decrypted to `/run/agenix/`.
+- Add with `./scripts/add-secret.sh <name>` (stdin). Never read private key
+  material into context: generate to a file, pipe it in, shred the file.
+- Never touch Vitalii's secrets (`vastai.age` etc.).
 
-## iVPN — do not touch without explicit permission
+## iVPN -- do not touch without explicit permission
 
-The user manages their iVPN connection (connect/disconnect/server/protocol)
-themselves. **Never run `ivpn connect`/`disconnect`/etc. on your own
-initiative**, even to test something — disconnecting once briefly left the
-firewall/kill-switch off. Ask first. The daemon (`ivpn-service`) now starts
-at boot (the repo's no-autostart override was removed at the user's request).
+**Never run `ivpn connect`/`disconnect`/etc. on your own initiative**, even to
+test -- disconnecting once left the kill-switch off. Ask first.
 
-**Per-app bypass** (`nixos/ivpn-bypass.nix` + `.py`): a root service watches
-process starts and moves any program named in `~/.config/ivpn-bypass/apps`
-(linked from `config/ivpn-bypass/apps`, re-read live) into iVPN's split-tunnel
-cgroup `/sys/fs/cgroup/net_cls/ivpn-exclude` -- what `ivpn exclude` does. Needs
-`ivpn splittun -on` (normal, not inverse mode). Logs: `journalctl -u ivpn-bypass`.
+Per-app bypass: `nixos/ivpn-bypass.nix` moves programs listed in
+`config/ivpn-bypass/apps` (re-read live) into iVPN's split-tunnel cgroup.
+Logs: `journalctl -u ivpn-bypass`. Some hosts fail through the VPN exit
+(e.g. crates.io API 403).
 
-Side effect worth knowing: some hosts are unreachable through the VPN exit
-(crates.io's REST API → 403, open-meteo → TLS timeout). Cargo's registry
-works fine. Claude's WebFetch/WebSearch don't go through it.
+## v2rayN -- do not touch without explicit permission
 
-## Epic Games Launcher / Unreal Engine
+Same rule: **never stop/restart it, toggle Tun/proxy, switch servers, or edit
+its config/DB on your own initiative.** Reading logs and the sing-box API
+(`curl 127.0.0.1:10814/connections`) is fine.
 
-- Epic Games Launcher (Preview) is an AppImage in `~/Applications/`, run via
-  `programs.appimage` (+binfmt); menu entry in `~/.local/share/applications/`
-  (outside git). It **can't install Unreal Engine on Linux** ("No build for
-  app UE_5.8 on platform Linux" in its log; the UI just says "try again").
-- Unreal Engine 5.8.4 = prebuilt zip from unrealengine.com/linux, unpacked to
-  `~/code/UE` (73GB). Runs directly via nix-ld: `unrealRuntimeLibs` in
-  `programs.nix` (SDL's X11/GTK/Pulse/D-Bus + CEF's nss/atk/gbm/...).
-  `steam-run` lacks nss, so it doesn't work. CEF's "eglInitialize SwANGLE
-  failed" log spam is harmless. Menu entry `unreal-editor.desktop` (outside git).
-- Run the editor with **`SDL_VIDEODRIVER=x11`** (menu entry does). Native
-  Wayland: apps can't place their own windows, so UE's dialogs landed
-  off-screen (x≈11000) and its toast window showed as an empty blurred box.
-  Under XWayland it places them itself and scales the UI correctly at 4K.
-- UE's shell scripts start with `#!/bin/bash` (absent on NixOS): run them as
-  `bash Engine/Build/BatchFiles/Linux/Build.sh ...`. UnrealBuildTool's
-  bundled .NET needs ICU (in `unrealRuntimeLibs`).
-- Project MMOKit: Linux copy `~/code/MMOKit` (origin = GitLab
-  `Glabrezu/mmokitv2`, remote `windows` = the D: copy, which stays on
-  the Windows source-built engine). EngineAssociation "5.8".
-- MMOKit's C# PersistenceServer stays on D: (`/mnt/ddrive/MMO_Kit_Creation/
-  PersistenceServer`, GitHub `CodeSpartan/MMOKitPersistenceServer`), built
-  on Linux with `dotnet-sdk_8`. Its `Directory.Build.props` sends Linux
-  builds to `bin-linux/`/`obj-linux/` so Windows' `bin/`/`obj/` stay
-  untouched. It reads `settings.ini` and `mmokit.db` from the folder it's
-  started in, so the launcher (`~/.local/bin/mmokit-persistence-server`, menu
-  entry "MMOKit Persistence Server", both outside git) symlinks the Linux
-  `mmokit.db` to Windows' `bin/Debug-Sqlite/net8.0/mmokit.db` -- one DB for
-  both OSes. Repo has `core.autocrlf=true` locally; without it Linux git
-  showed CRLF-only "changes". Stop it by name: `pkill -f` matches your shell.
+- Runs in Tun mode; its routing overrides the iVPN bypass while on, so it has
+  its own direct-process list (kept by hand to match).
+- Routing lives in `~/.local/share/v2rayN/guiConfigs/guiNDB.db` (back it up
+  before editing; applies on the user's Reload). `guiNConfig.json` is
+  rewritten by the app -- change those settings in the UI.
+- Process rules match the exe name per socket (no child inheritance), so
+  Electron apps need domain rules.
+- `link.sh` links the Nix `xray`/`sing-box` into v2rayN's `bin/` -- don't use
+  its in-app core update.
+
+## Unreal Engine / MMOKit
+
+- UE 5.8.4 is the prebuilt Linux zip in `~/code/UE`, run via nix-ld
+  (`unrealRuntimeLibs` in `programs.nix`). Run the editor with
+  `SDL_VIDEODRIVER=x11` (native Wayland puts its dialogs off-screen). Its
+  scripts need `bash <script>` (no `/bin/bash`). The Epic launcher can't
+  install UE on Linux.
+- MMOKit: `~/code/MMOKit` (GitLab), remote `windows` = the D: copy.
+- PersistenceServer stays on D: (`/mnt/ddrive/MMO_Kit_Creation/
+  PersistenceServer`), built with `dotnet-sdk_8` into `bin-linux/` so
+  Windows' `bin/` is untouched; its launcher shares Windows' `mmokit.db`. That
+  repo needs `core.autocrlf=true`.
 
 ## Bloodborne (bbport)
 
-The Windows install `D:\Games\bbport-windows` (Supermedo's port + the user's refill cheat;
-workspace notes in `/mnt/ddrive/Games/bb_cheat/CLAUDE.md`) runs through **Proton-GE**:
-`~/.local/bin/bloodborne` + menu entry `bloodborne.desktop` (both outside git). Saves and
-`bbport.ini` are shared with Windows.
-- Prefix `~/.local/share/proton-prefixes/bloodborne`; its `dosdevices/d:` -> `/mnt/ddrive`, and
-  its own launcher `settings.json` (AppData\Roaming\bbport-launcher, copied from Windows) has
-  `present_mode = Immediate`: Proton's XWayland window offers no Mailbox, and FIFO cost ~10 ms
-  per frame (55 instead of ~120 game FPS). G-Sync comes from Hyprland `vrr = 2`.
-  `PROTON_ENABLE_WAYLAND=1` gives Mailbox but presents too slowly for frame generation.
-- DLSS + DLSS frame gen work via `PROTON_ENABLE_NVAPI=1` (driver ships `nvidia/wine/nvngx*.dll`).
-- `scripts\mods.py` in the install is patched to mirror folders with hard links under Wine
-  (Wine's folder symlinks/junctions are emulated and not followed); original in
-  `bbport-windows-backup-1.9.2\mods.py.before-wine`. The launcher's **Update** overwrites it
-  and the cheat.
-- Diagnostics: `BB_FRAME_STATS=1 BB_FPS_LOG=1` in the environment -> `user\last_run.log`.
-- A native Linux build of the same branch (cheat hook ported, builds with fixes) is in
-  `~/code/bloodborne_pc` -- no DLSS there (the port's DLSS bridge is Windows-only).
-
-## AI tools
-
-`claude` and `codex` live in `~/.local/bin`, installed by
-`scripts/install-ai-tools.sh` — **not** part of the Nix rebuild. `claude`
-self-updates; no need to rerun the script after reboots/updates.
-
-## Debugging the live desktop session
-
-This session's Bash tool can reach the real Hyprland session:
-```bash
-export XDG_RUNTIME_DIR=/run/user/1000
-export WAYLAND_DISPLAY=wayland-1   # confirm via: ls /run/user/1000 | grep wayland
-grim /path/in/scratchpad/screenshot.png   # then Read it; crop with imagemagick
-```
-- Wayle logs: `~/.local/state/wayle/wayle-shell.<date>.log` (the date can lag
-  a day behind local time).
-- Restart the bar with `wayle panel restart` — not by killing the process and
-  launching another instance.
-- Boot history for crash forensics: `journalctl --list-boots`, then
-  `journalctl -b -1`.
-- `sudo`, `gh auth login`, `add-secret.sh` pastes, anything needing an
-  interactive password/browser prompt **cannot** run from this tool — hand
-  back exact commands (the user can run them with the `!` prefix).
-
-## v2rayN (proxy client) — do not touch without explicit permission
-
-Same rule as iVPN: **never stop, restart, toggle Tun/system proxy, switch
-servers or edit v2rayN's config/DB on your own initiative** -- ask first.
-Reading its logs/config and the sing-box status API (`127.0.0.1:10814`,
-`/connections`) is fine.
-
-`v2raynScaled` in `programs.nix` (Avalonia app; wrapped with
-`AVALONIA_GLOBAL_SCALE_FACTOR=2` or it renders at 1x). It only looks for
-cores in `~/.local/share/v2rayN/bin/<core>/`, so `link.sh` symlinks the
-Nix `xray` and `sing-box` there, plus xray's `geoip.dat`/`geosite.dat`
-(v2rayN points xray's asset dir at `bin/`). Don't use v2rayN's in-app core
-update -- it would replace the links with downloaded binaries.
-
-Runs in **Tun mode** (sing-box TUN as root, VLESS via xray). Its ip rules
-(prio 9000+) sit above iVPN's bypass fwmark rule (32765), so while it's on,
-the iVPN bypass list has no effect -- v2rayN has its own copy, kept by hand:
-- Routing lives in `~/.local/share/v2rayN/guiConfigs/guiNDB.db` (sqlite,
-  `RoutingItem.RuleSet` JSON). Edits there apply on the user's Reload;
-  `guiNConfig.json` (DNS etc.) is rewritten by the running app -- change
-  those settings in the UI. Back up the DB before editing.
-- Active preset "RU-Bypass Russia (Whitelist)" (was the stock China one):
-  direct for processes `chrome steam steamwebhelper max max-service
-  qbittorrent`,
-  `geosite:yandex`, private nets, Yandex DNS, `geosite:category-ru`,
-  `geoip:ru`; Google + everything else via proxy; UDP 443 blocked. Direct/
-  bootstrap DNS 77.88.8.8. Process rules match the exe basename per socket
-  (no child inheritance), so Electron apps (yandex-music) need domain rules.
-- `nixos/overlays/v2rayn-skip-process-rules-in-xray.patch`: v2rayN copied
-  Process rules into xray's config too; behind the sing-box TUN xray can't
-  see the (root) sockets and logged "no process found" per connection. The
-  patch drops those rules from xray only in that setup. Upstream-worthy.
-- Verify with the sing-box API: `curl 127.0.0.1:10814/connections`
-  (process, outbound, matched rule per connection).
-
-## Flatpak apps
-
-`services.flatpak.enable` only enables the service; apps live outside Nix.
-Discord is Flatpak on purpose (nixpkgs' `patchelf`'d build caused
-screen-share bugs). `install.sh` now installs/updates Discord system-wide
-and runs `flatpak update`; anything else is manual
-(`flatpak install --user flathub <app-id>`, Flathub exists as both a system
-and a user remote).
-
-**MAX messenger** is the unofficial Flathub wrapper `ru.max.MAX` (user
-install; not in nixpkgs, the official `.deb`/apt repo doesn't apply). max.ru
-doesn't answer through the iVPN exit, so `max` is in the bypass list, and its
-install/update download needs `flatpak` added to that list *temporarily*
-(children inherit the bypass -- leaving it would put every Flatpak app,
-Discord included, around the VPN). Its bundled Qt is X11-only, so with
-`force_zero_scaling` it rendered at 1x; fixed by a per-app
-`flatpak override --user --env=QT_SCALE_FACTOR=2 ru.max.MAX`.
+The Windows install on D: runs via Proton-GE (`~/.local/bin/bloodborne`);
+saves are shared with Windows. Notes in
+`/mnt/ddrive/Games/bb_cheat/CLAUDE.md`.
+- Its launcher settings in the Proton prefix need `present_mode = Immediate`
+  (FIFO halves FPS). DLSS works with `PROTON_ENABLE_NVAPI=1`.
+- `scripts\mods.py` is patched for Wine (hard links instead of symlinks); the
+  launcher's Update overwrites it and the cheat.
+- Native Linux build: `~/code/bloodborne_pc` (no DLSS).
 
 ## Brave
 
-Profile was migrated from Windows (2026-10-27) by copying the profile folder
-off `/mnt/cdrive`; passwords came via CSV export (Windows-encrypted, can't be
-read from Linux). Lessons: Brave flags copied extensions "corrupted"
-(prefs are signed per machine), and **Repair = uninstall + reinstall, which
-wipes the extension's data** -- restore `Local Extension Settings/<id>` (and
-`Sync Extension Settings`, `IndexedDB/chrome-extension_<id>_*`) afterwards
-with Brave fully quit. Brave keeps running with no windows while a PWA
-(WhatsApp) is open -- check `pgrep -x brave`, not `pgrep -f`.
-Brave Sync (2026-10-27): the copied profile carried Windows' sync device ID
-(`sync.transport_data_per_account` in `Preferences`, kept per sync chain, so
-"Leave Sync Chain" + rejoin reuses it) -- both PCs looked like one device.
-Fixed by removing it with Brave closed. **Don't delete `Default/Sync Data/`**:
-besides sync state it holds the installed-PWA registry (deleting it
-unregistered WhatsApp; reinstalling from web.whatsapp.com kept the login).
-Windows Brave still needs to rejoin the chain from its side.
-Windows fonts (Tahoma, Verdana, Georgia, Arial, Times, Consolas, Segoe UI,
-Calibri, ...) were copied from `/mnt/cdrive/Windows/Fonts` into
-`~/.local/share/fonts/windows` (+ `fc-cache -f`) -- outside git; redo after a
-reinstall. nixpkgs' `corefonts`/`vista-fonts` lack Tahoma, which sites like
-rpgcodex.net (and the RPGCodex Mod userscript) ask for first; without it
-Brave falls back to Inter.
-Tab switching by scroll: brave://flags `brave-change-active-tab-on-scroll-event`
-is **Disabled** (on Linux it's all-or-nothing -- no Ctrl-only mode); Ctrl+scroll
-over the tab bar is re-created by Hyprland binds in `user.lua` that send
-Ctrl+PageDown/PageUp (`brave_tabbar_height`, non-consuming).
-Apps Brave opens (downloads -> xdg-open) inherit the nixpkgs wrapper's
-`LD_LIBRARY_PATH` (Brave's own libwayland/glvnd/gbm/qtbase...). imv froze with
-it (stopped reading Wayland events -> Hyprland "Application Not Responding").
-The image viewer (nomacs, see below) is wrapped with `--unset LD_LIBRARY_PATH`.
-If another app misbehaves only when opened from Brave, suspect the same.
-Userscripts (Tampermonkey) are kept in `config/userscripts/` -- e.g.
-`eda-yandex-light.user.js` forces eda.yandex.ru to its light theme.
-
-## Wallpaper
-
-hyprpaper shows `~/Pictures/wallpaper.png` -> `wallpapers/wallpaper.png`
-(linked by `link.sh`), committed via **Git LFS** (`.gitattributes`: `*.png`),
-despite the README calling it gitignored. Currently the user's Dark Souls
-image (from `~/Downloads/wallpapers/dark_souls.jpg`, converted to PNG at
-2160px height). Apply a new one: `pkill -x hyprpaper; hyprpaper &`
-(or `hyprctl hyprpaper` IPC). Check: `hyprctl hyprpaper listactive`.
+- Copied extensions show "corrupted"; **Repair wipes the extension's data** --
+  back up `Local Extension Settings/<id>` first, restore with Brave closed.
+- **Don't delete `Default/Sync Data/`** -- it also holds installed PWAs.
+- Brave keeps running with no windows while a PWA is open: `pgrep -x brave`.
+- Apps Brave opens inherit its wrapper's `LD_LIBRARY_PATH` (its own Qt/Wayland
+  libs). If an app misbehaves only when opened from Brave, that's why (fix:
+  wrap the app with `--unset LD_LIBRARY_PATH`, like `nomacsTuned`).
+- Windows fonts (incl. Tahoma) were copied into `~/.local/share/fonts/windows`
+  -- outside git, redo after a reinstall.
+- Ctrl+scroll over the tab bar switching tabs = Hyprland binds in `user.lua`.
+- Userscripts are kept in `config/userscripts/`.
 
 ## Image viewer (nomacs)
 
-**nomacs** replaced imv (2026-10-28; user wanted IrfanView-like). Gwenview
-was tried and dropped (fade on switch, ~0.5s delay per image).
-`nomacsTuned` in `programs.nix` + `xdg.mime.defaultApplications` (all image
-types -> `org.nomacs.ImageLounge.desktop`). User settings live in
-`~/.config/nomacs/Image Lounge.conf` (rewritten by the app -- edit only with
-nomacs closed; check with `ps -eo comm | grep nomacs`, `pgrep -f` matches your
-own shell). `config/nomacs/default.ini` is installed next to the binary and
-seeds that file on a fresh install only. Non-obvious defaults it fixes:
-`horZoomSkips` (on = only *horizontal* wheel switches images),
-`switchModifier` (Linux default swaps Ctrl/Alt for wheel), `keepZoom=2`
-(fit big images, 100% small). Ctrl+wheel steps through `[zooming]` levels.
+Default for images (`nomacsTuned` + `xdg.mime.defaultApplications` in
+`programs.nix`). nomacs rewrites `~/.config/nomacs/Image Lounge.conf` -- edit
+it only while nomacs is closed. `config/nomacs/default.ini` seeds it on a
+fresh install only.
 
-## `~/Desktop/message to vitalii.txt`
+## Flatpak
 
-Brief running log of upstream-worthy findings for Vitalii (install.sh,
-wayle `local.toml`, `overFullscreen`, the two network-module bugs). Keep it
-current; don't pad it with machine-specific or personal-preference stuff.
+Apps are outside Nix (`flatpak install --user flathub <id>`). Discord is
+Flatpak on purpose (nixpkgs build had screen-share bugs). MAX messenger is
+`ru.max.MAX`: it's in the iVPN bypass list; installing/updating it needs
+`flatpak` added to that list *temporarily* (leaving it would bypass every
+Flatpak app).
 
-## Claude Code statusline
+## Working from Claude's shell
 
-Not configured on this machine yet (the old laptop had one: reset
-countdown, quota % used, fresh session tokens). Use the `statusline-setup`
-agent if the user wants it back.
+- Reach the desktop: `export XDG_RUNTIME_DIR=/run/user/1000
+  WAYLAND_DISPLAY=wayland-1`, then e.g. `grim <file>` to screenshot.
+- `sudo`, `gh auth login` or anything needing a password/browser prompt can't
+  run here -- hand the user the exact command (they can use the `!` prefix).
+- Crash forensics: `journalctl --list-boots`, `journalctl -b -1`,
+  `coredumpctl list`.
+- `claude`/`codex` are in `~/.local/bin` (`scripts/install-ai-tools.sh`), not
+  in the Nix rebuild.
+- `~/Desktop/message to vitalii.txt`: short list of upstream-worthy findings
+  for Vitalii. Keep it current, no machine-specific stuff.

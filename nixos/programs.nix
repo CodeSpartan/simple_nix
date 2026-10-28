@@ -188,14 +188,18 @@ in
     browsing = false;                  # Don't advertise printers on the network
   };
 
-  # Open images with nomacs (system-wide /etc/xdg/mimeapps.list; a choice made
+  # Default apps: images -> nomacs, torrents/magnet links -> qBittorrent
+  # (system-wide /etc/xdg/mimeapps.list; a choice made
   # in a file manager's "Open With" still wins for that user).
   xdg.mime.defaultApplications = lib.genAttrs [
     "image/avif" "image/bmp" "image/gif" "image/heic" "image/heif" "image/jpeg"
     "image/jxl" "image/png" "image/tiff" "image/webp" "image/x-eps" "image/x-ico"
     "image/x-portable-bitmap" "image/x-portable-graymap" "image/x-portable-pixmap"
     "image/x-xbitmap" "image/x-xpixmap"
-  ] (_: "org.nomacs.ImageLounge.desktop");
+  ] (_: "org.nomacs.ImageLounge.desktop") // {
+    "application/x-bittorrent" = "org.qbittorrent.qBittorrent.desktop";
+    "x-scheme-handler/magnet" = "org.qbittorrent.qBittorrent.desktop";
+  };
 
   # --- System Packages ---
   environment.systemPackages = with pkgs; [
