@@ -101,6 +101,10 @@ let
   chromeAutoscroll = pkgs.google-chrome.override {
     commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
   };
+  # Discord is Electron, so the same flag works (Flatpak Discord: home/apps.nix).
+  discordPtbAutoscroll = pkgs.discord-ptb.override {
+    commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
+  };
 
   # v2rayN is an Avalonia (.NET) app on XWayland; same force_zero_scaling
   # story as VLC, so it drew at 1x. Avalonia's own scale knob fixes it.
@@ -204,7 +208,7 @@ in
   # --- System Packages ---
   environment.systemPackages = with pkgs; [
     chromeAutoscroll           # Chrome browser, middle-click autoscroll on (bypasses iVPN: see config/ivpn-bypass/apps)
-    discord-ptb                # Second Discord instance (own login), alongside the Flatpak Discord. Flathub has no PTB.
+    discordPtbAutoscroll       # Second Discord instance (PTB), middle-click autoscroll on (own login), alongside the Flatpak Discord. Flathub has no PTB.
 
     # Core utilities
     git-filter-repo gh glab wget curl unzip p7zip file fastfetch optipng
