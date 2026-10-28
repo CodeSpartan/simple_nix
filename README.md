@@ -204,6 +204,11 @@ Design choices:
 
 Applied via:
 - **kitty** -- 16 terminal colors + cursor/selection in `kitty.conf`
+- **Midnight Commander** -- custom truecolor `ayu-dark` skin in
+  `config/mc/skins/ayu-dark.ini`, with a subtle dark selection and orange text,
+  blue directories, green executables, cyan links, and thin borders.
+  Home-manager installs it into `~/.local/share/mc/skins/` and selects it in `mc/ini`.
+  Preview without rebuilding: `mc -S "$PWD/config/mc/skins/ayu-dark.ini"`
 - **VS Code** -- local theme extension in `config/vscode/`, carrying both the
   desktop palette and the 10-group syntax system. The terminal's 16 ANSI slots
   are copied from `kitty.conf` so an integrated terminal matches a kitty window.

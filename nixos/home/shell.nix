@@ -31,6 +31,13 @@
   # Zsh with oh-my-zsh and powerlevel10k prompt
   programs.zsh = {
     enable = true;
+    envExtra = ''
+      # Agent commands often expect unquoted scalars to split like sh/bash.
+      # Keep normal terminals and unrelated zsh scripts on native zsh defaults.
+      if [[ ! -o interactive && ( -n ''${CLAUDECODE-} || -n ''${CODEX_THREAD_ID-} || -n ''${CODEX_SESSION_ID-} ) ]]; then
+        setopt SH_WORD_SPLIT
+      fi
+    '';
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     enableCompletion = true;
