@@ -1,35 +1,54 @@
 # Day notes calendar (replaces Rainlendar from Windows), all local.
 #
-# - GNOME Calendar is the editor: click a day in the month view to add a note.
-#   It stores events through Evolution Data Server (EDS) in plain .ics files,
-#   ~/.local/share/evolution/calendar/system/calendar.ics for "Personal".
-# - `calendar-notes` (pkgs/calendar-notes) reads those files for the Wayle bar
-#   module next to the clock and for the morning notification below.
-# - Rainlendar data was copied once with
+# - calcurse is the calendar: a terminal app, opened from the bar in a small
+#   `foot` window (~80 MB while open, nothing running when closed). Data:
+#   ~/.local/share/calcurse (`apts` + `notes/`), saved when it quits.
+# - `calendar-notes` (pkgs/calendar-notes) asks calcurse for today's notes:
+#   the Wayle module next to the clock and the morning notification below.
+# - Rainlendar data was loaded once with
 #   `calendar-notes import-rainlendar <Default.ics>`.
+# (GNOME Calendar was tried first: 1.6 s to open, ~450 MB, plus ~160 MB of
+# Evolution Data Server always running.)
 { pkgs, ... }:
 
 let
   calendarNotes = pkgs.writers.writePython3Bin "calendar-notes" {
-    libraries = with pkgs.python3Packages; [ icalendar recurring-ical-events ];
+    libraries = [ pkgs.python3Packages.icalendar ];  # import-rainlendar only
     flakeIgnore = [ "E501" ];
   } (builtins.readFile ./pkgs/calendar-notes/calendar-notes.py);
 
-  # What the bar's clock and calendar icon run on click. GNOME Calendar
-  # aborts if it can't resolve the timezone, which happens when it inherits
-  # an environment without TZDIR (e.g. a bar restarted from a bare shell).
+  # Starting settings, copied in only if calcurse has no config yet (its own
+  # settings menu rewrites the file). periodicsave: save every minute, so the
+  # bar sees new notes while calcurse is still open.
+  calcurseConf = pkgs.writeText "calcurse.conf" ''
+    general.confirmquit=no
+    general.firstdayofweek=monday
+    general.periodicsave=1
+    general.progressbar=no
+    format.inputdate=4
+    appearance.calendarview=monthly
+  '';
+
+  # What the bar's clock and calendar icon run on click: focus calcurse if
+  # it's already open (it refuses to run twice), else open it in foot.
+  # Window size/position: "calcurse" rule in config/hypr/user.lua.
   calendarOpen = pkgs.writeShellScriptBin "calendar-open" ''
-    export TZDIR=''${TZDIR:-/etc/zoneinfo}
-    # Always start on the month view (it reopens in the last-used view).
-    ${pkgs.dconf}/bin/dconf write /org/gnome/calendar/active-view "'month'"
-    exec ${pkgs.gnome-calendar}/bin/gnome-calendar "$@"
+    conf="''${XDG_CONFIG_HOME:-$HOME/.config}/calcurse/conf"
+    if [ ! -s "$conf" ]; then
+      mkdir -p "$(dirname "$conf")" && cp ${calcurseConf} "$conf" && chmod 644 "$conf"
+    fi
+    if ${pkgs.procps}/bin/pgrep -x calcurse >/dev/null; then
+      exec hyprctl dispatch 'hl.dsp.focus({ window = "class:^calcurse$" })'
+    fi
+    exec ${pkgs.foot}/bin/foot --app-id=calcurse \
+      -o 'main.font=JetBrainsMono Nerd Font Mono:size=12' \
+      -o colors.background=0B0E14 -o colors.foreground=B8B5AC \
+      ${pkgs.calcurse}/bin/calcurse
   '';
 in
 {
-  services.gnome.evolution-data-server.enable = true;
-
   environment.systemPackages = [
-    pkgs.gnome-calendar
+    pkgs.calcurse
     calendarNotes
     calendarOpen
   ];
@@ -42,7 +61,7 @@ in
     after = [ "graphical-session.target" ];
     partOf = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
-    path = [ pkgs.libnotify pkgs.systemd ];
+    path = [ pkgs.libnotify pkgs.systemd pkgs.calcurse ];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${calendarNotes}/bin/calendar-notes notify";

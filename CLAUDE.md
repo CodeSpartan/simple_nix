@@ -210,15 +210,14 @@ saves are shared with Windows. Notes in
 
 ## Calendar / day notes (replaces Rainlendar)
 
-`nixos/calendar.nix`. GNOME Calendar edits; data is EDS's plain file
-`~/.local/share/evolution/calendar/system/calendar.ics` ("Personal").
-`calendar-notes` (`nixos/pkgs/calendar-notes/`) feeds the Wayle module next
-to the clock and a once-a-day notification (user unit
-`calendar-notes-notify`, at login + 08:00; stamp in
-`~/.local/state/calendar-notes/`). EDS holds the file in memory -- stop
-`evolution-calendar-factory` (user unit) before editing it by hand; the
-`import-rainlendar` subcommand does that. Rainlendar's original data:
-`/mnt/cdrive/Users/Delfosse/.rainlendar2/Default.ics`.
+`nixos/calendar.nix`. calcurse in a `foot` window (`calendar-open`, from the
+bar's clock/icon); data `~/.local/share/calcurse`. `calendar-notes`
+(`nixos/pkgs/calendar-notes/`) queries `calcurse -Q` for the Wayle module and
+a once-a-day notification (user unit `calendar-notes-notify`, at login +
+08:00; stamp in `~/.local/state/calendar-notes/`). calcurse follows
+`XDG_DATA_HOME`/`XDG_CONFIG_HOME`, not `HOME` -- override those when testing.
+GNOME Calendar was tried and dropped as too heavy (user wants lightweight).
+Rainlendar's original data: `/mnt/cdrive/Users/Delfosse/.rainlendar2/Default.ics`.
 
 ## Image viewer (nomacs)
 

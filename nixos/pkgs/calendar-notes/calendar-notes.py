@@ -1,4 +1,4 @@
-"""Day notes from the local GNOME Calendar (Evolution Data Server) files.
+"""Day notes from calcurse, for the Wayle bar and a morning notification.
 
   calendar-notes wayle            JSON for the Wayle bar module (today's count,
                                   tooltip with today's and tomorrow's notes)
@@ -6,124 +6,84 @@
                                   at most once a day (--force: send anyway)
   calendar-notes today            today's notes as plain text
   calendar-notes import-rainlendar FILE
-                                  copy a Rainlendar Default.ics into the
-                                  "Personal" calendar (safe to re-run)
+                                  load a Rainlendar Default.ics into calcurse
+                                  (only into an empty calendar)
 
-Reads every local calendar: ~/.local/share/evolution/calendar/*/calendar.ics
-("system" is the built-in "Personal" one). Repeating events are expanded.
+calcurse keeps its data in ~/.local/share/calcurse: `apts` (one line per
+item) and `notes/<hash>` (an item's longer text).
 """
 
 import datetime as dt
-import json
 import os
 import re
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
-import icalendar
-import recurring_ical_events
-
 HOME = Path.home()
-CAL_DIR = HOME / ".local/share/evolution/calendar"
-PERSONAL = CAL_DIR / "system/calendar.ics"
+# Same lookup as calcurse itself (it follows XDG_DATA_HOME, not HOME).
+DATA = Path(os.environ.get("XDG_DATA_HOME") or HOME / ".local/share") / "calcurse"
 STATE = HOME / ".local/state/calendar-notes"
-CACHE = HOME / ".cache/calendar-notes"
-UPCOMING_DAYS = 1  # bar tooltip: today + tomorrow
 TITLE_MAX = 80
+SEP = "\x1f"  # between an item's text and its note hash in calcurse output
 
 
-def calendar_files():
-    return sorted(CAL_DIR.glob("*/calendar.ics"))
-
-
-def load_calendars():
-    cals = []
-    for f in calendar_files():
-        try:
-            cals.append(icalendar.Calendar.from_ical(f.read_bytes()))
-        except (OSError, ValueError) as e:
-            print(f"skipping {f}: {e}", file=sys.stderr)
-    return cals
-
-
-def as_date(value):
-    if isinstance(value, dt.datetime):
-        if value.tzinfo is not None:
-            value = value.astimezone()  # local time
-        return value.date()
-    return value
-
-
-def notes_between(cals, first, last):
-    """{date: [(sort_key, text)]} for first..last inclusive."""
-    days = {}
-    for cal in cals:
-        for ev in recurring_ical_events.of(cal).between(first, last + dt.timedelta(days=1)):
-            start = ev["DTSTART"].dt
-            title = str(ev.get("SUMMARY", "")).strip() or "(no title)"
-            if isinstance(start, dt.datetime):
-                local = start.astimezone() if start.tzinfo else start
-                key, text = local.strftime("%H:%M"), f"{local:%H:%M}  {title}"
-            else:
-                key, text = "", title
-            # A multi-day event shows on each of its days.
-            end = ev.get("DTEND")
-            end = as_date(end.dt) if end else as_date(start) + dt.timedelta(days=1)
-            day = max(as_date(start), first)
-            while day <= last and (day < end or day == as_date(start)):
-                days.setdefault(day, []).append((key, text, str(ev.get("DESCRIPTION", "")).strip()))
-                day += dt.timedelta(days=1)
-    for v in days.values():
-        v.sort()
-    return days
+def notes_for(first, days):
+    """{date: [(title, note_text)]} for `days` days starting at `first`."""
+    fmt_apt = f"%S %m{SEP}%n\\n"
+    fmt_event = f"%m{SEP}%n\\n"
+    out = subprocess.run(
+        ["calcurse", "--input-datefmt", "4", "--output-datefmt", "%F",
+         "-Q", "--from", first.isoformat(), "--days", str(days),
+         "--format-apt", fmt_apt, "--format-recur-apt", fmt_apt,
+         "--format-event", fmt_event, "--format-recur-event", fmt_event],
+        capture_output=True, text=True).stdout
+    result, day = {}, None
+    for line in out.splitlines():
+        if re.fullmatch(r"\d{4}-\d\d-\d\d:", line):
+            day = dt.date.fromisoformat(line[:-1])
+        elif day and SEP in line:
+            title, note = line.split(SEP, 1)
+            text = ""
+            if note and note != "(null)":
+                try:
+                    text = (DATA / "notes" / note).read_text().strip()
+                except OSError:
+                    pass
+            result.setdefault(day, []).append((title.strip(), text))
+    return result
 
 
 # --- wayle --------------------------------------------------------------------
 
 def cmd_wayle():
+    import json
     today = dt.date.today()
-    # Wayle polls often; only re-read the calendars when a file or the date changed.
-    # The script's own path is in the key so an update drops the old cache.
-    stamp = os.path.realpath(__file__) + "|" + today.isoformat() + "|" + "|".join(
-        f"{f}:{f.stat().st_mtime_ns}" for f in calendar_files())
-    cache_file = CACHE / "wayle.json"
-    try:
-        cached = json.loads(cache_file.read_text())
-        if cached.get("stamp") == stamp:
-            print(json.dumps(cached["out"], ensure_ascii=False))
-            return
-    except (OSError, ValueError, KeyError):
-        pass
-
-    days = notes_between(load_calendars(), today, today + dt.timedelta(days=UPCOMING_DAYS))
-    todays = days.get(today, [])
-    lines = [f"Today, {today:%a %d %b}"]
-    lines += [f"  • {t}" for _, t, _ in todays] or ["  nothing"]
     tomorrow = today + dt.timedelta(days=1)
-    lines += ["", f"Tomorrow, {tomorrow:%a %d %b}"]
-    lines += [f"  • {t}" for _, t, _ in days.get(tomorrow, [])] or ["  nothing"]
+    days = notes_for(today, 2)
+    lines = []
+    for label, d in (("Today", today), ("Tomorrow", tomorrow)):
+        if lines:
+            lines.append("")
+        lines.append(f"{label}, {d:%a %d %b}")
+        lines += [f"  • {t}" for t, _ in days.get(d, [])] or ["  nothing"]
     lines += ["", "Click: open calendar"]
-    out = {
-        "text": str(len(todays)) if todays else "",
-        "tooltip": "\n".join(lines),
-        "alt": "notes" if todays else "none",
-    }
-    CACHE.mkdir(parents=True, exist_ok=True)
-    cache_file.write_text(json.dumps({"stamp": stamp, "out": out}, ensure_ascii=False))
-    print(json.dumps(out, ensure_ascii=False))
+    n = len(days.get(today, []))
+    print(json.dumps({"text": str(n) if n else "", "tooltip": "\n".join(lines),
+                      "alt": "notes" if n else "none"}, ensure_ascii=False))
 
 
 # --- notify / today -----------------------------------------------------------
 
 def today_text(todays):
     parts = []
-    for _, title, desc in todays:
+    for title, note in todays:
         parts.append(f"• {title}")
         # Show the full note when it says more than the title.
-        if desc and desc != title:
-            body = desc if len(desc) <= 400 else desc[:400] + "…"
+        if note and note != title:
+            body = note if len(note) <= 400 else note[:400] + "…"
             parts.append("   " + body.replace("\n", "\n   "))
     return "\n".join(parts)
 
@@ -140,7 +100,7 @@ def cmd_notify(force):
     stamp_file = STATE / "last-notified"
     if not force and stamp_file.exists() and stamp_file.read_text().strip() == today.isoformat():
         return
-    todays = notes_between(load_calendars(), today, today).get(today, [])
+    todays = notes_for(today, 1).get(today, [])
     if todays:
         # At login the bar (which shows notifications) may still be starting.
         for _ in range(60):
@@ -162,7 +122,7 @@ def cmd_notify(force):
 
 def cmd_today():
     today = dt.date.today()
-    todays = notes_between(load_calendars(), today, today).get(today, [])
+    todays = notes_for(today, 1).get(today, [])
     print(today_text(todays) if todays else "No notes today.")
 
 
@@ -178,7 +138,7 @@ def rainlendar_title(ev):
         line = re.sub(r"^[\s\-•*=_]+", "", line).strip()
         if line.strip("=_ "):
             title = line if len(line) <= TITLE_MAX else line[:TITLE_MAX - 1] + "…"
-            # A one-line note needs no separate description.
+            # A one-line note needs no separate note text.
             return title, (title == desc)
     # Colour-only day marker: name it after its category ("[Green]" -> "Green").
     cats = ev.get("CATEGORIES")
@@ -187,44 +147,25 @@ def rainlendar_title(ev):
 
 
 def cmd_import(src):
-    source = icalendar.Calendar.from_ical(Path(src).read_bytes())
-
-    # Evolution Data Server keeps the calendar in memory and would overwrite
-    # our change; stop it, edit the file, and let it start again on demand.
-    subprocess.run(["systemctl", "--user", "stop", "evolution-calendar-factory.service"],
-                   stderr=subprocess.DEVNULL)
-
-    if PERSONAL.exists():
-        target = icalendar.Calendar.from_ical(PERSONAL.read_bytes())
-    else:
-        target = icalendar.Calendar()
-        target.add("PRODID", "-//simple_nix//calendar-notes//EN")
-        target.add("VERSION", "2.0")
-    have = {str(c.get("UID")) for c in target.walk("VEVENT")}
-
-    added = 0
-    for ev in source.walk("VEVENT"):
-        uid = str(ev.get("UID"))
-        if uid in have:
-            continue
+    import icalendar
+    apts = DATA / "apts"
+    if apts.exists() and apts.stat().st_size > 0:
+        sys.exit(f"{apts} is not empty; calcurse doesn't skip duplicates, so not importing")
+    cal = icalendar.Calendar.from_ical(Path(src).read_bytes())
+    for ev in cal.walk("VEVENT"):
         title, drop_desc = rainlendar_title(ev)
         if "SUMMARY" in ev:
             del ev["SUMMARY"]
         ev.add("SUMMARY", title)
         if drop_desc and "DESCRIPTION" in ev:
             del ev["DESCRIPTION"]
-        target.add_component(ev)
-        added += 1
-
-    PERSONAL.parent.mkdir(parents=True, exist_ok=True)
-    if PERSONAL.exists():
-        backup = PERSONAL.with_suffix(f".ics.bak-{int(time.time())}")
-        backup.write_bytes(PERSONAL.read_bytes())
-        print(f"backup: {backup}")
-    tmp = PERSONAL.with_suffix(".ics.tmp")
-    tmp.write_bytes(target.to_ical())
-    os.replace(tmp, PERSONAL)
-    print(f"imported {added} events into {PERSONAL} ({len(have)} were already there)")
+    DATA.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(suffix=".ics", delete=False) as f:
+        f.write(cal.to_ical())
+    try:
+        subprocess.run(["calcurse", "-i", f.name], check=True)
+    finally:
+        os.unlink(f.name)
 
 
 def main():
