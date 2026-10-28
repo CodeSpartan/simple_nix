@@ -229,7 +229,8 @@ fresh install only.
 ## Flatpak
 
 Apps are outside Nix (`flatpak install --user flathub <id>`). Discord is
-Flatpak on purpose (nixpkgs build had screen-share bugs). MAX messenger is
+Flatpak on purpose (nixpkgs build had screen-share bugs). The second
+Discord (separate account) is `discord-ptb` from nixpkgs -- Flathub has no PTB. MAX messenger is
 `ru.max.MAX`: it's in the iVPN bypass list; installing/updating it needs
 `flatpak` added to that list *temporarily* (leaving it would bypass every
 Flatpak app).

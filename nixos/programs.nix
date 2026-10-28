@@ -204,6 +204,7 @@ in
   # --- System Packages ---
   environment.systemPackages = with pkgs; [
     chromeAutoscroll           # Chrome browser, middle-click autoscroll on (bypasses iVPN: see config/ivpn-bypass/apps)
+    discord-ptb                # Second Discord instance (own login), alongside the Flatpak Discord. Flathub has no PTB.
 
     # Core utilities
     git-filter-repo gh glab wget curl unzip p7zip file fastfetch optipng
