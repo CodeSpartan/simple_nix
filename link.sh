@@ -60,7 +60,7 @@ ln -sfn "$REPO/config/wayle/styles" "$HOME/.config/wayle/styles"
 ln -sf "$REPO/config/wayle/weather.sh" "$HOME/.config/wayle/weather.sh"
 
 mkdir -p "$HOME/.config/hypr"
-for f in user.lua hypridle.conf hyprlock.conf hyprpaper.conf cheatsheet.sh toggle-layout.sh nightlight.sh lg-ultragear-srgb-d65.icm; do
+for f in user.lua hypridle.conf hyprlock.conf hyprpaper.conf cheatsheet.sh toggle-layout.sh nightlight.sh vlc-idle-inhibit.sh lg-ultragear-srgb-d65.icm; do
   ln -sf "$REPO/config/hypr/$f" "$HOME/.config/hypr/$f"
 done
 

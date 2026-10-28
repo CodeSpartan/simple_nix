@@ -98,6 +98,7 @@ hl.on("hyprland.start", function()
     -- without Hyprland's ICC conversion -- see the monitor rule above.
     hl.exec_cmd("vcgt-loader " .. configDir .. "/lg-ultragear-srgb-d65.icm 'LG ULTRAGEAR'")
     hl.exec_cmd("hypridle")   -- monitor off after 15 min idle (no lock), see hypridle.conf
+    hl.exec_cmd(configDir .. "/vlc-idle-inhibit.sh")  -- keep monitor on while VLC plays (windowed too)
     hl.exec_cmd("nm-applet --indicator")
     hl.exec_cmd("blueman-applet")
 
