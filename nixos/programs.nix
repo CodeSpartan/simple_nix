@@ -108,6 +108,7 @@ in
   programs.direnv.enable = true;        # Auto-load .envrc per-directory environments
   programs.nix-ld.enable = true;        # Dynamic linker for non-Nix binaries (Mason, uv, pip wheels)
   programs.nix-ld.libraries = desktopRuntimeLibs ++ unrealRuntimeLibs;
+  programs.firefox.enable = true;       # Firefox browser
 
   # --- Gaming ---
   programs.gamemode.enable = true;      # CPU governor + scheduler optimization while gaming
