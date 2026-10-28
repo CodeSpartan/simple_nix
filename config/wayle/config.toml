@@ -48,7 +48,7 @@ button-label-size = 1.15
 [[bar.layout]]
 monitor = "*"
 left = ["dashboard", "hyprland-workspaces"]
-center = ["clock"]
+center = ["clock", "custom-calendar"]
 right = [
     "custom-weather",
     "cpu",
@@ -109,9 +109,24 @@ empty-color = "blue"
 container-bg-color = "transparent"
 
 [modules.clock]
+icon-show = false   # the calendar-notes module right after it carries the icon
 format = "%a %b %d  %H:%M:%S"
 icon-color = "#D2A6FF"
 label-color = "#D2A6FF"
+
+# Day notes next to the clock (nixos/calendar.nix). Icon + today's count;
+# hover lists today and the next 7 days; click opens GNOME Calendar to add or
+# edit notes. Re-reads the calendar only when it changed, so polling is cheap.
+[[modules.custom]]
+id = "calendar"
+command = "calendar-notes wayle"
+interval-ms = 30000
+format = "{{ text }}"
+tooltip-format = "{{ tooltip }}"
+icon-name = "tb-calendar-time-symbolic"   # bundled with wayle; its icon CDN is unreachable from here
+icon-color = "#D2A6FF"
+label-color = "#D2A6FF"
+left-click = "gnome-calendar"
 
 # Weather from MET Norway via weather.sh (no API key). Wayle's built-in
 # weather module is unused: its keyless provider, open-meteo, is unreachable

@@ -10,6 +10,7 @@
     ./home
     ./update-check.nix
     ./ivpn-bypass.nix
+    ./calendar.nix
   ];
 
   # --- Networking ---

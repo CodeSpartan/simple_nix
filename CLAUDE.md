@@ -204,6 +204,18 @@ saves are shared with Windows. Notes in
 - Ctrl+scroll over the tab bar switching tabs = Hyprland binds in `user.lua`.
 - Userscripts are kept in `config/userscripts/`.
 
+## Calendar / day notes (replaces Rainlendar)
+
+`nixos/calendar.nix`. GNOME Calendar edits; data is EDS's plain file
+`~/.local/share/evolution/calendar/system/calendar.ics` ("Personal").
+`calendar-notes` (`nixos/pkgs/calendar-notes/`) feeds the Wayle module next
+to the clock and a once-a-day notification (user unit
+`calendar-notes-notify`, at login + 08:00; stamp in
+`~/.local/state/calendar-notes/`). EDS holds the file in memory -- stop
+`evolution-calendar-factory` (user unit) before editing it by hand; the
+`import-rainlendar` subcommand does that. Rainlendar's original data:
+`/mnt/cdrive/Users/Delfosse/.rainlendar2/Default.ics`.
+
 ## Image viewer (nomacs)
 
 Default for images (`nomacsTuned` + `xdg.mime.defaultApplications` in
