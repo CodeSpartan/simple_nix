@@ -86,7 +86,7 @@ def cmd_wayle():
     today = dt.date.today()
     # Wayle polls often; only re-read the calendars when a file or the date changed.
     # The script's own path is in the key so an update drops the old cache.
-    stamp = __file__ + "|" + today.isoformat() + "|" + "|".join(
+    stamp = os.path.realpath(__file__) + "|" + today.isoformat() + "|" + "|".join(
         f"{f}:{f.stat().st_mtime_ns}" for f in calendar_files())
     cache_file = CACHE / "wayle.json"
     try:
