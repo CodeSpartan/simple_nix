@@ -509,6 +509,14 @@ hl.window_rule({
     suppress_event = "fullscreen maximize",
 })
 
+-- Any fullscreen window (movie, game) keeps hypridle from turning the
+-- monitor off; the 15-min timer runs again once it leaves fullscreen.
+hl.window_rule({
+    name         = "idle-inhibit-fullscreen",
+    match        = { class = ".*" },
+    idle_inhibit = "fullscreen",
+})
+
 -- Telegram's photo/video viewer: open fullscreen. It asks for fullscreen
 -- itself, but suppress-maximize-events above ignores that request.
 hl.window_rule({
