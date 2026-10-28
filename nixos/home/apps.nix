@@ -9,20 +9,6 @@
     mimeType = [ "text/markdown" "text/x-markdown" ];
   };
 
-  # Override imv desktop entry -- upstream ships NoDisplay=true which hides it
-  # from Dolphin's "Open With" dialog, making it impossible to select
-  xdg.desktopEntries.imv = {
-    name = "imv";
-    exec = "imv %F";
-    terminal = false;
-    icon = "multimedia-photo-viewer";
-    categories = [ "Graphics" "2DGraphics" "Viewer" ];
-    mimeType = [
-      "image/png" "image/jpeg" "image/gif" "image/bmp" "image/webp"
-      "image/svg+xml" "image/tiff" "image/avif" "image/heif" "image/jxl"
-    ];
-  };
-
   # --- Dotfile deployments (edit in repo, then nixos-rebuild switch) ---
   xdg.configFile."mc/ini".source = ../../config/mc/ini;
   xdg.configFile."mc/bat-viewer.sh" = { source = ../../config/mc/bat-viewer.sh; executable = true; };

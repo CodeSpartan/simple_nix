@@ -80,6 +80,21 @@ let
   # Middle-click in text fields still pastes, on links still opens a tab.
   # Loads the monitor's ICC calibration curve (see config/hypr/user.lua).
   vcgtLoader = pkgs.callPackage ./pkgs/vcgt-loader { };
+
+  # Image viewer (default for images, see xdg.mime below).
+  # - Unsets LD_LIBRARY_PATH: apps Brave opens (downloads) inherit Brave's
+  #   wrapper's one, with Brave's own Qt/Wayland libs -- imv froze with it.
+  # - default.ini next to the binary = nomacs' first-run settings (wheel
+  #   switches images, Ctrl+wheel zooms, dark theme, ...).
+  nomacsTuned = pkgs.nomacs.overrideAttrs (old: {
+    nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.makeWrapper ];
+    postInstall = (old.postInstall or "") + ''
+      install -Dm644 ${../config/nomacs/default.ini} $out/bin/default.ini
+    '';
+    postFixup = (old.postFixup or "") + ''
+      wrapProgram $out/bin/nomacs --unset LD_LIBRARY_PATH
+    '';
+  });
   braveAutoscroll = pkgs.brave.override {
     commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
   };
@@ -172,6 +187,15 @@ in
     enable = true;
     browsing = false;                  # Don't advertise printers on the network
   };
+
+  # Open images with nomacs (system-wide /etc/xdg/mimeapps.list; a choice made
+  # in a file manager's "Open With" still wins for that user).
+  xdg.mime.defaultApplications = lib.genAttrs [
+    "image/avif" "image/bmp" "image/gif" "image/heic" "image/heif" "image/jpeg"
+    "image/jxl" "image/png" "image/tiff" "image/webp" "image/x-eps" "image/x-ico"
+    "image/x-portable-bitmap" "image/x-portable-graymap" "image/x-portable-pixmap"
+    "image/x-xbitmap" "image/x-xpixmap"
+  ] (_: "org.nomacs.ImageLounge.desktop");
 
   # --- System Packages ---
   environment.systemPackages = with pkgs; [
@@ -385,7 +409,7 @@ in
     # Theming (GTK theme + icons managed by home-manager in theming.nix)
 
     # Desktop utilities
-    imv                        # Fast Wayland-native image viewer
+    nomacsTuned                # Image viewer (IrfanView-like), default for images
     file-roller                # Archive manager GUI (zip/tar/7z)
     hyprsunset                 # Night light (toggled by clicking the bar weather; config/hypr/nightlight.sh)
     vcgtLoader                 # Monitor calibration curve without Hyprland's ICC (nixos/pkgs/vcgt-loader)

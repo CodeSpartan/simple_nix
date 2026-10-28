@@ -445,8 +445,27 @@ Tab switching by scroll: brave://flags `brave-change-active-tab-on-scroll-event`
 is **Disabled** (on Linux it's all-or-nothing -- no Ctrl-only mode); Ctrl+scroll
 over the tab bar is re-created by Hyprland binds in `user.lua` that send
 Ctrl+PageDown/PageUp (`brave_tabbar_height`, non-consuming).
+Apps Brave opens (downloads -> xdg-open) inherit the nixpkgs wrapper's
+`LD_LIBRARY_PATH` (Brave's own libwayland/glvnd/gbm/qtbase...). imv froze with
+it (stopped reading Wayland events -> Hyprland "Application Not Responding").
+The image viewer (nomacs, see below) is wrapped with `--unset LD_LIBRARY_PATH`.
+If another app misbehaves only when opened from Brave, suspect the same.
 Userscripts (Tampermonkey) are kept in `config/userscripts/` -- e.g.
 `eda-yandex-light.user.js` forces eda.yandex.ru to its light theme.
+
+## Image viewer (nomacs)
+
+**nomacs** replaced imv (2026-10-28; user wanted IrfanView-like). Gwenview
+was tried and dropped (fade on switch, ~0.5s delay per image).
+`nomacsTuned` in `programs.nix` + `xdg.mime.defaultApplications` (all image
+types -> `org.nomacs.ImageLounge.desktop`). User settings live in
+`~/.config/nomacs/Image Lounge.conf` (rewritten by the app -- edit only with
+nomacs closed; check with `ps -eo comm | grep nomacs`, `pgrep -f` matches your
+own shell). `config/nomacs/default.ini` is installed next to the binary and
+seeds that file on a fresh install only. Non-obvious defaults it fixes:
+`horZoomSkips` (on = only *horizontal* wheel switches images),
+`switchModifier` (Linux default swaps Ctrl/Alt for wheel), `keepZoom=2`
+(fit big images, 100% small). Ctrl+wheel steps through `[zooming]` levels.
 
 ## `~/Desktop/message to vitalii.txt`
 
