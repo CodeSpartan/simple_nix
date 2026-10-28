@@ -310,6 +310,17 @@ works fine. Claude's WebFetch/WebSearch don't go through it.
 - Project MMOKit: Linux copy `~/code/MMOKit` (origin = GitLab
   `Glabrezu/mmokitv2`, remote `windows` = the D: copy, which stays on
   the Windows source-built engine). EngineAssociation "5.8".
+- MMOKit's C# PersistenceServer stays on D: (`/mnt/ddrive/MMO_Kit_Creation/
+  PersistenceServer`, GitHub `CodeSpartan/MMOKitPersistenceServer`), built
+  on Linux with `dotnet-sdk_8`. Its `Directory.Build.props` sends Linux
+  builds to `bin-linux/`/`obj-linux/` so Windows' `bin/`/`obj/` stay
+  untouched. It reads `settings.ini` and `mmokit.db` from the folder it's
+  started in, so the launcher (`~/.local/bin/mmokit-persistence-server`, menu
+  entry "MMOKit Persistence Server", both outside git) symlinks the Linux
+  `mmokit.db` to Windows' `bin/Debug-Sqlite/net8.0/mmokit.db` -- one DB for
+  both OSes. Repo has `core.autocrlf=true` locally; without it Linux git
+  showed CRLF-only "changes". Stop it by name: `pkill -f` matches your shell.
+
 ## Bloodborne (bbport)
 
 The Windows install `D:\Games\bbport-windows` (Supermedo's port + the user's refill cheat;

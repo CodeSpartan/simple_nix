@@ -272,6 +272,9 @@ in
     # Node/TypeScript
     nodejs typescript bun
 
+    # .NET -- MMOKit's PersistenceServer (net8.0, ASP.NET Core; SDK includes the runtimes)
+    dotnet-sdk_8
+
     # Cloud tools
     awscli2                    # AWS CLI v2
 
