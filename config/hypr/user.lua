@@ -97,7 +97,7 @@ hl.on("hyprland.start", function()
     -- Monitor calibration curve (white balance) from the LG's ICC profile,
     -- without Hyprland's ICC conversion -- see the monitor rule above.
     hl.exec_cmd("vcgt-loader " .. configDir .. "/lg-ultragear-srgb-d65.icm 'LG ULTRAGEAR'")
-    -- hl.exec_cmd("hypridle")  -- autolock disabled
+    hl.exec_cmd("hypridle")   -- monitor off after 15 min idle (no lock), see hypridle.conf
     hl.exec_cmd("nm-applet --indicator")
     hl.exec_cmd("blueman-applet")
 
