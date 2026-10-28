@@ -310,6 +310,25 @@ works fine. Claude's WebFetch/WebSearch don't go through it.
 - Project MMOKit: Linux copy `~/code/MMOKit` (origin = GitLab
   `Glabrezu/mmokitv2`, remote `windows` = the D: copy, which stays on
   the Windows source-built engine). EngineAssociation "5.8".
+## Bloodborne (bbport)
+
+The Windows install `D:\Games\bbport-windows` (Supermedo's port + the user's refill cheat;
+workspace notes in `/mnt/ddrive/Games/bb_cheat/CLAUDE.md`) runs through **Proton-GE**:
+`~/.local/bin/bloodborne` + menu entry `bloodborne.desktop` (both outside git). Saves and
+`bbport.ini` are shared with Windows.
+- Prefix `~/.local/share/proton-prefixes/bloodborne`; its `dosdevices/d:` -> `/mnt/ddrive`, and
+  its own launcher `settings.json` (AppData\Roaming\bbport-launcher, copied from Windows) has
+  `present_mode = Immediate`: Proton's XWayland window offers no Mailbox, and FIFO cost ~10 ms
+  per frame (55 instead of ~120 game FPS). G-Sync comes from Hyprland `vrr = 2`.
+  `PROTON_ENABLE_WAYLAND=1` gives Mailbox but presents too slowly for frame generation.
+- DLSS + DLSS frame gen work via `PROTON_ENABLE_NVAPI=1` (driver ships `nvidia/wine/nvngx*.dll`).
+- `scripts\mods.py` in the install is patched to mirror folders with hard links under Wine
+  (Wine's folder symlinks/junctions are emulated and not followed); original in
+  `bbport-windows-backup-1.9.2\mods.py.before-wine`. The launcher's **Update** overwrites it
+  and the cheat.
+- Diagnostics: `BB_FRAME_STATS=1 BB_FPS_LOG=1` in the environment -> `user\last_run.log`.
+- A native Linux build of the same branch (cheat hook ported, builds with fixes) is in
+  `~/code/bloodborne_pc` -- no DLSS there (the port's DLSS bridge is Windows-only).
 
 ## AI tools
 
