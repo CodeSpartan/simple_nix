@@ -20,6 +20,8 @@ let
   # an environment without TZDIR (e.g. a bar restarted from a bare shell).
   calendarOpen = pkgs.writeShellScriptBin "calendar-open" ''
     export TZDIR=''${TZDIR:-/etc/zoneinfo}
+    # Always start on the month view (it reopens in the last-used view).
+    ${pkgs.dconf}/bin/dconf write /org/gnome/calendar/active-view "'month'"
     exec ${pkgs.gnome-calendar}/bin/gnome-calendar "$@"
   '';
 in

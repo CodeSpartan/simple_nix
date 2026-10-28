@@ -560,6 +560,17 @@ hl.window_rule({
     no_anim = true,
 })
 
+-- GNOME Calendar (day notes, opened from the bar): big centred floating
+-- window. Tiled at half width it drops to its narrow layout, where the month
+-- grid shows no notes. Title match keeps its event dialogs at normal size.
+hl.window_rule({
+    name  = "gnome-calendar",
+    match = { class = "^org.gnome.Calendar$", title = "^Calendar$" },
+    float = true,
+    size  = { "monitor_w*0.75", "monitor_h*0.8" },
+    move  = { "monitor_w*0.125", "monitor_h*0.1" },
+})
+
 -- Picture-in-Picture
 hl.window_rule({
     name  = "pip",
