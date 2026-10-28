@@ -110,12 +110,13 @@ container-bg-color = "transparent"
 
 [modules.clock]
 icon-show = false   # the calendar-notes module right after it carries the icon
+left-click = "calendar-open"   # GNOME Calendar instead of wayle's note-less month popup
 format = "%a %b %d  %H:%M:%S"
 icon-color = "#D2A6FF"
 label-color = "#D2A6FF"
 
 # Day notes next to the clock (nixos/calendar.nix). Icon + today's count;
-# hover lists today and the next 7 days; click opens GNOME Calendar to add or
+# hover lists today's and tomorrow's notes; click opens GNOME Calendar to add or
 # edit notes. Re-reads the calendar only when it changed, so polling is cheap.
 [[modules.custom]]
 id = "calendar"
@@ -126,7 +127,7 @@ tooltip-format = "{{ tooltip }}"
 icon-name = "tb-calendar-time-symbolic"   # bundled with wayle; its icon CDN is unreachable from here
 icon-color = "#D2A6FF"
 label-color = "#D2A6FF"
-left-click = "gnome-calendar"
+left-click = "calendar-open"
 
 # Weather from MET Norway via weather.sh (no API key). Wayle's built-in
 # weather module is unused: its keyless provider, open-meteo, is unreachable

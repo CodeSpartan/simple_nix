@@ -95,6 +95,10 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
 - Harmless: `missing field overFullscreen` log spam; two iVPN tray icons.
 - Logs: `~/.local/state/wayle/wayle-shell.<date>.log`. Restart with
   `wayle panel restart`, not kill + relaunch.
+- **From Claude's shell, don't `wayle panel restart`**: the new bar inherits
+  Claude's bare env (no `TZDIR`, no `HYPRLAND_INSTANCE_SIGNATURE`) and apps
+  it launches break. Use `wayle panel stop`, then
+  `hyprctl eval 'hl.exec_cmd("wayle shell")'` (Hyprland's env).
 
 ## NVIDIA / kernel / power
 

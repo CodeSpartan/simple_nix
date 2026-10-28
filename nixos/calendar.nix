@@ -14,6 +14,14 @@ let
     libraries = with pkgs.python3Packages; [ icalendar recurring-ical-events ];
     flakeIgnore = [ "E501" ];
   } (builtins.readFile ./pkgs/calendar-notes/calendar-notes.py);
+
+  # What the bar's clock and calendar icon run on click. GNOME Calendar
+  # aborts if it can't resolve the timezone, which happens when it inherits
+  # an environment without TZDIR (e.g. a bar restarted from a bare shell).
+  calendarOpen = pkgs.writeShellScriptBin "calendar-open" ''
+    export TZDIR=''${TZDIR:-/etc/zoneinfo}
+    exec ${pkgs.gnome-calendar}/bin/gnome-calendar "$@"
+  '';
 in
 {
   services.gnome.evolution-data-server.enable = true;
@@ -21,6 +29,7 @@ in
   environment.systemPackages = [
     pkgs.gnome-calendar
     calendarNotes
+    calendarOpen
   ];
 
   # Today's notes as a notification, once a day: at the first login of the day

@@ -1,7 +1,7 @@
 """Day notes from the local GNOME Calendar (Evolution Data Server) files.
 
   calendar-notes wayle            JSON for the Wayle bar module (today's count,
-                                  tooltip with today + the next 7 days)
+                                  tooltip with today's and tomorrow's notes)
   calendar-notes notify [--force] one desktop notification with today's notes,
                                   at most once a day (--force: send anyway)
   calendar-notes today            today's notes as plain text
@@ -30,7 +30,7 @@ CAL_DIR = HOME / ".local/share/evolution/calendar"
 PERSONAL = CAL_DIR / "system/calendar.ics"
 STATE = HOME / ".local/state/calendar-notes"
 CACHE = HOME / ".cache/calendar-notes"
-UPCOMING_DAYS = 7
+UPCOMING_DAYS = 1  # bar tooltip: today + tomorrow
 TITLE_MAX = 80
 
 
@@ -100,12 +100,9 @@ def cmd_wayle():
     todays = days.get(today, [])
     lines = [f"Today, {today:%a %d %b}"]
     lines += [f"  • {t}" for _, t, _ in todays] or ["  nothing"]
-    upcoming = [d for d in sorted(days) if d != today]
-    if upcoming:
-        for d in upcoming:
-            lines.append("")
-            lines.append("Tomorrow" if d == today + dt.timedelta(days=1) else f"{d:%a %d %b}")
-            lines += [f"  • {t}" for _, t, _ in days[d]]
+    tomorrow = today + dt.timedelta(days=1)
+    lines += ["", f"Tomorrow, {tomorrow:%a %d %b}"]
+    lines += [f"  • {t}" for _, t, _ in days.get(tomorrow, [])] or ["  nothing"]
     lines += ["", "Click: open calendar"]
     out = {
         "text": str(len(todays)) if todays else "",
