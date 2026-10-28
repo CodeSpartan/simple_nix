@@ -12,6 +12,7 @@
   # --- Dotfile deployments (edit in repo, then nixos-rebuild switch) ---
   xdg.configFile."mc/ini".source = ../../config/mc/ini;
   xdg.configFile."mc/bat-viewer.sh" = { source = ../../config/mc/bat-viewer.sh; executable = true; };
+  xdg.dataFile."mc/skins/ayu-dark.ini".source = ../../config/mc/skins/ayu-dark.ini;
 
   # Discord Flatpak -- force XWayland on NVIDIA (GBM can't init inside Flatpak sandbox)
   # TODO: remove when NVIDIA GBM works inside Flatpak sandbox
