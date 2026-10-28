@@ -70,7 +70,9 @@ inherited from Vitalii stays -- don't trim it.
   in *that* rule's match (`negative:`), a later narrower rule doesn't override.
 - `hl.dsp.dpms("on")` ignores the string and **toggles** -- use
   `hl.dsp.dpms({action="on"})` / `{action="off"}`. hypridle (autostarted)
-  turns the monitor off after 15 min, no lock.
+  turns the monitor off after 15 min, no lock; blocked while a window is
+  fullscreen (`idle_inhibit` rule) or VLC plays (`vlc-idle-inhibit.sh`: VLC 3
+  sends no inhibit on Wayland). See locks: `systemd-inhibit --list`.
 - `hl.exec_cmd` strings starting with `[` are parsed as window rules -- use
   `test`, not `[ ]`.
 - Per-window keyboard layout: `hyprland-per-window-layout`, config in
