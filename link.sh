@@ -145,4 +145,10 @@ else
   echo "    SKIP: $CLAUDE_SETTINGS is not plain JSON, apply config/claude/settings.json by hand" >&2
 fi
 
+echo "==> Setting KClock options..."
+# kclockrc is NOT symlinked: KClock rewrites it (timer presets, settings).
+# Set only our keys. No "timer running" notification when the window is
+# closed -- only the one when a timer rings.
+kwriteconfig6 --file kclockrc --group Global --key timerNotification Never
+
 echo "Done."

@@ -48,6 +48,10 @@ inherited from Vitalii stays -- don't trim it.
   `wayle panel restart`), no rebuild.
 - **home-manager files** (`nixos/home/*.nix`: git/ssh config, mc, KDE theming)
   are read-only Nix store links -- change the source, then `./install.sh`.
+- **Configs the app rewrites itself** (KClock, VS Code, Claude Code
+  settings): don't symlink -- `link.sh` sets only our keys (`kwriteconfig6`
+  for KDE files, `jq` merge for JSON). Copy-once seeding (nomacs) when only
+  starting defaults matter.
 - Kernel-module blacklists apply only at boot. A rebuilt app keeps running the
   old binary until restarted.
 
@@ -247,8 +251,9 @@ hides the popup) plus two notification patches in
 `nixos/overlays/wayle-pr255-package.nix`: wayle dropped "never expires"
 notifications from its list, and gave a resent notification a new id that
 KClock doesn't listen for.
-Its "timer running" notification is off: `timerNotification=Never` in
-`~/.config/kclockrc` (outside git; KClock's settings, or redo after a reinstall).
+Its "timer running" notification is off: `link.sh` sets
+`timerNotification=Never` in `~/.config/kclockrc` (KClock rewrites that file,
+so only that key is set, not symlinked).
 
 ## Image viewer (nomacs)
 
