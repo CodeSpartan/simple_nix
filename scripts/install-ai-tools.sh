@@ -75,8 +75,16 @@ install_codex() {
 
   # The daemon has a separate package and can lag behind an up-to-date CLI.
   echo "  updating managed app-server from CLI (may interrupt active Codex work)"
-  "${BIN_DIR}/codex" app-server daemon update --from-cli --yes
-  "${BIN_DIR}/codex" app-server daemon version
+  # Skip it if it was never set up (`codex app-server daemon start`).
+  local out
+  if out=$("${BIN_DIR}/codex" app-server daemon update --from-cli --yes 2>&1); then
+    echo "$out"
+    "${BIN_DIR}/codex" app-server daemon version
+  elif [[ "$out" == *"no daemon package is selected"* ]]; then
+    echo "  app-server daemon not set up; skipped"
+  else
+    echo "$out"; return 1
+  fi
 }
 
 install_desktop() (
