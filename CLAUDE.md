@@ -233,6 +233,17 @@ a once-a-day notification (user unit `calendar-notes-notify`, at login +
 GNOME Calendar was tried and dropped as too heavy (user wants lightweight).
 Rainlendar's original data: `/mnt/cdrive/Users/Delfosse/.rainlendar2/Default.ics`.
 
+## Timer / stopwatch (KClock)
+
+`nixos/clock.nix`. Click the time in the bar → `clock-open` → KClock's
+Timers page (the date is a separate custom module that still opens calcurse).
+`kclockd` runs the timers and rings until dismissed. Clicking the popup's
+body stops it. The X needs `popup-close-behavior = "remove"` (default just
+hides the popup) plus two notification patches in
+`nixos/overlays/wayle-pr255-package.nix`: wayle dropped "never expires"
+notifications from its list, and gave a resent notification a new id that
+KClock doesn't listen for.
+
 ## Image viewer (nomacs)
 
 Default for images (`nomacsTuned` + `xdg.mime.defaultApplications` in

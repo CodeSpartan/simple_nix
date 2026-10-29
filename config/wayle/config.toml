@@ -48,7 +48,7 @@ button-label-size = 1.15
 [[bar.layout]]
 monitor = "*"
 left = ["dashboard", "hyprland-workspaces"]
-center = ["clock", "custom-calendar"]
+center = ["custom-date", "clock", "custom-calendar"]
 right = [
     "custom-weather",
     "cpu",
@@ -108,10 +108,21 @@ occupied-color = "red"
 empty-color = "blue"
 container-bg-color = "transparent"
 
-[modules.clock]
-icon-show = false   # the calendar-notes module right after it carries the icon
+# Date and time are separate modules so each opens its own app on click:
+# date (and the calendar icon) -> calcurse, time -> KClock (nixos/clock.nix).
+[[modules.custom]]
+id = "date"
+command = "LC_TIME=C date '+%a %b %d'"
+interval-ms = 10000   # the date flips at most 10 s after midnight
+format = "{{ output }}"
+icon-show = false   # the calendar-notes module after the time carries the icon
+label-color = "#D2A6FF"
 left-click = "calendar-open"   # calcurse instead of wayle's note-less month popup
-format = "%a %b %d  %H:%M:%S"
+
+[modules.clock]
+icon-show = false
+left-click = "clock-open"   # KClock (timer, stopwatch, alarms)
+format = "%H:%M:%S"
 icon-color = "#D2A6FF"
 label-color = "#D2A6FF"
 
@@ -267,6 +278,10 @@ label-color = "blue"
 # gets hidden when a window goes fullscreen. New popups during fullscreen are
 # stopped by the fullscreen -> Do Not Disturb hook in config/hypr/user.lua.
 popup-layer = "top"
+# The popup's X removes the notification instead of only hiding it, so the
+# app hears that it closed. KClock stops a ringing timer/alarm on that;
+# with the default ("dismiss") it kept ringing.
+popup-close-behavior = "remove"
 
 # --- Wallpaper ---
 # hyprpaper owns the wallpaper (config/hypr/hyprpaper.conf); keep Wayle's

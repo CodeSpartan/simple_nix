@@ -11,6 +11,7 @@
     ./update-check.nix
     ./ivpn-bypass.nix
     ./calendar.nix
+    ./clock.nix
   ];
 
   # --- Networking ---

@@ -213,6 +213,7 @@ in
     # Core utilities
     git-filter-repo gh glab wget curl unzip p7zip file fastfetch optipng
     bc                         # Arbitrary-precision command-line calculator
+    kdePackages.kcalc          # Calculator (keyboard's calculator key, see config/hypr/user.lua)
     imagemagick                # Image conversion/resizing (convert, mogrify)
     poppler-utils              # PDF utilities (pdftotext, pdfimages, pdfinfo)
     ffmpeg                     # Audio/video transcoding and processing

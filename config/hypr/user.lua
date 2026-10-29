@@ -460,6 +460,9 @@ hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tr
 hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
 
+-- Calculator key -> KCalc (floating, "kcalc" window rule)
+hl.bind("XF86Calculator", hl.dsp.exec_cmd("kcalc"))
+
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
@@ -580,6 +583,24 @@ hl.window_rule({
     float = true,
     size  = { "monitor_w*0.6", "monitor_h*0.65" },
     move  = { "monitor_w*0.2", "monitor_h*0.15" },
+})
+
+-- KClock (timer/stopwatch, opened from the bar's clock by clock-open):
+-- floating, top-centre under the clock.
+hl.window_rule({
+    name  = "kclock",
+    match = { class = "^org\\.kde\\.kclock$" },
+    float = true,
+    size  = { "monitor_w*0.3", "monitor_h*0.5" },
+    move  = { "monitor_w*0.35", "monitor_h*0.04" },
+})
+
+-- KCalc (calculator key): small floating window, centred.
+hl.window_rule({
+    name   = "kcalc",
+    match  = { class = "^org\\.kde\\.kcalc$" },
+    float  = true,
+    center = true,
 })
 
 -- Picture-in-Picture
