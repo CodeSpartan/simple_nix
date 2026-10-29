@@ -128,11 +128,13 @@ label-color = "#D2A6FF"
 
 # Day notes next to the clock (nixos/calendar.nix). Icon + today's count;
 # hover lists today's and tomorrow's notes; click opens calcurse to add or
-# edit notes. A calcurse query takes ~15 ms, so polling is cheap.
+# edit notes. Watch mode: the script reprints as soon as calcurse saves
+# (it saves every minute while open, and on quit).
 [[modules.custom]]
 id = "calendar"
-command = "calendar-notes wayle"
-interval-ms = 30000
+command = "calendar-notes wayle-watch"
+mode = "watch"
+restart-policy = "on-failure"
 format = "{{ text }}"
 tooltip-format = "{{ tooltip }}"
 icon-name = "tb-calendar-time-symbolic"   # bundled with wayle; its icon CDN is unreachable from here

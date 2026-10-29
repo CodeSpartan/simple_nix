@@ -2,6 +2,8 @@
 
   calendar-notes wayle            JSON for the Wayle bar module (today's count,
                                   tooltip with today's and tomorrow's notes)
+  calendar-notes wayle-watch      the same, printed again whenever calcurse
+                                  saves or the date changes (Wayle watch mode)
   calendar-notes notify [--force] one desktop notification with today's notes,
                                   at most once a day (--force: send anyway)
   calendar-notes today            today's notes as plain text
@@ -58,7 +60,7 @@ def notes_for(first, days):
 
 # --- wayle --------------------------------------------------------------------
 
-def cmd_wayle():
+def wayle_json():
     import json
     today = dt.date.today()
     tomorrow = today + dt.timedelta(days=1)
@@ -71,8 +73,28 @@ def cmd_wayle():
         lines += [f"  • {t}" for t, _ in days.get(d, [])] or ["  nothing"]
     lines += ["", "Click: open calendar"]
     n = len(days.get(today, []))
-    print(json.dumps({"text": str(n) if n else "", "tooltip": "\n".join(lines),
-                      "alt": "notes" if n else "none"}, ensure_ascii=False))
+    return json.dumps({"text": str(n) if n else "", "tooltip": "\n".join(lines),
+                       "alt": "notes" if n else "none"}, ensure_ascii=False)
+
+
+def cmd_wayle():
+    print(wayle_json())
+
+
+def cmd_wayle_watch():
+    """Reprint when calcurse saves `apts` or the day changes (checked every 2 s,
+    a stat call, so the bar shows a new note as soon as calcurse writes it)."""
+    last = None
+    while True:
+        try:
+            mtime = (DATA / "apts").stat().st_mtime_ns
+        except OSError:
+            mtime = None
+        key = (mtime, dt.date.today())
+        if key != last:
+            last = key
+            print(wayle_json(), flush=True)
+        time.sleep(2)
 
 
 # --- notify / today -----------------------------------------------------------
@@ -172,6 +194,8 @@ def main():
     args = sys.argv[1:]
     if args[:1] == ["wayle"]:
         cmd_wayle()
+    elif args[:1] == ["wayle-watch"]:
+        cmd_wayle_watch()
     elif args[:1] == ["notify"]:
         cmd_notify(force="--force" in args)
     elif args[:1] == ["today"]:
