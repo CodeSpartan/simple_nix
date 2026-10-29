@@ -14,12 +14,14 @@ The icon shows only while MAX runs (status "Passive" hides it, see
 nixos/overlays/wayle-systray-hide-passive.patch).
 
 Left click: go to the MAX window (switches to its workspace), or start MAX.
+Right click: menu with "Open MAX" and "Quit MAX".
 The same tray protocol (StatusNotifierItem) as pkgs/whatsapp-tray.
 """
 
 import json
 import os
 import re
+import signal
 import socket
 import subprocess
 
@@ -102,7 +104,8 @@ MENU_XML = """
 
 SNI_PATH = "/StatusNotifierItem"
 MENU_PATH = "/MenuBar"
-MENU_ITEMS = {1: "Open MAX"}
+MENU_ITEMS = {1: "Open MAX", 2: "Quit MAX"}
+QUIT_GRACE_SECONDS = 5
 
 
 def hypr_request(cmd):
@@ -244,6 +247,30 @@ class Tray:
                               f"hl.exec_cmd('flatpak run {FLATPAK_ID}')"],
                              stdout=subprocess.DEVNULL)
 
+    def quit_max(self):
+        """Ask MAX to exit (SIGTERM, like closing it properly), then stop the
+        rest of its sandbox: its calls helper (max-service) and crash
+        reporters outlive it, and a new launch would hand over to them
+        instead of starting. Waits up to a few seconds for MAX itself."""
+        pid = find_max_pid()
+        if pid is None:
+            return
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except OSError:
+            pass
+        waited = [0]
+
+        def finish():
+            waited[0] += 1
+            if find_max_pid() is not None and waited[0] < QUIT_GRACE_SECONDS * 4:
+                return True  # check again in 0.25 s
+            subprocess.Popen(["flatpak", "kill", FLATPAK_ID],
+                             stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
+            return False
+        GLib.timeout_add(250, finish)
+
     # --- D-Bus: StatusNotifierItem ---------------------------------------
     def emit(self, signal, params=None):
         self.bus.emit_signal(None, SNI_PATH, "org.kde.StatusNotifierItem",
@@ -320,6 +347,8 @@ class Tray:
     def menu_clicked(self, item_id):
         if item_id == 1:
             self.open_max()
+        elif item_id == 2:
+            self.quit_max()
 
     # --- setup -----------------------------------------------------------
     def export(self):
