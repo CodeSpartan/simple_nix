@@ -12,6 +12,17 @@ mv "$_hw_tmp" "$REPO/nixos/hardware-configuration.nix"
 # Nix flakes in git repos only see tracked files; stage it temporarily so nixos-rebuild can find it
 git -C "$REPO" add -f nixos/hardware-configuration.nix
 
+# uProf/Nsight installers sit behind vendor logins, so Nix can't download them.
+# Re-add every file from host.nix's vendorDir (no-op if already in the store);
+# this covers a fresh install. Missing folder (e.g. D: not mounted) is skipped.
+_vendor_dir=$(nix eval --raw -f "$REPO/nixos/host.nix" vendorDir 2>/dev/null || true)
+if [[ -n "$_vendor_dir" && -d "$_vendor_dir" ]]; then
+  echo "==> Adding vendor installers from $_vendor_dir to the Nix store..."
+  for _f in "$_vendor_dir"/*; do
+    [[ -f "$_f" ]] && nix store add-file "$_f" >/dev/null
+  done
+fi
+
 echo "==> Rebuilding NixOS..."
 _hostname=$(nix eval --raw -f "$REPO/nixos/host.nix" hostname 2>/dev/null || hostname)
 # Exit 4 = new system is active but some unit is in a failed state, even an unrelated

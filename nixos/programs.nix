@@ -461,4 +461,11 @@ in
     CMAKE_CUDA_COMPILER_LAUNCHER = "sccache";
     SCCACHE_CACHE_SIZE = "50G";
   };
+
+  # Keep the uProf/Nsight downloads in the system closure so the weekly
+  # garbage collection never deletes them -- Nix can't re-download them,
+  # and every nixpkgs bump rebuilds these packages from the originals.
+  system.extraDependencies =
+    lib.optionals (host.amduprof or false) [ pkgs.amduprof-unwrapped.src ]
+    ++ lib.optionals (host.nsightGraphics or false) [ pkgs.nsight-graphics-unwrapped.src ];
 }

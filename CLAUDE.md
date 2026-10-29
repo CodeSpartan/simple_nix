@@ -166,6 +166,14 @@ via Save Changes and Reset. `sbctl enroll-keys` "File is immutable" → `chattr
   prefix `GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=true`.
 - `*.png` goes through Git LFS.
 
+## AMD uProf / Nsight Graphics
+
+Enabled (`host.nix`). Their downloads can't be fetched by Nix (vendor
+login); copies live in `vendorDir` (`/mnt/ddrive/NixOS-installers`), which
+`install.sh` re-adds to the store, and `system.extraDependencies` keeps them
+from GC. A version bump = new download into that folder + version/hash in
+the overlay. `AMDuProfPcm` doesn't support this CPU (desktop Zen 2).
+
 ## Secrets (agenix)
 
 - Age key `~/.config/age/keys.txt` -- without it the secrets can't be

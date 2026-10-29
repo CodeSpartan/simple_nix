@@ -14,4 +14,5 @@
   updateCheck = true;                 # fetch origin/main nightly and notify; never pull or rebuild
   amduprof = true;                    # AMD uProf -- requires one-time tarball setup, see README
   nsightGraphics = true;              # NVIDIA Nsight Graphics CLI -- requires one-time installer setup, see README
+  vendorDir = "/mnt/ddrive/NixOS-installers";  # uProf/Nsight downloads; install.sh re-adds them to the Nix store
 }

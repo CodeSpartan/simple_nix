@@ -213,6 +213,8 @@ AMD uProf isn't in nixpkgs -- AMD gates every download behind a EULA form, so no
 
 Gated by `amduprof` in `host.nix`. Leave it `false` (default) and `install.sh` works on any machine without the tarball.
 
+Keep the downloaded tarball in `vendorDir` (`host.nix`): `install.sh` re-adds every file there to the Nix store before rebuilding, so a fresh install needs no manual `nix store add-file`. Once enabled, the tarball is also kept in the system closure (`system.extraDependencies` in `programs.nix`), so garbage collection never deletes it -- nixpkgs bumps rebuild the package from it.
+
 ### One-time setup
 
 ```bash
@@ -274,6 +276,8 @@ Check the current value with `cat /proc/sys/kernel/perf_event_paranoid`. Alterna
 Nsight Graphics isn't in nixpkgs (only `nsight_compute` and `nsight_systems` are). NVIDIA gates the download behind a developer login, so no fetchurl is possible. The overlay at `nixos/overlays/nsight-graphics.nix` handles it via `requireFile`: it extracts the Makeself installer's `pkg/` tree and wraps the headless CLI in a `buildFHSEnv`. The GUI (`ngfx-ui`) is intentionally skipped.
 
 Gated by `nsightGraphics` in `host.nix`. Leave it `false` (default) and `install.sh` works on any machine without the installer.
+
+Keep the downloaded installer in `vendorDir` (`host.nix`): `install.sh` re-adds every file there to the Nix store before rebuilding, so a fresh install needs no manual `nix store add-file`. Once enabled, the installer is also kept in the system closure (`system.extraDependencies` in `programs.nix`), so garbage collection never deletes it -- nixpkgs bumps rebuild the package from it.
 
 ### One-time setup
 
