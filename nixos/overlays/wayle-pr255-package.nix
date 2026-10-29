@@ -111,6 +111,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     # expired and drops it from its list right away (the popup still shows).
     # Closing that popup then finds nothing to remove, so the app never gets
     # NotificationClosed -- e.g. KClock keeps ringing after the popup's X.
+    # Upstream: https://github.com/wayle-rs/wayle-services/pull/53
     substituteInPlace "$cargoDepsCopy"/*/wayle-notification-0.1.3/src/monitoring.rs \
       --replace-fail \
         'let Some(ttl) = notif_arc.expire_timeout.get() else {' \
@@ -121,6 +122,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
     # that id, so it hands out a new one -- and KClock, still listening for
     # the old id, ignores the NotificationClosed for the new one. Reuse a
     # replaces_id that no other app owns instead of only one this app owns.
+    # Upstream: https://github.com/wayle-rs/wayle-services/pull/54
+    # Drop both patches once wayle ships a wayle-notification with them.
     substituteInPlace "$cargoDepsCopy"/*/wayle-notification-0.1.3/src/daemon.rs \
       --replace-fail \
         '.is_some_and(|owner| owner == app_name);' \
