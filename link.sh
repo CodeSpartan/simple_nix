@@ -58,6 +58,7 @@ if [[ -d "$HOME/.config/wayle/styles" && ! -L "$HOME/.config/wayle/styles" ]]; t
 fi
 ln -sfn "$REPO/config/wayle/styles" "$HOME/.config/wayle/styles"
 ln -sf "$REPO/config/wayle/weather.sh" "$HOME/.config/wayle/weather.sh"
+ln -sf "$REPO/config/wayle/launch.sh" "$HOME/.config/wayle/launch.sh"
 
 mkdir -p "$HOME/.config/hypr"
 for f in user.lua hypridle.conf hyprlock.conf hyprpaper.conf cheatsheet.sh toggle-layout.sh nightlight.sh vlc-idle-inhibit.sh lg-ultragear-srgb-d65.icm; do
