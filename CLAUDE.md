@@ -81,6 +81,10 @@ inherited from Vitalii stays -- don't trim it.
   sends no inhibit on Wayland). See locks: `systemd-inhibit --list`.
 - `hl.exec_cmd` strings starting with `[` are parsed as window rules -- use
   `test`, not `[ ]`.
+- `initial_workspace_tracking = 2`: a window opens on the workspace its
+  launching process started on. Apps started from the bar would land on the
+  bar's workspace (1), so bar click scripts (`clock-open`, `calendar-open`)
+  launch through `hyprctl eval 'hl.exec_cmd(...)'`.
 - Per-window keyboard layout: `hyprland-per-window-layout`, config in
   `config/hyprland-per-window-layout/options.toml`. Kill it with
   `pkill -x hyprland-per-wi` (`pgrep/pkill -f` also matches your own shell --

@@ -40,6 +40,11 @@ let
     if ${pkgs.procps}/bin/pgrep -x calcurse >/dev/null; then
       exec hyprctl dispatch 'hl.dsp.focus({ window = "class:^calcurse$" })'
     fi
+    # Let Hyprland launch it, so it opens on the current workspace instead of
+    # the bar's (initial_workspace_tracking follows the launching process).
+    if [ -z "''${CALENDAR_OPEN_VIA_HYPRLAND:-}" ]; then
+      exec hyprctl eval "hl.exec_cmd(\"CALENDAR_OPEN_VIA_HYPRLAND=1 $0\")"
+    fi
     exec ${pkgs.foot}/bin/foot --app-id=calcurse \
       -o 'main.font=JetBrainsMono Nerd Font Mono:size=12' \
       -o colors.background=0B0E14 -o colors.foreground=B8B5AC \

@@ -16,13 +16,14 @@
 
 let
   # What the bar's clock runs on click: focus KClock if it's already open,
-  # else open it on the Timers page. Window rule: "kclock" in
-  # config/hypr/user.lua.
+  # else open it on the Timers page as a normal tiled window. Hyprland
+  # launches it, not this script: initial_workspace_tracking would put a
+  # window started from the bar on the bar's workspace (1), not the current.
   clockOpen = pkgs.writeShellScriptBin "clock-open" ''
     if hyprctl clients | grep -q '^\s*class: org\.kde\.kclock$'; then
       exec hyprctl dispatch 'hl.dsp.focus({ window = "class:^org\\.kde\\.kclock$" })'
     fi
-    exec ${pkgs.kdePackages.kclock}/bin/kclock --page Timers
+    exec hyprctl eval 'hl.exec_cmd("${pkgs.kdePackages.kclock}/bin/kclock --page Timers")'
   '';
 in
 {
