@@ -234,6 +234,14 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
   Windows' `bin/` is untouched; its launcher shares Windows' `mmokit.db`. That
   repo needs `core.autocrlf=true`.
 
+## Silmaril (MUD client)
+
+`~/code/Silmaril` (Kotlin Compose + Jewel; its own CLAUDE.md has the Linux
+notes). `programs.nix` adds JBR 21 (`/etc/jbr-21`), `silmaril-gradle <task>`
+(JAVA_HOME + libGL path for skiko) and `silmaril` + app-menu entry (runs the
+`createReleaseDistributable` output). User data `~/Documents/Silmaril`, copied
+from Windows without logs.
+
 ## Bloodborne (bbport)
 
 The Windows install on D: runs via Proton-GE (`~/.local/bin/bloodborne`);

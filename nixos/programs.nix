@@ -135,6 +135,40 @@ let
         --unset LD_LIBRARY_PATH
     '';
   };
+
+  # Silmaril (MUD client, ~/code/Silmaril): Kotlin Compose Desktop + Jewel.
+  # Jewel's custom title bar needs JetBrains Runtime 21, not plain OpenJDK;
+  # also at /etc/jbr-21 for IDEs. Compose's Skia (skiko) dlopens libGL/X11/
+  # fontconfig, which NixOS has in no standard path -> LD_LIBRARY_PATH.
+  jbr21 = pkgs.jetbrains.jdk-21;
+  silmarilLibPath = "/run/opengl-driver/lib:"
+    + lib.makeLibraryPath (with pkgs; [ libglvnd libx11 fontconfig ]);
+  # `silmaril-gradle <task>`: gradlew in the current dir if it has one (a
+  # worktree), else ~/code/Silmaril. E.g. run, createReleaseDistributable.
+  silmarilGradle = pkgs.writeShellScriptBin "silmaril-gradle" ''
+    test -x ./gradlew || cd "$HOME/code/Silmaril" || exit 1
+    export JAVA_HOME=${jbr21}/lib/openjdk
+    export LD_LIBRARY_PATH=${silmarilLibPath}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    exec ./gradlew -Porg.gradle.java.installations.paths="$JAVA_HOME" "$@"
+  '';
+  # `silmaril`: runs the last `silmaril-gradle createReleaseDistributable`.
+  silmarilRun = pkgs.writeShellScriptBin "silmaril" ''
+    app="$HOME/code/Silmaril/build/compose/binaries/main-release/app/Silmaril/bin/Silmaril"
+    if ! test -x "$app"; then
+      echo "Silmaril isn't built yet: run  silmaril-gradle createReleaseDistributable" >&2
+      exit 1
+    fi
+    export LD_LIBRARY_PATH=${silmarilLibPath}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    exec "$app" "$@"
+  '';
+  silmarilDesktop = pkgs.makeDesktopItem {
+    name = "silmaril";
+    desktopName = "Silmaril";
+    comment = "MUD client for adan.ru";
+    exec = "${silmarilRun}/bin/silmaril";
+    icon = "/home/vervain/code/Silmaril/icons/icon_256.png";
+    categories = [ "Game" ];
+  };
 in
 
 {
@@ -142,6 +176,9 @@ in
   programs.direnv.enable = true;        # Auto-load .envrc per-directory environments
   programs.nix-ld.enable = true;        # Dynamic linker for non-Nix binaries (Mason, uv, pip wheels)
   programs.nix-ld.libraries = desktopRuntimeLibs ++ unrealRuntimeLibs;
+
+  # Stable JBR path for IDEs (JDK home: /etc/jbr-21/lib/openjdk).
+  environment.etc."jbr-21".source = jbr21;
   programs.firefox.enable = true;       # Firefox browser
 
   # --- Gaming ---
@@ -280,6 +317,7 @@ in
 
     # JVM
     jdk kotlin kotlin-language-server
+    silmarilGradle silmarilRun silmarilDesktop   # Silmaril MUD client (see the let block)
 
     # Haskell
     ghc cabal-install haskell-language-server
