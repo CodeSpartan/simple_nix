@@ -112,6 +112,14 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   that back (cosmetic).
 - Weather is a custom module (`config/wayle/weather.sh`, MET Norway) because
   the built-in provider (open-meteo) is unreachable from here.
+- WhatsApp tray icon: `whatsapp-tray` user service (`nixos/whatsapp-tray.nix`).
+  WhatsApp Web exposes no unread count (title stays "WhatsApp Web", no app
+  badge), so the red dot counts its notifications (body starts with
+  `web.whatsapp.com`) and clears when its window gets focus. PWA id is
+  hardcoded in `whatsapp-tray.py`.
+- Tray icons whose app reports SNI status "Passive" are hidden (our wayle
+  patches `wayle-systray-*.patch`). Blueman is patched to go Passive while
+  Bluetooth is off (`blueman-hide-when-off`); turn it on in Bluetooth Manager.
 - Harmless: `missing field overFullscreen` log spam; two iVPN tray icons.
 - Logs: `~/.local/state/wayle/wayle-shell.<date>.log`. Restart with
   `wayle panel restart`, not kill + relaunch.

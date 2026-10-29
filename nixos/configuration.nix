@@ -12,6 +12,7 @@
     ./ivpn-bypass.nix
     ./calendar.nix
     ./clock.nix
+    ./whatsapp-tray.nix
   ];
 
   # --- Networking ---
