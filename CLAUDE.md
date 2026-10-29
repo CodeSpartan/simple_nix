@@ -66,6 +66,9 @@ inherited from Vitalii stays -- don't trim it.
   root-owned files in `.git` (fix: `sudo chown -R vervain:users ~/code/simple_nix`).
 - Discord exists as both system (managed by install.sh) and user Flatpak --
   leave both.
+- install.sh updates only *system* Flatpaks. User Flatpaks (MAX, user Discord)
+  and claude/codex are updated by `./update-apps.sh` (no sudo, closes nothing;
+  skips MAX with a warning if `download.max.ru` is unreachable, i.e. on iVPN).
 
 ## Hyprland
 
@@ -122,6 +125,8 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   Red dot = MAX's unread counter (`setTotalUnreadCounter`, muted chats
   excluded), read from the log the running MAX has open
   (`~/.var/app/ru.max.MAX/data/ONEME/logs/`); clears when read anywhere.
+  Its menu's Quit SIGTERMs MAX, then `flatpak kill`s the sandbox: MAX's
+  `max-service` outlives it, and new launches hand over to it and quit.
 - Wayle doesn't notice edits to `config.toml` (it watches the symlink, not
   the repo file) -- restart it after changing it.
 - Tray icons whose app reports SNI status "Passive" are hidden (our wayle
