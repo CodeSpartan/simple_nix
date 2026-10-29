@@ -261,6 +261,10 @@ label-color = "#D2A6FF"
 
 [modules.systray]
 button-bg-color = "transparent"
+# Hide MAX's own tray icon (id/title "max"); our max-tray icon
+# (nixos/max-tray.nix) replaces it. Exact, case-sensitive match: "MAX" and
+# "max-tray" stay visible.
+blacklist = ["max"]
 
 [modules.keyboard-input]
 icon-color = "blue"

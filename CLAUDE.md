@@ -117,6 +117,13 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   badge), so the red dot counts its notifications (body starts with
   `web.whatsapp.com`) and clears when its window gets focus. PWA id is
   hardcoded in `whatsapp-tray.py`.
+- MAX tray icon: `max-tray` user service (`nixos/max-tray.nix`), preferred
+  over MAX's own (hidden by `blacklist = ["max"]` in `config/wayle/config.toml`).
+  Red dot = MAX's unread counter (`setTotalUnreadCounter`, muted chats
+  excluded), read from the log the running MAX has open
+  (`~/.var/app/ru.max.MAX/data/ONEME/logs/`); clears when read anywhere.
+- Wayle doesn't notice edits to `config.toml` (it watches the symlink, not
+  the repo file) -- restart it after changing it.
 - Tray icons whose app reports SNI status "Passive" are hidden (our wayle
   patches `wayle-systray-*.patch`). Blueman is patched to go Passive while
   Bluetooth is off (`blueman-hide-when-off`); turn it on in Bluetooth Manager.
@@ -286,7 +293,9 @@ Flatpak on purpose (nixpkgs build had screen-share bugs). The second
 Discord (separate account) is `discord-ptb` from nixpkgs -- Flathub has no PTB. MAX messenger is
 `ru.max.MAX`: it's in the iVPN bypass list; installing/updating it needs
 `flatpak` added to that list *temporarily* (leaving it would bypass every
-Flatpak app).
+Flatpak app). MAX needs `flatpak override --user
+--talk-name=org.freedesktop.Notifications ru.max.MAX` (not in Nix; redo after
+a reinstall): without it, no popups and no tray icon of its own.
 
 ## Working from Claude's shell
 

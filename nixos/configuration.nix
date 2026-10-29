@@ -13,6 +13,7 @@
     ./calendar.nix
     ./clock.nix
     ./whatsapp-tray.nix
+    ./max-tray.nix
   ];
 
   # --- Networking ---
