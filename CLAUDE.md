@@ -32,6 +32,12 @@ inherited from Vitalii stays -- don't trim it.
 ## TODO
 
 - `config/hypr/user.conf` is dead (see Hyprland) -- could be deleted.
+- From ~2026-12: check if the `discord-openh264` user unit (`nixos/home/apps.nix`)
+  is still needed. It's a workaround for a Discord bug (deletes OpenH264 2.5.1
+  at startup but its voice engine still loads it -> streams error 2012).
+  Check: disable the path unit, restart Discord, watch a stream; Discord's log
+  `logs/discord-webrtc_0` shows which `libopenh264-*` it loads. If it now loads
+  a version it keeps, remove the unit.
 
 ## Where to make a change
 
