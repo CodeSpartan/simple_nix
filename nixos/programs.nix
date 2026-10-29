@@ -120,6 +120,21 @@ let
         --set AVALONIA_GLOBAL_SCALE_FACTOR 2
     '';
   };
+
+  # Opened from Brave (.torrent / magnet), qBittorrent inherits Brave's
+  # LD_LIBRARY_PATH and comes up with no tray icon -- closing the window
+  # then leaves it running invisibly. Same fix as nomacsTuned.
+  qbittorrentClean = pkgs.symlinkJoin {
+    name = "qbittorrent-${pkgs.qbittorrent.version}-clean-env";
+    inherit (pkgs.qbittorrent) version meta;
+    paths = [ pkgs.qbittorrent ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      rm "$out/bin/qbittorrent"
+      makeWrapper "${pkgs.qbittorrent}/bin/qbittorrent" "$out/bin/qbittorrent" \
+        --unset LD_LIBRARY_PATH
+    '';
+  };
 in
 
 {
@@ -382,7 +397,7 @@ in
     pre-commit                 # Git pre-commit hook framework
 
     # Desktop apps
-    braveAutoscroll vscode vlcScaled telegram-desktop yt-dlp qbittorrent obsidian
+    braveAutoscroll vscode vlcScaled telegram-desktop yt-dlp qbittorrentClean obsidian
     yandex-music               # Official Yandex Music app, repackaged for Linux
     mangohud                   # Real-time FPS/GPU/CPU overlay for games
     piper                      # GUI for the G300s: buttons, DPI, polling rate, LED (via ratbagd)

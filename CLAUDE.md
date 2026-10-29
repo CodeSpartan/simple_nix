@@ -253,7 +253,8 @@ saves are shared with Windows. Notes in
 - Brave keeps running with no windows while a PWA is open: `pgrep -x brave`.
 - Apps Brave opens inherit its wrapper's `LD_LIBRARY_PATH` (its own Qt/Wayland
   libs). If an app misbehaves only when opened from Brave, that's why (fix:
-  wrap the app with `--unset LD_LIBRARY_PATH`, like `nomacsTuned`).
+  wrap the app with `--unset LD_LIBRARY_PATH`, like `nomacsTuned`,
+  `qbittorrentClean`).
 - Windows fonts (incl. Tahoma) were copied into `~/.local/share/fonts/windows`
   -- outside git, redo after a reinstall.
 - Ctrl+scroll over the tab bar switching tabs = Hyprland binds in `user.lua`.
