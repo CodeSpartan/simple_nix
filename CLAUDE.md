@@ -247,6 +247,8 @@ hides the popup) plus two notification patches in
 `nixos/overlays/wayle-pr255-package.nix`: wayle dropped "never expires"
 notifications from its list, and gave a resent notification a new id that
 KClock doesn't listen for.
+Its "timer running" notification is off: `timerNotification=Never` in
+`~/.config/kclockrc` (outside git; KClock's settings, or redo after a reinstall).
 
 ## Image viewer (nomacs)
 
