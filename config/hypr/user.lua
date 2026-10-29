@@ -520,9 +520,12 @@ hl.window_rule({
 
 -- Telegram's photo/video viewer: open fullscreen. It asks for fullscreen
 -- itself, but suppress-maximize-events above ignores that request.
+-- Floating: a tiled fullscreen window makes the smart-gaps rules resize the
+-- chat window behind it, and Telegram jumps to the chat bottom on close.
 hl.window_rule({
     name       = "telegram-media-viewer",
     match      = { class = "^org.telegram.desktop$", title = "^Media viewer$" },
+    float      = true,
     fullscreen = true,
 })
 
