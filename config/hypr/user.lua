@@ -593,6 +593,23 @@ hl.window_rule({
     center = true,
 })
 
+-- Silmaril's hover tooltips (map rooms, lore, effects) are separate
+-- XWayland dialogs. Without this, opening one focuses it: Hyprland jumps to
+-- its workspace and keyboard input (even in other apps) goes to it. The app
+-- titles them "silmaril-tooltip" for this rule; no blur/shadow, they're
+-- transparent windows.
+hl.window_rule({
+    name             = "silmaril-tooltip",
+    match            = { class = "^ru-adan-silmaril-MainKt$", title = "^silmaril-tooltip$" },
+    float            = true,
+    no_focus         = true,
+    no_initial_focus = true,
+    no_blur          = true,
+    no_shadow        = true,
+    no_anim          = true,
+    border_size      = 0,
+})
+
 -- Picture-in-Picture
 hl.window_rule({
     name  = "pip",

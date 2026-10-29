@@ -137,19 +137,24 @@ let
   };
 
   # Silmaril (MUD client, ~/code/Silmaril): Kotlin Compose Desktop + Jewel.
-  # Jewel's custom title bar needs JetBrains Runtime 21, not plain OpenJDK;
-  # also at /etc/jbr-21 for IDEs. Compose's Skia (skiko) dlopens libGL/X11/
-  # fontconfig, which NixOS has in no standard path -> LD_LIBRARY_PATH.
-  jbr21 = pkgs.jetbrains.jdk-21;
-  silmarilLibPath = "/run/opengl-driver/lib:"
-    + lib.makeLibraryPath (with pkgs; [ libglvnd libx11 fontconfig ]);
+  # Jewel 0.42 is built for Java 25 and its custom title bar needs JetBrains
+  # Runtime, so the app compiles and runs on JBR 25 (also at /etc/jbr-25 for
+  # IDEs). Gradle 8.14 itself can't run on Java 25 -> plain JDK 21, with JBR
+  # 25 handed to it as the toolchain. Compose's Skia (skiko) dlopens libGL/
+  # X11/fontconfig, which NixOS has in no standard path -> LD_LIBRARY_PATH.
+  # JBR 25 ignores GDK_SCALE (JBR 21 didn't) -> pass it as Java's UI scale.
+  jbr25 = pkgs.jetbrains.jdk;
+  silmarilEnv = ''
+    export LD_LIBRARY_PATH=/run/opengl-driver/lib:${lib.makeLibraryPath (with pkgs; [ libglvnd libx11 fontconfig ])}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    export JAVA_TOOL_OPTIONS="-Dsun.java2d.uiScale=''${GDK_SCALE:-1}''${JAVA_TOOL_OPTIONS:+ $JAVA_TOOL_OPTIONS}"
+  '';
   # `silmaril-gradle <task>`: gradlew in the current dir if it has one (a
   # worktree), else ~/code/Silmaril. E.g. run, createReleaseDistributable.
   silmarilGradle = pkgs.writeShellScriptBin "silmaril-gradle" ''
     test -x ./gradlew || cd "$HOME/code/Silmaril" || exit 1
-    export JAVA_HOME=${jbr21}/lib/openjdk
-    export LD_LIBRARY_PATH=${silmarilLibPath}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-    exec ./gradlew -Porg.gradle.java.installations.paths="$JAVA_HOME" "$@"
+    export JAVA_HOME=${pkgs.jdk21}/lib/openjdk
+    ${silmarilEnv}
+    exec ./gradlew -Porg.gradle.java.installations.paths=${jbr25}/lib/openjdk "$@"
   '';
   # `silmaril`: runs the last `silmaril-gradle createReleaseDistributable`.
   silmarilRun = pkgs.writeShellScriptBin "silmaril" ''
@@ -158,7 +163,7 @@ let
       echo "Silmaril isn't built yet: run  silmaril-gradle createReleaseDistributable" >&2
       exit 1
     fi
-    export LD_LIBRARY_PATH=${silmarilLibPath}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    ${silmarilEnv}
     exec "$app" "$@"
   '';
   silmarilDesktop = pkgs.makeDesktopItem {
@@ -177,8 +182,8 @@ in
   programs.nix-ld.enable = true;        # Dynamic linker for non-Nix binaries (Mason, uv, pip wheels)
   programs.nix-ld.libraries = desktopRuntimeLibs ++ unrealRuntimeLibs;
 
-  # Stable JBR path for IDEs (JDK home: /etc/jbr-21/lib/openjdk).
-  environment.etc."jbr-21".source = jbr21;
+  # Stable JBR path for IDEs (JDK home: /etc/jbr-25/lib/openjdk).
+  environment.etc."jbr-25".source = jbr25;
   programs.firefox.enable = true;       # Firefox browser
 
   # --- Gaming ---
