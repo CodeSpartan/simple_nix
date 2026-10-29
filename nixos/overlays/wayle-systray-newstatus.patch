@@ -1,0 +1,32 @@
+--- a/src/core/item/monitoring.rs	2026-10-29 09:28:49.950026868 +0300
++++ b/src/core/item/monitoring.rs	2026-10-29 09:28:57.668989551 +0300
+@@ -127,6 +127,16 @@
+         }
+     };
+ 
++    // Apps announce Passive/Active (show/hide me) with the NewStatus signal;
++    // many (e.g. blueman) never emit PropertiesChanged for Status.
++    let mut new_status = match item_proxy.receive_new_status().await {
++        Ok(stream) => stream,
++        Err(error) => {
++            error!(error = %error, "cannot subscribe to NewStatus signal");
++            return;
++        }
++    };
++
+     let mut layout_updated = match menu_proxy.receive_layout_updated().await {
+         Ok(layout) => layout,
+         Err(error) => {
+@@ -302,6 +312,12 @@
+                 }
+             }
+ 
++            Some(signal) = new_status.next() => {
++                if let Ok(args) = signal.args() {
++                    tray_item.status.set(Status::from(args.status.as_str()));
++                }
++            }
++
+             Some(_) = new_menu.next() => {
+                 debug!("new_menu signal received, scheduling debounced refresh");
+                 menu_dirty = true;

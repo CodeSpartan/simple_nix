@@ -44,6 +44,7 @@
     (import ./overlays/nsight-graphics.nix)
     (import ./overlays/wayle-pr255.nix)   # TEMPORARY, see that file -- drop once wayle-rs/wayle#255 merges
     (import ./overlays/wayle-english-dates.nix)   # LC_TIME=en_US for wayle only; after wayle-pr255
+    (import ./overlays/blueman-hide-when-off.nix)   # tray icon only while Bluetooth is on
     (import ./overlays/typescript-language-server-hash.nix)
   ];
   nixpkgs.config.allowUnfree = true;

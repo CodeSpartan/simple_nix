@@ -43,7 +43,15 @@ rustPlatform.buildRustPackage (finalAttrs: {
   # plain Wifi/Wired/None -- which is always, on this machine, since iVPN's
   # WireGuard tunnel is reported as primary. Prefer an actually-connected
   # wired device in that fallback instead. See wayle-network-prefer-wired.patch.
-  patches = [ ./wayle-network-prefer-wired.patch ];
+  #
+  # The tray shows every icon, even ones whose app asks to be hidden (SNI
+  # status "Passive", e.g. blueman while Bluetooth is off). Hide those; the
+  # second half (wayle-systray-newstatus.patch, applied in postPatch) makes
+  # wayle notice the NewStatus signal apps send when the status changes.
+  patches = [
+    ./wayle-network-prefer-wired.patch
+    ./wayle-systray-hide-passive.patch
+  ];
 
   nativeBuildInputs = [
     copyDesktopItems
@@ -128,6 +136,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
       --replace-fail \
         '.is_some_and(|owner| owner == app_name);' \
         '.is_none_or(|owner| owner == app_name);'
+
+    # Tray: update an icon's status on the NewStatus signal (wayle only read
+    # it from PropertiesChanged, which blueman never sends). See `patches`.
+    patch -d "$(echo "$cargoDepsCopy"/*/wayle-systray-0.1.3)" -p1 < ${./wayle-systray-newstatus.patch}
   '';
 
   cargoBuildFlags = [

@@ -1,0 +1,89 @@
+diff -ru a/crates/wayle-shell/src/shell/bar/modules/systray/item/mod.rs b/crates/wayle-shell/src/shell/bar/modules/systray/item/mod.rs
+--- a/crates/wayle-shell/src/shell/bar/modules/systray/item/mod.rs	2026-10-29 09:28:11.505408525 +0300
++++ b/crates/wayle-shell/src/shell/bar/modules/systray/item/mod.rs	2026-10-29 09:29:08.930242197 +0300
+@@ -12,7 +12,10 @@
+ use tokio_util::sync::CancellationToken;
+ use tracing::{debug, warn};
+ use wayle_config::ConfigService;
+-use wayle_systray::{core::item::TrayItem, types::Coordinates};
++use wayle_systray::{
++    core::item::TrayItem,
++    types::{Coordinates, item::Status},
++};
+ 
+ pub(super) struct SystrayItemInit {
+     pub(super) item: Arc<TrayItem>,
+@@ -40,6 +43,7 @@
+     ShowMenu,
+     MenuUpdated,
+     IconUpdated,
++    StatusUpdated,
+ }
+ 
+ #[derive(Debug)]
+@@ -126,11 +130,13 @@
+ 
+         watchers::spawn_menu_watcher(&sender, &self.item, self.cancel_token.clone());
+         watchers::spawn_icon_watcher(&sender, &self.item, self.cancel_token.clone());
++        watchers::spawn_status_watcher(&sender, &self.item, self.cancel_token.clone());
+ 
+         let widgets = view_output!();
+ 
+         self.icon = Some(widgets.icon.clone());
+         self.update_icon(&widgets.icon);
++        self.update_visibility();
+ 
+         widgets
+     }
+@@ -184,6 +190,19 @@
+                     self.update_icon(&icon);
+                 }
+             }
++            SystrayItemMsg::StatusUpdated => {
++                self.update_visibility();
++            }
++        }
++    }
++}
++
++impl SystrayItem {
++    /// SNI "Passive" means the app asks to be hidden (e.g. blueman while
++    /// Bluetooth is off); "Active" and "NeedsAttention" are shown.
++    fn update_visibility(&self) {
++        if let Some(button) = &self.button {
++            button.set_visible(self.item.status.get() != Status::Passive);
+         }
+     }
+ }
+diff -ru a/crates/wayle-shell/src/shell/bar/modules/systray/item/watchers.rs b/crates/wayle-shell/src/shell/bar/modules/systray/item/watchers.rs
+--- a/crates/wayle-shell/src/shell/bar/modules/systray/item/watchers.rs	2026-10-29 09:28:11.505446908 +0300
++++ b/crates/wayle-shell/src/shell/bar/modules/systray/item/watchers.rs	2026-10-29 09:29:08.930320236 +0300
+@@ -58,3 +58,28 @@
+         }
+     });
+ }
++
++pub(super) fn spawn_status_watcher(
++    sender: &FactorySender<SystrayItem>,
++    item: &Arc<TrayItem>,
++    cancel_token: CancellationToken,
++) {
++    let stream = item.status.watch().skip(1);
++    let sender = sender.clone();
++
++    relm4::spawn_local(async move {
++        futures::pin_mut!(stream);
++
++        loop {
++            tokio::select! {
++                () = cancel_token.cancelled() => break,
++                result = stream.next() => {
++                    if result.is_none() {
++                        break;
++                    }
++                    sender.input(SystrayItemMsg::StatusUpdated);
++                }
++            }
++        }
++    });
++}

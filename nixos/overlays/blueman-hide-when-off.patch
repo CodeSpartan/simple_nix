@@ -1,0 +1,17 @@
+--- a/blueman/plugins/applet/StatusIcon.py	2026-10-29 09:29:37.458593483 +0300
++++ b/blueman/plugins/applet/StatusIcon.py	2026-10-29 09:29:37.482545790 +0300
+@@ -69,9 +69,11 @@
+         self._add_dbus_method("Activate", (), "", self.parent.Plugins.StandardItems.on_devices)
+ 
+     def query_visibility(self, delay_hiding: bool = False, emit: bool = True) -> None:
+-        if self.parent.Manager.get_adapters() or \
+-           any(plugin.on_query_force_status_icon_visibility()
+-               for plugin in self.parent.Plugins.get_loaded_plugins(StatusIconVisibilityHandler)):
++        # simple_nix: show the icon only while Bluetooth is on (upstream shows it
++        # whenever an adapter exists). Turn it on from blueman-manager.
++        if self.parent.Manager.get_adapters() and \
++           "PowerManager" in self.parent.Plugins.get_loaded() and \
++           self.parent.Plugins.PowerManager.get_bluetooth_status():
+             self.set_visible(True, emit)
+         elif not self.visibility_timeout:
+             if delay_hiding:
