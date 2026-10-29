@@ -53,6 +53,10 @@
 
   # --- Locale ---
   time.timeZone = host.timezone;
+  # Flatpak apps (MAX, Discord) get their timezone from /etc/localtime only if it
+  # points into /usr/share/zoneinfo; NixOS's points into the Nix store, so they
+  # fell back to UTC. /etc/timezone is flatpak's next guess.
+  environment.etc."timezone".text = "${host.timezone}\n";
 
   i18n.defaultLocale = host.defaultLocale;
   i18n.extraLocaleSettings = {
