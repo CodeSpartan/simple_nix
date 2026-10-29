@@ -31,9 +31,9 @@
 final: prev:
 
 let
-  nsightVersion = "2026.2.0.26134";
+  nsightVersion = "2026.3.1.26224";
   nsightRun     = "NVIDIA_Nsight_Graphics_${nsightVersion}-linux_x64.run";
-  nsightHash    = "sha256-gXwkSUpxpzidd2E7ZZ7/m3KpdHqendcDUQ9J260QoIk=";
+  nsightHash    = "sha256-uGq3pUwctPMkLknleZgTqDLjRaDyZfCLY4BDybGytnw=";
 
   # Where the CLI launchers live inside the extracted pkg/ tree.
   hostDir = "host/linux-desktop-nomad-x64";

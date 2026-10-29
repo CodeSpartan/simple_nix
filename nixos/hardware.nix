@@ -63,6 +63,9 @@ in
     "kernel.hardlockup_panic" = 1;   # CPU ignored IRQs >10s => panic via NMI
     "kernel.softlockup_panic" = 1;   # CPU looped in kernel >20s => panic
     "kernel.hung_task_panic" = 1;    # task stuck in D-state >120s => panic
+  } // lib.optionalAttrs (host.amduprof or false) {
+    # AMD uProf's IBS sampling needs <= 1 for non-root (NixOS default is 2).
+    "kernel.perf_event_paranoid" = 1;
   };
   # Hardware watchdog -- sp5100_tco on this AMD chipset. If systemd stops
   # pinging it, the chipset itself resets the box. Only backstop that survives

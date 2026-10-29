@@ -25,9 +25,9 @@
 final: prev:
 
 let
-  uprofVersion = "5.2.606";
+  uprofVersion = "5.3.521";
   uprofTarball = "AMDuProf_Linux_x64_${uprofVersion}.tar.bz2";
-  uprofHash    = "sha256-1YVqZkD2xnOUHctuQvcrWJ1la6QNK6A/8SFWEbKDDxE=";
+  uprofHash    = "sha256-E0ZZxtk5S+MjYyrUBhacG9U2I7J+WPXrcvcjXaqmwPk=";
 
   src = prev.requireFile {
     name = uprofTarball;

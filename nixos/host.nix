@@ -12,6 +12,6 @@
   nvidia = true;                      # set false on AMD/Intel GPU machines
   repoDir = "/home/vervain/code/simple_nix";   # local clone path for the update check; must match username above
   updateCheck = true;                 # fetch origin/main nightly and notify; never pull or rebuild
-  amduprof = false;                   # AMD uProf -- requires one-time tarball setup, see README
-  nsightGraphics = false;             # NVIDIA Nsight Graphics CLI -- requires one-time installer setup, see README
+  amduprof = true;                    # AMD uProf -- requires one-time tarball setup, see README
+  nsightGraphics = true;              # NVIDIA Nsight Graphics CLI -- requires one-time installer setup, see README
 }

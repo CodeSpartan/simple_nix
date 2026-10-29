@@ -218,15 +218,15 @@ Gated by `amduprof` in `host.nix`. Leave it `false` (default) and `install.sh` w
 ```bash
 # 1. Download AMDuProf_Linux_x64_<version>.tar.bz2 (~300 MB) from:
 #      https://www.amd.com/en/developer/uprof.html
-#    (The version pinned in the overlay is 5.2.606 -- bump `uprofVersion`
+#    (The version pinned in the overlay is 5.3.521 -- bump `uprofVersion`
 #     there if you grab a newer release.)
 
 # 2. Compute its hash and paste into `uprofHash` in
 #    nixos/overlays/amduprof.nix:
-nix hash file ~/Downloads/AMDuProf_Linux_x64_5.2.606.tar.bz2
+nix hash file ~/Downloads/AMDuProf_Linux_x64_5.3.521.tar.bz2
 
 # 3. Add the tarball to the Nix store:
-nix store add-file ~/Downloads/AMDuProf_Linux_x64_5.2.606.tar.bz2
+nix store add-file ~/Downloads/AMDuProf_Linux_x64_5.3.521.tar.bz2
 
 # 4. Enable the flag in nixos/host.nix:
 #      amduprof = true;
@@ -238,10 +238,14 @@ nix store add-file ~/Downloads/AMDuProf_Linux_x64_5.2.606.tar.bz2
 Afterwards `AMDuProfCLI`, `AMDuProfPcm`, and `AMDuProfCfg` are on PATH. Quick check:
 
 ```bash
-AMDuProfCLI info                                        # system/CPU info
+AMDuProfCLI info --system                               # system/CPU info
 AMDuProfCLI collect --config tbp -o /tmp/uprof ./myapp  # sample a binary
-AMDuProfCLI report  -i /tmp/uprof/AMDuProf-*            # text report
+AMDuProfCLI report  -i /tmp/uprof                       # writes /tmp/uprof/report.csv
 ```
+
+AMD's launcher passes arguments through `eval`, so an argument containing spaces or parentheses (e.g. `python3 -c '...'`) breaks -- put such code in a script file.
+
+`AMDuProfPcm` only works on CPUs it ships a config for (`bin/Data/Config/<family>_<model>.conf`). Desktop Zen 2 (Ryzen 3000, family 0x17 model 0x7x) has none, so there it fails with "unsupported processor model" -- use `likwid-perfctr` instead.
 
 No `msr` kernel-module changes are needed for user-space profiling on the default NixOS sysctls. If a specific counter errors with "Permission denied", run that single invocation with `sudo` -- CAP_SYS_ADMIN bypasses the default paranoid level. If the wrapper complains about a missing `.so`, add the library to `fhsDeps` in the overlay and rebuild.
 
@@ -261,11 +265,7 @@ Temporary (resets on reboot):
 sudo sysctl -w kernel.perf_event_paranoid=1
 ```
 
-Persistent, add to `nixos/configuration.nix`:
-
-```nix
-boot.kernel.sysctl."kernel.perf_event_paranoid" = 1;
-```
+Persistent: already done -- `amduprof = true` also sets `kernel.perf_event_paranoid = 1` (`nixos/hardware.nix`).
 
 Check the current value with `cat /proc/sys/kernel/perf_event_paranoid`. Alternatively, run `AMDuProfCLI collect` under `sudo` -- root bypasses the paranoid check entirely.
 
@@ -280,15 +280,15 @@ Gated by `nsightGraphics` in `host.nix`. Leave it `false` (default) and `install
 ```bash
 # 1. Download NVIDIA_Nsight_Graphics_<version>-linux_x64.run (~450 MB) from:
 #      https://developer.nvidia.com/nsight-graphics
-#    (The version pinned in the overlay is 2026.2.0.26134 -- bump
+#    (The version pinned in the overlay is 2026.3.1.26224 -- bump
 #     `nsightVersion` there if you grab a newer release.)
 
 # 2. Compute its hash and paste into `nsightHash` in
 #    nixos/overlays/nsight-graphics.nix:
-nix hash file ~/Downloads/NVIDIA_Nsight_Graphics_2026.2.0.26134-linux_x64.run
+nix hash file ~/Downloads/NVIDIA_Nsight_Graphics_2026.3.1.26224-linux_x64.run
 
 # 3. Add the installer to the Nix store:
-nix store add-file ~/Downloads/NVIDIA_Nsight_Graphics_2026.2.0.26134-linux_x64.run
+nix store add-file ~/Downloads/NVIDIA_Nsight_Graphics_2026.3.1.26224-linux_x64.run
 
 # 4. Enable the flag in nixos/host.nix:
 #      nsightGraphics = true;
