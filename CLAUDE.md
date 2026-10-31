@@ -300,6 +300,15 @@ saves are shared with Windows. Notes in
 - Ctrl+scroll over the tab bar switching tabs = Hyprland binds in `user.lua`.
 - Userscripts are kept in `config/userscripts/`.
 
+## Screenshot upload (Gyazo / Cloudinary)
+
+`nixos/screenshot-upload.nix` + `nixos/pkgs/screenshot-upload/`. PrtSc is
+Flameshot; Shift/Ctrl+PrtSc pipe `flameshot gui --raw` to
+`screenshot-upload gyazo|cloudinary` (link -> clipboard + Brave). Also in
+Flameshot's "Open with" and Dolphin's right-click "Upload to". Credentials:
+agenix `gyazo-token` (access token) and `cloudinary`
+(`cloudinary://key:secret@cloud`, signed upload).
+
 ## Calendar / day notes (replaces Rainlendar)
 
 `nixos/calendar.nix`. calcurse in a `foot` window (`calendar-open`, from the

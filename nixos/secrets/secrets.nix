@@ -21,4 +21,6 @@ in
   # and wires up nixos/security.nix automatically.
   "id_ed25519_github.age".publicKeys = [ vervain ];
   "id_ed25519_gitlab.age".publicKeys = [ vervain ];
+  "gyazo-token.age".publicKeys = [ vervain ];
+  "cloudinary.age".publicKeys = [ vervain ];
 }

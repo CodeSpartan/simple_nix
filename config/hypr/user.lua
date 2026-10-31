@@ -40,6 +40,8 @@
 --   Super+Alt+N          = notification history (full bodies)
 --   Super+Ctrl+S         = move window to scratchpad
 --   Print                = screenshot region
+--   Shift+Print          = screenshot region -> Gyazo (link copied + opened)
+--   Ctrl+Print           = screenshot region -> Cloudinary (link copied + opened)
 --   Super+Shift+S        = screenshot region
 --   Super+Print          = screenshot full monitor
 
@@ -375,6 +377,9 @@ hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("hyprctl reload"), { locked =
 
 -- Screenshots
 hl.bind("Print",                   hl.dsp.exec_cmd("flameshot gui"))
+-- Same Flameshot screen; Enter uploads (nixos/screenshot-upload.nix)
+hl.bind("SHIFT + Print",           hl.dsp.exec_cmd("flameshot gui --raw | screenshot-upload gyazo"))
+hl.bind("CTRL + Print",            hl.dsp.exec_cmd("flameshot gui --raw | screenshot-upload cloudinary"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("grimblast --freeze copysave area"))
 hl.bind(mainMod .. " + Print",     hl.dsp.exec_cmd("grimblast copysave output"))
 

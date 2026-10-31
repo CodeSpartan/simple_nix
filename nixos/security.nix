@@ -69,6 +69,18 @@ in
     group = "users";
     mode = "0600";
   };
+  age.secrets.gyazo-token = {
+    file = ./secrets/gyazo-token.age;
+    owner = host.username;
+    group = "users";
+    mode = "0600";
+  };
+  age.secrets.cloudinary = {
+    file = ./secrets/cloudinary.age;
+    owner = host.username;
+    group = "users";
+    mode = "0600";
+  };
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [ ];   # openssh module auto-opens 22

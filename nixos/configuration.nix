@@ -14,6 +14,7 @@
     ./clock.nix
     ./whatsapp-tray.nix
     ./max-tray.nix
+    ./screenshot-upload.nix
   ];
 
   # --- Networking ---
