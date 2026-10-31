@@ -20,8 +20,12 @@
 --   Super+right-drag     = resize floating window
 --
 -- Workspaces:
---   Super+1-9            = jump to workspace
---   Super+Shift+1-9      = move window to workspace
+--   Super+1-0            = jump to workspace 1-10
+--   Super+Shift+1-0      = move window to workspace 1-10
+--   Super+Alt+1-0        = jump to workspace 11-20
+--   Super+Alt+Shift+1-0  = move window to workspace 11-20
+--   Super+N              = jump to a new empty workspace
+--   Super+Shift+N        = move window to a new empty workspace
 --   Super+scroll          = cycle workspaces
 --   Super+`              = show desktop (press again to go back)
 --   Super+S              = toggle scratchpad
@@ -33,7 +37,7 @@
 --   Super+P              = toggle pseudo tiling
 --   Super+L              = lock screen
 --   Super+/              = keybind cheatsheet
---   Super+N              = notification history (full bodies)
+--   Super+Alt+N          = notification history (full bodies)
 --   Super+Ctrl+S         = move window to scratchpad
 --   Print                = screenshot region
 --   Super+Shift+S        = screenshot region
@@ -349,7 +353,7 @@ hl.bind(mainMod .. " + slash",     hl.dsp.exec_cmd(configDir .. "/cheatsheet.sh"
 hl.bind(mainMod .. " + P",         hl.dsp.window.pseudo())                    -- dwindle
 hl.bind(mainMod .. " + J",         hl.dsp.layout("togglesplit"))              -- dwindle
 hl.bind(mainMod .. " + M",         hl.dsp.exec_cmd(configDir .. "/toggle-layout.sh"))
-hl.bind(mainMod .. " + N",         hl.dsp.exec_cmd("kitty --class=notif-log sh -c 'wayle notify list | less -R'"))
+hl.bind(mainMod .. " + ALT + N",   hl.dsp.exec_cmd("kitty --class=notif-log sh -c 'wayle notify list | less -R'"))
 
 -- Ctrl+Shift switches keyboard layout on *release*, like Windows. XKB's own
 -- grp:ctrl_shift_toggle fires on press, so Ctrl+Shift+C/V/T also flipped the
@@ -395,11 +399,18 @@ hl.bind(mainMod .. " + ALT + C", hl.dsp.window.center())
 
 -- Switch workspaces with mainMod + [0-9]
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
+-- Same with ALT added for workspaces 11-20
 for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
-    hl.bind(mainMod .. " + " .. key,           hl.dsp.focus({ workspace = i }))
-    hl.bind(mainMod .. " + SHIFT + " .. key,   hl.dsp.window.move({ workspace = i }))
+    hl.bind(mainMod .. " + " .. key,                 hl.dsp.focus({ workspace = i }))
+    hl.bind(mainMod .. " + SHIFT + " .. key,         hl.dsp.window.move({ workspace = i }))
+    hl.bind(mainMod .. " + ALT + " .. key,           hl.dsp.focus({ workspace = i + 10 }))
+    hl.bind(mainMod .. " + ALT + SHIFT + " .. key,   hl.dsp.window.move({ workspace = i + 10 }))
 end
+
+-- First unused workspace number (no limit)
+hl.bind(mainMod .. " + N",         hl.dsp.focus({ workspace = "empty" }))
+hl.bind(mainMod .. " + SHIFT + N", hl.dsp.window.move({ workspace = "empty" }))
 
 -- Show desktop: Super+` jumps to an empty workspace named "desktop" (just the
 -- wallpaper); pressing it again goes back to the workspace you came from.
