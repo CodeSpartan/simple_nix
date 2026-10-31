@@ -219,6 +219,15 @@ M.base46 = {
 }
 
 M.ui = {
+  tabufline = {
+    modules = {
+      -- Upstream's version is O(n^2) and takes seconds with hundreds of
+      -- buffers. Required lazily: the module needs nvconfig, which loads us.
+      buffers = function()
+        return require "configs.tabufline_buffers"()
+      end,
+    },
+  },
   statusline = {
     modules = {
       cursor = function()

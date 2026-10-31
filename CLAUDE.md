@@ -38,6 +38,12 @@ inherited from Vitalii stays -- don't trim it.
   Check: disable the path unit, restart Discord, watch a stream; Discord's log
   `logs/discord-webrtc_0` shows which `libopenh264-*` it loads. If it now loads
   a version it keeps, remove the unit.
+- NvChad PR https://github.com/NvChad/ui/pull/564 (tabufline O(n^2) with
+  many buffers). Check at most once a month: `gh pr view 564 -R nvchad/ui`.
+  **Last checked: 2026-10-31** (just opened) -- update the date each check.
+  Once merged: `:Lazy update ui` in nvim (bumps `config/nvim/lazy-lock.json`),
+  then remove our workaround (`config/nvim/lua/configs/tabufline_buffers.lua`
+  + `ui.tabufline.modules` in `chadrc.lua`). If closed unmerged, keep it.
 
 ## Where to make a change
 
@@ -297,6 +303,15 @@ KClock doesn't listen for.
 Its "timer running" notification is off: `link.sh` sets
 `timerNotification=Never` in `~/.config/kclockrc` (KClock rewrites that file,
 so only that key is set, not symlinked).
+
+## Notepad++ tabs (Windows) in Neovim
+
+The Windows Notepad++ session (portable install `D:\Progs\Notepad++`) was
+converted for nvim: unsaved tabs became files in `~/Documents/npp-tabs`,
+and auto-session's session for that folder lists them plus the real files
+on C:/D:/E: in Notepad++'s tab order (`cd ~/Documents/npp-tabs && nvim`).
+Untouched copy of the Notepad++ folder: `~/Documents/notepad++ from windows`.
+~600 buffers made NvChad's tab bar take 1.5 s per redraw -- see the TODO.
 
 ## Image viewer (nomacs)
 
