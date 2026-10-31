@@ -539,6 +539,14 @@ hl.window_rule({
     idle_inhibit = "fullscreen",
 })
 
+-- WoW (Proton): open fullscreen. Its "Fullscreen (Windowed)" mode never asks
+-- for it and just takes the tile's size (3840x2074 next to the bar).
+hl.window_rule({
+    name       = "wow-fullscreen",
+    match      = { class = "^steam_app_default$", title = "^World of Warcraft$" },
+    fullscreen = true,
+})
+
 -- Telegram's photo/video viewer: open fullscreen. It asks for fullscreen
 -- itself, but suppress-maximize-events above ignores that request.
 -- Floating: a tiled fullscreen window makes the smart-gaps rules resize the
