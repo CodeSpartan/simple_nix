@@ -41,9 +41,11 @@ inherited from Vitalii stays -- don't trim it.
 - NvChad PR https://github.com/NvChad/ui/pull/564 (tabufline O(n^2) with
   many buffers). Check at most once a month: `gh pr view 564 -R nvchad/ui`.
   **Last checked: 2026-10-31** (just opened) -- update the date each check.
-  Once merged: `:Lazy update ui` in nvim (bumps `config/nvim/lazy-lock.json`),
-  then remove our workaround (`config/nvim/lua/configs/tabufline_buffers.lua`
-  + `ui.tabufline.modules` in `chadrc.lua`). If closed unmerged, keep it.
+  Once merged: `:Lazy update ui` in nvim (bumps `config/nvim/lazy-lock.json`).
+  Keep our module (`config/nvim/lua/configs/tabufline_buffers.lua`, wired
+  via `ui.tabufline.modules` in `chadrc.lua`) anyway: it also keeps one tab
+  visible after the current one when the bar scrolls (user wants that;
+  upstream doesn't do it). Drop it only if upstream gains that too.
 
 ## Where to make a change
 

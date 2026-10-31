@@ -115,13 +115,19 @@ return function()
     end
   end
 
-  -- Upstream shows buffers from the start; once the current one would fall
-  -- off the right edge, the window scrolls so it is the last visible one.
-  -- If the current buffer isn't in the list (e.g. the file tree), it shows
-  -- the last ones.
+  -- Show buffers from the start; once the current one would fall off the
+  -- right edge, scroll so one more buffer stays visible after it (unlike
+  -- upstream, which makes the current one the last), so you can see there
+  -- are more. If the current buffer isn't in the list (e.g. the file tree),
+  -- show the last ones.
+  local n = #bufs
   local fit = math.max(1, math.floor((vim.o.columns - other_width()) / bufwidth))
-  local first = math.max(1, (ci or #bufs) - fit + 1)
-  local last = math.min(#bufs, first + fit - 1)
+  local last = n
+  if ci then
+    local ahead = fit >= 2 and 1 or 0
+    last = math.max(math.min(fit, n), math.min(ci + ahead, n))
+  end
+  local first = math.max(1, last - fit + 1)
 
   local cur_mod = api.nvim_get_option_value("mod", { buf = 0 })
   local out = {}
