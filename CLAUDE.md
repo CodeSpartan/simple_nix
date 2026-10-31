@@ -240,7 +240,9 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
 notes). `programs.nix` adds JBR 25 (`/etc/jbr-25`; Jewel 0.42 is Java 25),
 `silmaril-gradle <task>` (Gradle on JDK 21 + JBR 25 toolchain, libGL path for
 skiko, `sun.java2d.uiScale` from `GDK_SCALE` since JBR 25 ignores it) and
-`silmaril` + app-menu entry (runs the `createReleaseDistributable` output).
+`silmaril` (runs the `createReleaseDistributable` output). The app-menu
+"Silmaril" is the native rewrite instead: `~/code/silmaril-native/launch.sh`
+(the latest `cargo build --release` there; that repo's CLAUDE.md has the rest).
 Its hover tooltips are XWayland dialogs titled `silmaril-tooltip`; the
 `silmaril-tooltip` rule in `user.lua` stops them stealing focus. User data
 `~/Documents/Silmaril` (repo `Silmaril-Config`), copied from Windows without logs.

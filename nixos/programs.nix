@@ -166,13 +166,16 @@ let
     ${silmarilEnv}
     exec "$app" "$@"
   '';
-  silmarilDesktop = pkgs.makeDesktopItem {
-    name = "silmaril";
+  # The app-menu "Silmaril" is the native client (~/code/silmaril-native, Rust): its launch.sh
+  # starts the latest `cargo build --release` there (the Kotlin one stays runnable as `silmaril`).
+  silmarilNativeDesktop = pkgs.makeDesktopItem {
+    name = "silmaril-native";
     desktopName = "Silmaril";
     comment = "MUD client for adan.ru";
-    exec = "${silmarilRun}/bin/silmaril";
-    icon = "/home/vervain/code/Silmaril/icons/icon_256.png";
+    exec = "/home/vervain/code/silmaril-native/launch.sh";
+    icon = "/home/vervain/code/silmaril-native/crates/ui/assets/icon_256.png";
     categories = [ "Game" ];
+    startupWMClass = "silmaril-native";
   };
 in
 
@@ -322,7 +325,7 @@ in
 
     # JVM
     jdk kotlin kotlin-language-server
-    silmarilGradle silmarilRun silmarilDesktop   # Silmaril MUD client (see the let block)
+    silmarilGradle silmarilRun silmarilNativeDesktop   # Silmaril MUD client (see the let block)
 
     # Haskell
     ghc cabal-install haskell-language-server
