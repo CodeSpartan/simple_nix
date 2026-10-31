@@ -446,6 +446,7 @@ in
     braveAutoscroll vscode vlcScaled telegram-desktop yt-dlp qbittorrentClean obsidian
     yandex-music               # Official Yandex Music app, repackaged for Linux
     mangohud                   # Real-time FPS/GPU/CPU overlay for games
+    lutris                     # Game manager for non-Steam games; installs Battle.net via its Wine/Proton script
     piper                      # GUI for the G300s: buttons, DPI, polling rate, LED (via ratbagd)
 
     # VPN

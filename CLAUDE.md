@@ -266,6 +266,25 @@ saves are shared with Windows. Notes in
   launcher's Update overwrites it and the cheat.
 - Native Linux build: `~/code/bloodborne_pc` (no DLSS).
 
+## Battle.net / WoW (Lutris)
+
+- Battle.net = Lutris's "Battle.net" installer (Proton-GE via umu). Prefix
+  `~/Games/battlenet`, Lutris config `~/.local/share/lutris/games/battlenet-*.yml`
+  -- outside git, redo after a reinstall. App-menu "Battle.net" starts it
+  through Lutris without the Lutris window.
+- WoW is the Windows install on C: (`/mnt/cdrive/Games/World of Warcraft`,
+  product `wowf` = WoW: Forever), shared with Windows. The prefix's
+  `drive_c/Games` symlinks to `/mnt/cdrive/Games` so paths match the
+  install's own records (`C:/Games/...`). "Locate" still didn't register it:
+  its entry was copied from Windows' `C:\ProgramData\Battle.net\Agent\product.db`
+  into the prefix's (protobuf; one top-level field 1 per game).
+- 2x scale: Lutris rewrites the prefix DPI on every launch -- set it in Lutris
+  (Configure → Runner options → Advanced → DPI 192), not in the registry.
+- The login code ("Challenge") pop-up renders black under Wine, and resizing
+  it crashes Battle.net. Confirm the login on account.battle.net in Brave.
+- WoW's fullscreen needs its title exemption in `suppress-maximize-events`
+  (`user.lua`).
+
 ## Brave
 
 - Copied extensions show "corrupted"; **Repair wipes the extension's data** --

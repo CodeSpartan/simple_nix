@@ -516,11 +516,13 @@ hl.window_rule({
 
 -- General window rules
 -- Apps can't fullscreen/maximize themselves -- except VLC, so its F key and
--- double-click work. ("negative:" inverts the regex. A later rule with a
--- narrower suppress_event does NOT override this one; tested.)
+-- double-click work, and WoW (Proton, so matched by title), whose fullscreen
+-- modes otherwise end up a tiled window at whatever size the tile has.
+-- ("negative:" inverts the regex. A later rule with a narrower
+-- suppress_event does NOT override this one; tested.)
 hl.window_rule({
     name           = "suppress-maximize-events",
-    match          = { class = "negative:^(vlc)$" },
+    match          = { class = "negative:^(vlc)$", title = "negative:^World of Warcraft$" },
     suppress_event = "fullscreen maximize",
 })
 
