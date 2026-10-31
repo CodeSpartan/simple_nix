@@ -31,8 +31,8 @@ Daily reference for this config.
 ;                 enter command-line mode
 jk                leave insert mode
 < / >             reindent visual selection and keep it selected
-<leader>y         yank visual selection to system clipboard
-<leader>p         paste from system clipboard
+<leader>y         yank visual selection to system clipboard (y does too now)
+<leader>p         paste from system clipboard (p does too now)
 <leader>F         format file
 <leader>F         format selected range in visual mode
 <leader>hc        open this cheat sheet

@@ -29,7 +29,7 @@ NvChad-based config for everyday editing with a bias toward C/C++/MLIR/TableGen 
 - `*.hlsl`, `*.hlsli`, `*.fx`, `*.fxh`, `*.usf`, `*.ush` map to `hlsl`, which Neovim does not detect on its own. `slangd` serves both `hlsl` and `shaderslang` buffers
 - shader and GPU filetypes beyond HLSL need no local mapping: Neovim already resolves `*.slang` to `shaderslang`, the `*.vert`/`*.frag`/`*.comp`/`*.glsl` family to `glsl`, and `*.cu`/`*.cuh` to `cuda`. `clangd` picks up `cuda` buffers on its own; `glsl` has no language server configured
 - undo and backup files live under Neovim's data directory
-- clipboard sync is intentionally disabled by default (`opt.clipboard = ""`)
+- yank/delete/paste share the system clipboard (`opt.clipboard = "unnamedplus"`)
 
 ## Maintenance
 

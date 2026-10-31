@@ -114,7 +114,9 @@ vim.filetype.add {
   },
 }
 
-opt.clipboard = ""
+-- One clipboard with the rest of the desktop: yank/delete/paste use the
+-- system clipboard (Ctrl+C/Ctrl+V in other apps).
+opt.clipboard = "unnamedplus"
 
 local view_state = {}
 local view_group = api.nvim_create_augroup("UserViewState", { clear = true })
