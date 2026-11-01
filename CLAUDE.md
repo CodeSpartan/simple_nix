@@ -31,6 +31,13 @@ inherited from Vitalii stays -- don't trim it.
 
 ## TODO
 
+- After WoW: Forever launches (2026-11-04): WoW (not Battle.net) should
+  bypass both VPNs. iVPN is done (`wow.exe` in `config/ivpn-bypass/apps`) --
+  confirm with `journalctl -u ivpn-bypass` while WoW runs. v2rayN can't tell
+  Wine programs apart (same exe for all), so: with the user in-game, read
+  `curl 127.0.0.1:10814/connections` for WoW's server IPs/ports, propose a
+  direct rule by destination, and add it only with the user's OK (back up
+  `guiNDB.db` first; user clicks Reload).
 - `config/hypr/user.conf` is dead (see Hyprland) -- could be deleted.
 - From ~2026-12: check if the `discord-openh264` user unit (`nixos/home/apps.nix`)
   is still needed. It's a workaround for a Discord bug (deletes OpenH264 2.5.1
