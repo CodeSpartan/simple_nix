@@ -265,8 +265,8 @@ label-color = "#D2A6FF"
 button-bg-color = "transparent"
 # Hide MAX's own tray icon (id/title "max"); our max-tray icon
 # (nixos/max-tray.nix) replaces it. Exact, case-sensitive match: "MAX" and
-# "max-tray" stay visible.
-blacklist = ["max"]
+# "max-tray" stay visible. VLC's icon (id "vlc") isn't wanted at all.
+blacklist = ["max", "vlc"]
 
 [modules.keyboard-input]
 icon-color = "blue"
