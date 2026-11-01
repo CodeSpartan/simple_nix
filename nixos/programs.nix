@@ -38,6 +38,9 @@ let
   # "Sans Serif" 9pt; a VLC-only fontconfig file points that at Segoe UI,
   # copied from the Windows drive -- see CLAUDE.md). The alias goes before the
   # system include so the system's Inter preference doesn't win.
+  #
+  # Opening a file starts a new VLC window instead of replacing what the
+  # running one plays (VLC's default reuses it when started from a file).
   vlcFonts = pkgs.writeText "vlc-fonts.conf" ''
     <?xml version="1.0"?>
     <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -58,7 +61,8 @@ let
         rm "$out/bin/$b"
         makeWrapper "${pkgs.vlc}/bin/$b" "$out/bin/$b" --set QT_SCALE_FACTOR 2 \
           --set QT_QPA_PLATFORMTHEME generic --set QT_STYLE_OVERRIDE Fusion \
-          --set FONTCONFIG_FILE ${vlcFonts}
+          --set FONTCONFIG_FILE ${vlcFonts} \
+          --add-flags --no-one-instance-when-started-from-file
       done
       for d in "$out"/share/applications/*.desktop; do
         src=$(readlink -f "$d"); rm "$d"
