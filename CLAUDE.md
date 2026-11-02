@@ -103,8 +103,10 @@ inherited from Vitalii stays -- don't trim it.
   (`vlc-idle-inhibit.sh`: VLC 3 sends no inhibit on Wayland). See locks:
   `systemd-inhibit --list`, `hyprctl clients -j` (`inhibitingIdle`). Log:
   `journalctl --user -t hypridle`. `mouse/key_press_enables_dpms` also wake
-  the monitor. Once (2026-11-03) it didn't wake at all: the monitor needed a
-  power-cycle (from another VT, Ctrl+Alt+F3 = desktop) -- suspect its deep sleep.
+  the monitor. Once (2026-11-03) input didn't wake it: TTY2 displayed fine,
+  but back on the desktop (TTY3) the screen stayed black even with dpms on;
+  power-cycling the monitor (re-plug -> Hyprland redoes the mode) fixed it.
+  Cause unknown -- the monitor is not at fault (no deep sleep).
 - `hl.exec_cmd` strings starting with `[` are parsed as window rules -- use
   `test`, not `[ ]`.
 - `initial_workspace_tracking = 2`: a window opens on the workspace its
