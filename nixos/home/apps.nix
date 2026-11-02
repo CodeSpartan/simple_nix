@@ -34,23 +34,20 @@ in
   # Discord Flatpak overrides.
   # /nix/store read-only: discord-flags.conf below is a symlink into the store,
   # which the sandbox otherwise can't see (the flags were silently ignored).
-  # NVIDIA: force XWayland (GBM can't init inside Flatpak sandbox).
-  # TODO: drop the NVIDIA part when NVIDIA GBM works inside Flatpak sandbox
   home.file.".local/share/flatpak/overrides/com.discordapp.Discord".text = ''
     [Context]
     filesystems=/nix/store:ro
-  '' + lib.optionalString host.nvidia ''
-
-    [Environment]
-    ELECTRON_OZONE_PLATFORM_HINT=x11
   '';
   # Flags the Flatpak's launcher passes to Discord. Autoscroll = middle-click
   # scroll widget, like Brave/Chrome (programs.nix).
+  # Native Wayland: under XWayland, Hyprland cut copied images to 128 KB, so
+  # they didn't paste into other apps. (It was XWayland because NVIDIA GBM
+  # couldn't init in the Flatpak sandbox; works now, tested 2026-11-02.)
   home.file.".var/app/com.discordapp.Discord/config/discord-flags.conf".text = ''
     --enable-blink-features=MiddleClickAutoscroll
+    --ozone-platform=wayland
   '' + lib.optionalString host.nvidia ''
     --ignore-gpu-blocklist
-    --ozone-platform=x11
   '';
 
   # Restores OpenH264 2.5.1 for Discord (see discordOpenh264 above).
