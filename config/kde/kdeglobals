@@ -1,5 +1,7 @@
 [General]
 BrowserApplication=brave-browser.desktop
+TerminalApplication=kitty
+TerminalService=kitty.desktop
 ColorScheme=AyuDark
 Name=Ayu Dark
 widgetStyle=Breeze
