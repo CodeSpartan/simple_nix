@@ -102,7 +102,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("hyprsunset -i")   -- night light daemon, starts off; toggled by nightlight.sh
     -- Monitor calibration curve (white balance) from the LG's ICC profile,
     -- without Hyprland's ICC conversion -- see the monitor rule above.
-    hl.exec_cmd("vcgt-loader " .. configDir .. "/lg-ultragear-srgb-d65.icm 'LG ULTRAGEAR'")
+    hl.exec_cmd("systemd-cat -t vcgt-loader vcgt-loader " .. configDir .. "/lg-ultragear-srgb-d65.icm 'LG ULTRAGEAR'")
     -- monitor off after 15 min idle (no lock), see hypridle.conf; log: journalctl --user -t hypridle
     hl.exec_cmd("systemd-cat -t hypridle hypridle")
     hl.exec_cmd(configDir .. "/vlc-idle-inhibit.sh")  -- keep monitor on while VLC plays (windowed too)
