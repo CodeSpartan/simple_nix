@@ -370,7 +370,9 @@ fresh install only.
 ## Flatpak
 
 Apps are outside Nix (`flatpak install --user flathub <id>`). Discord is
-Flatpak on purpose (nixpkgs build had screen-share bugs). The second
+Flatpak on purpose (nixpkgs build had screen-share bugs; Krisp). It runs
+native Wayland (`discord-flags.conf` in `nixos/home/apps.nix`): under
+XWayland, Hyprland cut images copied from it to 128 KB. The second
 Discord (separate account) is `discord-ptb` from nixpkgs -- Flathub has no PTB. MAX messenger is
 `ru.max.MAX`: it's in the iVPN bypass list; installing/updating it needs
 `flatpak` added to that list *temporarily* (leaving it would bypass every
