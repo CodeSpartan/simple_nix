@@ -170,6 +170,15 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
 - Builds failing with "gzip: unexpected end of file" after a power cut:
   `sudo nix-store --verify --check-contents --repair`.
 
+## Login screen (SDDM)
+
+Theme `sddm-astronaut` with our colors/background via `themeConfig` in
+`nixos/desktop.nix`. Its wallpaper `wallpapers/sddm-fevre-dream.jpg` is a
+plain git file (unignored in `.gitignore`), not LFS: Nix would read an LFS
+pointer. Preview without logging out: `sddm-greeter-qt6 --test-mode --theme
+/run/current-system/sw/share/sddm/themes/sddm-astronaut-theme` (a tiled
+window squashes the layout -- fullscreen it).
+
 ## Secure Boot (Lanzaboote, enabled)
 
 If keys ever need re-enrolling on this MSI board: in BIOS Secure Boot → Key

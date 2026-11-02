@@ -1,5 +1,59 @@
 { pkgs, host, ... }:
 
+let
+  sddmTheme = pkgs.sddm-astronaut.override {
+    themeConfig = {
+      Background = "${../wallpapers/sddm-fevre-dream.jpg}";
+      Font = "Noto Serif";
+      RoundCorners = "12";
+      DateFormat = "dddd, d MMMM";
+
+      # Palette from the wallpaper: moon cream text, blood-red button,
+      # the steamboat's lamp gold on hover, red-tinted near-black form.
+      HeaderTextColor = "#EDE3CF";
+      DateTextColor = "#D9CBB0";
+      TimeTextColor = "#EDE3CF";
+      FormBackgroundColor = "#0A0606";
+      BackgroundColor = "#0A0606";
+      DimBackgroundColor = "#0A0606";
+      LoginFieldBackgroundColor = "#1A0C0C";
+      PasswordFieldBackgroundColor = "#1A0C0C";
+      LoginFieldTextColor = "#EDE3CF";
+      PasswordFieldTextColor = "#EDE3CF";
+      UserIconColor = "#EDE3CF";
+      PasswordIconColor = "#EDE3CF";
+      PlaceholderTextColor = "#8C7B70";
+      WarningColor = "#E0503C";
+      LoginButtonTextColor = "#F5EDE0";
+      LoginButtonBackgroundColor = "#8E1B1B";
+      SystemButtonsIconsColor = "#D9CBB0";
+      SessionButtonTextColor = "#D9CBB0";
+      VirtualKeyboardButtonTextColor = "#D9CBB0";
+      DropdownTextColor = "#EDE3CF";
+      DropdownSelectedBackgroundColor = "#5A1414";
+      DropdownBackgroundColor = "#140A0A";
+      HighlightTextColor = "#F5EDE0";
+      HighlightBackgroundColor = "#5A1414";
+      HighlightBorderColor = "#B3261E";
+      HoverUserIconColor = "#F2C46D";
+      HoverPasswordIconColor = "#F2C46D";
+      HoverSystemButtonsIconsColor = "#F2C46D";
+      HoverSessionButtonTextColor = "#F2C46D";
+      HoverVirtualKeyboardButtonTextColor = "#F2C46D";
+
+      # Form on the left over a faint dark panel; only a slight blur behind
+      # it (theme default: Blur 2.0, BlurMax 48).
+      FormPosition = "left";
+      HaveFormBackground = "true";
+      PartialBlur = "true";
+      FullBlur = "false";
+      Blur = "0.6";
+      BlurMax = "16";
+      VirtualKeyboardPosition = "left";
+      HideVirtualKeyboard = "true";
+    };
+  };
+in
 {
   # --- Display Manager ---
   services.xserver.enable = true;
@@ -7,6 +61,14 @@
   services.displayManager.sddm.wayland.enable = true;
   services.displayManager.sddm.settings.General.Numlock = "on";   # Num Lock on at the login screen
   services.displayManager.defaultSession = "hyprland-uwsm";
+
+  # Login screen look: the astronaut theme restyled to the "Fevre Dream"
+  # wallpaper. Only the keys below differ from astronaut's own style.
+  # Preview after a rebuild (a window, logs nobody in):
+  #   sddm-greeter-qt6 --test-mode --theme /run/current-system/sw/share/sddm/themes/sddm-astronaut-theme
+  services.displayManager.sddm.theme = "sddm-astronaut-theme";
+  services.displayManager.sddm.extraPackages = [ sddmTheme ];  # its Qt modules (video, svg)
+  environment.systemPackages = [ sddmTheme ];
   # Plasma as fallback DE, system settings, AND Qt theming (Breeze) for Hyprland.
   # Removing Plasma breaks: Qt theme (theming.nix kde/breeze), Dolphin "Open With"
   # (hyprland-applications.menu below), and QT_QPA_PLATFORMTHEME=kde in user.conf.

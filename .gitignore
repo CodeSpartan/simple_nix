@@ -12,6 +12,7 @@ nixos/hardware-configuration.nix
 wallpapers/*
 !wallpapers/.gitkeep
 !wallpapers/wallpaper.png
+!wallpapers/sddm-fevre-dream.jpg
 # Wayle imports this from ~/.config/wayle/, not from here -- see
 # config/wayle/local.toml.example. Ignored in case a copy lands in the repo.
 config/wayle/local.toml
