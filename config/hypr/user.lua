@@ -103,7 +103,8 @@ hl.on("hyprland.start", function()
     -- Monitor calibration curve (white balance) from the LG's ICC profile,
     -- without Hyprland's ICC conversion -- see the monitor rule above.
     hl.exec_cmd("vcgt-loader " .. configDir .. "/lg-ultragear-srgb-d65.icm 'LG ULTRAGEAR'")
-    hl.exec_cmd("hypridle")   -- monitor off after 15 min idle (no lock), see hypridle.conf
+    -- monitor off after 15 min idle (no lock), see hypridle.conf; log: journalctl --user -t hypridle
+    hl.exec_cmd("systemd-cat -t hypridle hypridle")
     hl.exec_cmd(configDir .. "/vlc-idle-inhibit.sh")  -- keep monitor on while VLC plays (windowed too)
     hl.exec_cmd("nm-applet --indicator")
     hl.exec_cmd("blueman-applet")
@@ -278,6 +279,10 @@ hl.config({
         focus_on_activate          = true, -- clicking notifications switches to that workspace+window
         initial_workspace_tracking = 2,    -- open windows on the workspace they were launched from, including late child windows
         on_focus_under_fullscreen  = 0,    -- keep current window fullscreen when another window spawns; new one opens behind
+        -- Any mouse move / key press turns the monitor back on, even if
+        -- hypridle's own "on" doesn't come through.
+        mouse_move_enables_dpms    = true,
+        key_press_enables_dpms     = true,
     },
 
     input = {
@@ -533,9 +538,11 @@ hl.window_rule({
 
 -- Any fullscreen window (movie, game) keeps hypridle from turning the
 -- monitor off; the 15-min timer runs again once it leaves fullscreen.
+-- Not VLC: vlc-idle-inhibit.sh keeps it on only while VLC *plays*, so a
+-- paused fullscreen video doesn't keep the monitor on all night.
 hl.window_rule({
     name         = "idle-inhibit-fullscreen",
-    match        = { class = ".*" },
+    match        = { class = "negative:^(vlc)$" },
     idle_inhibit = "fullscreen",
 })
 

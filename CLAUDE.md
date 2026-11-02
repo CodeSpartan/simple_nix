@@ -99,8 +99,12 @@ inherited from Vitalii stays -- don't trim it.
 - `hl.dsp.dpms("on")` ignores the string and **toggles** -- use
   `hl.dsp.dpms({action="on"})` / `{action="off"}`. hypridle (autostarted)
   turns the monitor off after 15 min, no lock; blocked while a window is
-  fullscreen (`idle_inhibit` rule) or VLC plays (`vlc-idle-inhibit.sh`: VLC 3
-  sends no inhibit on Wayland). See locks: `systemd-inhibit --list`.
+  fullscreen (`idle_inhibit` rule, minus VLC) or VLC plays
+  (`vlc-idle-inhibit.sh`: VLC 3 sends no inhibit on Wayland). See locks:
+  `systemd-inhibit --list`, `hyprctl clients -j` (`inhibitingIdle`). Log:
+  `journalctl --user -t hypridle`. `mouse/key_press_enables_dpms` also wake
+  the monitor. Once (2026-11-03) it didn't wake at all: the monitor needed a
+  power-cycle (from another VT, Ctrl+Alt+F3 = desktop) -- suspect its deep sleep.
 - `hl.exec_cmd` strings starting with `[` are parsed as window rules -- use
   `test`, not `[ ]`.
 - `initial_workspace_tracking = 2`: a window opens on the workspace its
