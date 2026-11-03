@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Xiaomi router: English
 // @namespace    simple_nix
-// @version      1.2
+// @version      1.3
 // @description  Translate the Xiaomi router's Chinese-only admin pages to English.
 // @match        http://192.168.31.1/*
 // @match        https://192.168.31.1/*
@@ -1474,6 +1474,26 @@
     const orig = window[f];
     window[f] = function (msg) { return orig.call(this, tr(String(msg))); };
   }
+
+  // Login page: the form has only a password field marked autocomplete=off
+  // (the page always logs in as "admin"), so Brave doesn't treat it as a
+  // login and won't save or fill it. Give it a username field and proper
+  // autocomplete hints.
+  function fixLoginForm() {
+    const pwd = document.querySelector('#rtloginform input[type=password]');
+    if (!pwd || pwd.form.querySelector('input[autocomplete=username]')) return;
+    pwd.setAttribute('autocomplete', 'current-password');
+    const user = document.createElement('input');
+    Object.assign(user, { type: 'text', name: 'username', value: 'admin', tabIndex: -1 });
+    user.setAttribute('value', 'admin');
+    user.setAttribute('autocomplete', 'username');
+    user.setAttribute('aria-hidden', 'true');
+    user.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;opacity:0';
+    pwd.form.insertBefore(user, pwd.form.firstChild);
+  }
+  // Tampermonkey may inject after the page has loaded.
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fixLoginForm);
+  else fixLoginForm();
 
   if (document.documentElement) walk(document.documentElement);
   fixTitle();

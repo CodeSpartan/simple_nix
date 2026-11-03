@@ -335,6 +335,10 @@ saves are shared with Windows. Notes in
   (192.168.31.1, http and https). Dictionary-based; untranslated text stays Chinese on
   purpose. For a new page, collect its strings from the page source
   (`fetch(location.href)`), not the DOM (already partly translated).
+  It also gives the login form a hidden `admin` username so Brave saves the
+  password -- but only over http: Brave's Shields "Upgrade connections to
+  HTTPS" is Disabled for the router, because on its self-signed https
+  Brave turns the password manager off.
 
 ## Screenshot upload (Gyazo / Cloudinary)
 
