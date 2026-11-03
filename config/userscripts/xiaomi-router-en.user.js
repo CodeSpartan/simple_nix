@@ -85,6 +85,12 @@
     '你的浏览器禁止了Javascript功能，会造成无法使用系统进行路由器管理，请开启。':
       'JavaScript is disabled in your browser; enable it to manage the router.',
 
+    // Devices page
+    '网线连网设备': 'Wired devices',
+    '无线连网设备': 'Wi-Fi devices',
+    '访问外网': 'Internet access',
+    '本机': 'this computer',
+
     // Common buttons
     '确定': 'OK',
     '取消': 'Cancel',
