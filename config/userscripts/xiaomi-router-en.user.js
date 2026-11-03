@@ -1,9 +1,12 @@
 // ==UserScript==
 // @name         Xiaomi router: English
 // @namespace    simple_nix
-// @version      1.1
+// @version      1.2
 // @description  Translate the Xiaomi router's Chinese-only admin pages to English.
 // @match        http://192.168.31.1/*
+// @match        https://192.168.31.1/*
+// @match        *://miwifi.com/*
+// @match        *://router.miwifi.com/*
 // @run-at       document-start
 // @all-frames   true
 // @grant        none

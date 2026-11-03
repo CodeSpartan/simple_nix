@@ -332,7 +332,7 @@ saves are shared with Windows. Notes in
   Tampermonkey has "Allow access to file URLs" on and loads scripts from the
   repo with `@require file:///...` (edits apply on page reload).
 - `xiaomi-router-en.user.js`: English for the Chinese-only router admin
-  (192.168.31.1). Dictionary-based; untranslated text stays Chinese on
+  (192.168.31.1, http and https). Dictionary-based; untranslated text stays Chinese on
   purpose. For a new page, collect its strings from the page source
   (`fetch(location.href)`), not the DOM (already partly translated).
 
