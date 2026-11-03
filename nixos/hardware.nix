@@ -89,9 +89,14 @@ in
   #    Windows if /mnt/cdrive doesn't show up.
   #  - windows_names: refuse file names Windows can't open.
   #  - x-gvfs-show: list them in the file manager sidebar.
+  #  - sparse (E: only, the torrent drive): new files get holes instead of
+  #    zeros. Without it, a torrent writing a piece deep into a new file
+  #    makes ntfs3 zero-fill everything before it -- tens of GB on the HDD,
+  #    stalling the whole desktop. Windows' qBittorrent makes sparse files too.
   fileSystems."/mnt/cdrive" = ntfs "5E22E87B79FB8B5A";   # Samsung 990 Pro 1 -- Windows C:
   fileSystems."/mnt/ddrive" = ntfs "01DD6502633B8D10";   # Samsung 990 Pro 2
-  fileSystems."/mnt/edrive" = ntfs "5E1E77E0C57314E1";   # WD Blue 4TB HDD
+  fileSystems."/mnt/edrive" = let d = ntfs "5E1E77E0C57314E1"; in   # WD Blue 4TB HDD
+    d // { options = d.options ++ [ "sparse" ]; };
 
   # --- GPU ---
   hardware.graphics = {
