@@ -368,6 +368,15 @@ on C:/D:/E: in Notepad++'s tab order (`cd ~/Documents/npp-tabs && nvim`).
 Untouched copy of the Notepad++ folder: `~/Documents/notepad++ from windows`.
 ~600 buffers made NvChad's tab bar take 1.5 s per redraw -- see the TODO.
 
+## qBittorrent / NTFS writes
+
+Downloads go to E: (`/mnt/edrive`, HDD). ntfs3 zero-fills a file up to any
+write past its written part, so torrents stalled the whole desktop for
+minutes. Fixes: NTFS drives mount with `sparse` (`hardware.nix`), and
+qBittorrent's Options → Advanced → Disk IO type = **POSIX-compliant** (the
+default memory-mapped mode `fallocate`s files, which ntfs3 zero-fills even
+when sparse). Pre-allocate disk space stays off.
+
 ## Image viewer (nomacs)
 
 Default for images (`nomacsTuned` + `xdg.mime.defaultApplications` in
