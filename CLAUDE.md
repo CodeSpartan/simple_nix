@@ -324,6 +324,17 @@ saves are shared with Windows. Notes in
   -- outside git, redo after a reinstall.
 - Ctrl+scroll over the tab bar switching tabs = Hyprland binds in `user.lua`.
 - Userscripts are kept in `config/userscripts/`.
+- Writing userscripts: Chromium 136+ ignores `--remote-debugging-port` on
+  the real profile, so a separate dev Brave is used: launch via Hyprland
+  `brave --user-data-dir=$HOME/.config/brave-dev --remote-debugging-port=9222
+  --remote-debugging-address=127.0.0.1`, then read/drive pages over CDP
+  (`curl 127.0.0.1:9222/json`; Python `websockets` via nix-shell). Its
+  Tampermonkey has "Allow access to file URLs" on and loads scripts from the
+  repo with `@require file:///...` (edits apply on page reload).
+- `xiaomi-router-en.user.js`: English for the Chinese-only router admin
+  (192.168.31.1). Dictionary-based; untranslated text stays Chinese on
+  purpose. For a new page, collect its strings from the page source
+  (`fetch(location.href)`), not the DOM (already partly translated).
 
 ## Screenshot upload (Gyazo / Cloudinary)
 
