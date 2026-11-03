@@ -93,6 +93,10 @@
     '关闭': 'Close',
     '返回': 'Back',
 
+    // Router name suffix ("home")
+    '(家)': '(Home)',
+    '（家）': ' (Home)',
+
     // Chinese punctuation left between translated pieces
     '：': ': ',
     '，': ', ',
@@ -102,7 +106,7 @@
   };
 
   // Matched only as a whole string: single characters that would wrongly
-  // hit names (e.g. the router's own name "FastInet (家)").
+  // hit other words.
   const EXACT = {
     '台': 'devices',
   };
