@@ -5,7 +5,7 @@ let
   ntfs = uuid: {
     device = "/dev/disk/by-uuid/${uuid}";
     fsType = "ntfs3";
-    options = [ "uid=1000" "gid=100" "windows_names" "noatime"
+    options = [ "uid=1000" "gid=100" "windows_names" "noatime" "sparse"
                 "nofail" "x-systemd.device-timeout=10s" "x-gvfs-show" ];
   };
 in
@@ -89,14 +89,13 @@ in
   #    Windows if /mnt/cdrive doesn't show up.
   #  - windows_names: refuse file names Windows can't open.
   #  - x-gvfs-show: list them in the file manager sidebar.
-  #  - sparse (E: only, the torrent drive): new files get holes instead of
-  #    zeros. Without it, a torrent writing a piece deep into a new file
-  #    makes ntfs3 zero-fill everything before it -- tens of GB on the HDD,
-  #    stalling the whole desktop. Windows' qBittorrent makes sparse files too.
+  #  - sparse: new files get holes instead of zeros. Without it, a torrent or
+  #    game downloader writing deep into a new file makes ntfs3 zero-fill
+  #    everything before it -- tens of GB on the HDD, stalling the whole
+  #    desktop. Windows' qBittorrent makes sparse files too.
   fileSystems."/mnt/cdrive" = ntfs "5E22E87B79FB8B5A";   # Samsung 990 Pro 1 -- Windows C:
   fileSystems."/mnt/ddrive" = ntfs "01DD6502633B8D10";   # Samsung 990 Pro 2
-  fileSystems."/mnt/edrive" = let d = ntfs "5E1E77E0C57314E1"; in   # WD Blue 4TB HDD
-    d // { options = d.options ++ [ "sparse" ]; };
+  fileSystems."/mnt/edrive" = ntfs "5E1E77E0C57314E1";   # WD Blue 4TB HDD
 
   # --- GPU ---
   hardware.graphics = {
