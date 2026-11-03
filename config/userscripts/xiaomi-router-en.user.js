@@ -48,6 +48,43 @@
     '登录': 'Log in',
     '密码错误': 'Wrong password',
 
+    // Top menu
+    '路由状态': 'Status',
+    '存储功能': 'Storage',
+    '常用设置': 'Settings',
+    '高级设置': 'Advanced',
+    '添加Mesh子路由': 'Add Mesh node',
+
+    // Status page
+    '终端设备': 'Devices',
+    '互联网': 'Internet',
+    '带宽': 'Bandwidth ',
+    '频段': 'band',
+    'Wi-Fi名称': 'Wi-Fi name',
+    'Wi-Fi密码': 'Wi-Fi password',
+    '连接设备数量': 'Connected devices',
+    '设置': 'Settings',
+    '路由器型号': 'Router model',
+    '系统ROM版本': 'ROM version',
+    'MAC地址': 'MAC address',
+    'Xiaomi路由器': 'Xiaomi Router ',
+    '路由器': 'router',
+    '稳定版': 'stable',
+    '外网状态': 'internet status',
+    '连接类型': 'Connection type',
+    'IP地址': 'IP address',
+    '网关地址': 'Gateway',
+    '外网带宽': 'internet bandwidth',
+    '下载带宽': 'Download bandwidth',
+    '上传带宽': 'Upload bandwidth',
+    '手工设置': 'Set manually',
+    '双WAN模式下，不支持在此处设置外网带宽': 'In dual-WAN mode, internet bandwidth can\'t be set here',
+    '系统版本': 'System version',
+    '检测到最新版本为': 'New firmware available: ',
+    '点击此处立即升级': 'update now',
+    '你的浏览器禁止了Javascript功能，会造成无法使用系统进行路由器管理，请开启。':
+      'JavaScript is disabled in your browser; enable it to manage the router.',
+
     // Common buttons
     '确定': 'OK',
     '取消': 'Cancel',
@@ -55,9 +92,22 @@
     '应用': 'Apply',
     '关闭': 'Close',
     '返回': 'Back',
+
+    // Chinese punctuation left between translated pieces
+    '：': ': ',
+    '，': ', ',
+    '。': '. ',
+    '（': ' (',
+    '）': ')',
   };
 
-  const ZH = /[㐀-鿿，：（）]/;
+  // Matched only as a whole string: single characters that would wrongly
+  // hit names (e.g. the router's own name "FastInet (家)").
+  const EXACT = {
+    '台': 'devices',
+  };
+
+  const ZH = /[㐀-鿿。（），：]/;
   const keys = Object.keys(DICT).sort((a, b) => b.length - a.length);
   const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const PIECES = new RegExp(keys.map(escape).join('|'), 'g');
@@ -65,8 +115,9 @@
   function tr(s) {
     if (!s || !ZH.test(s)) return s;
     const t = s.trim();
-    if (DICT[t]) return s.replace(t, DICT[t]);
-    return s.replace(PIECES, (m) => DICT[m]);
+    const whole = EXACT[t] || DICT[t];
+    if (whole) return s.replace(t, whole);
+    return s.replace(PIECES, (m) => DICT[m]).replace(/ {2,}/g, ' ');
   }
 
   const ATTRS = ['placeholder', 'title', 'alt', 'aria-label', 'value'];
