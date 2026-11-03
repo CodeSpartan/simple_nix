@@ -85,6 +85,11 @@
     '你的浏览器禁止了Javascript功能，会造成无法使用系统进行路由器管理，请开启。':
       'JavaScript is disabled in your browser; enable it to manage the router.',
 
+    // Internet page
+    '手工设置外网带宽': 'Set internet bandwidth manually',
+    '上传': 'Upload',
+    '下载': 'Download',
+
     // Devices page
     '网线连网设备': 'Wired devices',
     '无线连网设备': 'Wi-Fi devices',
@@ -127,7 +132,15 @@
     const t = s.trim();
     const whole = EXACT[t] || DICT[t];
     if (whole) return s.replace(t, whole);
-    return s.replace(PIECES, (m) => DICT[m]).replace(/ {2,}/g, ' ');
+    // Pieces translated next to letters/digits or other Chinese get a space,
+    // so "手工设置外网带宽" doesn't become "Set manuallyinternet bandwidth".
+    return s.replace(PIECES, (m, off, str) => {
+      let r = DICT[m];
+      const prev = str[off - 1], next = str[off + m.length];
+      if (prev && /[A-Za-z0-9\u3400-\u9fff]/.test(prev) && /^[A-Za-z]/.test(r)) r = ' ' + r;
+      if (next && /[A-Za-z0-9\u3400-\u9fff]/.test(next) && /[A-Za-z]$/.test(r)) r += ' ';
+      return r;
+    }).replace(/ {2,}/g, ' ');
   }
 
   const ATTRS = ['placeholder', 'title', 'alt', 'aria-label', 'value'];
