@@ -526,13 +526,11 @@ hl.window_rule({
 
 -- General window rules
 -- Apps can't fullscreen/maximize themselves -- except VLC, so its F key and
--- double-click work, and WoW (Proton, so matched by title), whose fullscreen
--- modes otherwise end up a tiled window at whatever size the tile has.
--- ("negative:" inverts the regex. A later rule with a narrower
--- suppress_event does NOT override this one; tested.)
+-- double-click work. ("negative:" inverts the regex. A later rule with a
+-- narrower suppress_event does NOT override this one; tested.)
 hl.window_rule({
     name           = "suppress-maximize-events",
-    match          = { class = "negative:^(vlc)$", title = "negative:^World of Warcraft$" },
+    match          = { class = "negative:^(vlc)$" },
     suppress_event = "fullscreen maximize",
 })
 
@@ -544,14 +542,6 @@ hl.window_rule({
     name         = "idle-inhibit-fullscreen",
     match        = { class = "negative:^(vlc)$" },
     idle_inhibit = "fullscreen",
-})
-
--- WoW (Proton): open fullscreen. Its "Fullscreen (Windowed)" mode never asks
--- for it and just takes the tile's size (3840x2074 next to the bar).
-hl.window_rule({
-    name       = "wow-fullscreen",
-    match      = { class = "^steam_app_default$", title = "^World of Warcraft$" },
-    fullscreen = true,
 })
 
 -- Telegram's photo/video viewer: open fullscreen. It asks for fullscreen
