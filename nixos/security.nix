@@ -103,7 +103,7 @@ in
   # https://www.gosuslugi.ru/landing/crt_linux. Browsers don't read this system
   # list for extra roots: Brave and Chrome share ~/.pki/nssdb (link.sh adds
   # them there with certutil), Firefox gets them from the policy below.
-  # Russian_Trusted_Sub_CA.cer expires 2027-03-06; fetch a fresh set before then.
+  # Root valid to 2032. The old Sub CA expiring 2027 is harmless (sites send theirs).
   security.pki.certificateFiles = russianCAs;
   programs.firefox.policies.Certificates.Install = map toString russianCAs;
   environment.systemPackages = [ pkgs.nssTools ];   # certutil, used by link.sh

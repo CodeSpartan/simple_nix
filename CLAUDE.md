@@ -346,8 +346,8 @@ Some Russian sites need the "Russian Trusted" root + 2 sub CAs
 (`nixos/certs/`, from gosuslugi.ru/landing/crt_linux). System trust via
 `security.pki.certificateFiles`, Firefox via policy (both in `security.nix`),
 Brave/Chrome via `~/.pki/nssdb` (`link.sh`, certutil) -- they show under
-"Linux", not "Installed by you". `Russian_Trusted_Sub_CA.cer` expires
-2027-03-06: download a fresh set before then.
+"Linux", not "Installed by you". Root valid to 2032 (only it matters;
+sites send their sub CA themselves, so the 2027 expiry of the old one is harmless).
 
 ## Screenshot upload (Gyazo / Cloudinary)
 
