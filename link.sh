@@ -152,4 +152,20 @@ echo "==> Setting KClock options..."
 # closed -- only the one when a timer rings.
 kwriteconfig6 --file kclockrc --group Global --key timerNotification Never
 
+echo "==> Adding Russian state CA certificates to Brave/Chrome certificate store..."
+# Brave and Chrome take extra trusted roots from this NSS database, not
+# from the system list in security.nix. Re-adding an existing cert is harmless.
+if command -v certutil >/dev/null; then
+  mkdir -p "$HOME/.pki/nssdb"
+  [[ -f "$HOME/.pki/nssdb/cert9.db" ]] || certutil -d "sql:$HOME/.pki/nssdb" -N --empty-password
+  for crt in "$REPO"/nixos/certs/*.cer; do
+    name=$(basename "$crt" .cer)
+    trust="C,,"                                  # trusted to issue site certs
+    [[ $name == *Root* ]] || trust=",,"          # intermediates: just known
+    certutil -d "sql:$HOME/.pki/nssdb" -A -t "$trust" -n "${name//_/ }" -i "$crt"
+  done
+else
+  echo "    SKIP: certutil missing (run ./install.sh first)" >&2
+fi
+
 echo "Done."

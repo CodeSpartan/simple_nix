@@ -340,6 +340,15 @@ saves are shared with Windows. Notes in
   HTTPS" is Disabled for the router, because on its self-signed https
   Brave turns the password manager off.
 
+## Russian state CA (Mintsifry)
+
+Some Russian sites need the "Russian Trusted" root + 2 sub CAs
+(`nixos/certs/`, from gosuslugi.ru/landing/crt_linux). System trust via
+`security.pki.certificateFiles`, Firefox via policy (both in `security.nix`),
+Brave/Chrome via `~/.pki/nssdb` (`link.sh`, certutil) -- they show under
+"Linux", not "Installed by you". `Russian_Trusted_Sub_CA.cer` expires
+2027-03-06: download a fresh set before then.
+
 ## Screenshot upload (Gyazo / Cloudinary)
 
 `nixos/screenshot-upload.nix` + `nixos/pkgs/screenshot-upload/`. PrtSc is
