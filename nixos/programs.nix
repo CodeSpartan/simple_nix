@@ -62,6 +62,8 @@ in
   environment.systemPackages = with pkgs; [
     # Core utilities
     git-filter-repo gh wget curl unzip p7zip file fastfetch optipng
+    rclone                     # Sync files with cloud storage (Google Drive and others)
+    git-annex                  # Keep large files outside git history, stored through rclone
     bc                         # Arbitrary-precision command-line calculator
     imagemagick                # Image conversion/resizing (convert, mogrify)
     poppler-utils              # PDF utilities (pdftotext, pdfimages, pdfinfo)
