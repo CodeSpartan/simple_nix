@@ -1,4 +1,4 @@
-{ lib, host, ... }:
+{ ... }:
 
 {
   # Desktop entry for glow (terminal markdown viewer) so file managers can open .md files
@@ -29,19 +29,4 @@
   xdg.configFile."mc/drag-files.sh" = { source = ../../config/mc/drag-files.sh; executable = true; };
   xdg.configFile."mc/bat-viewer.sh" = { source = ../../config/mc/bat-viewer.sh; executable = true; };
   xdg.dataFile."mc/skins/ayu-dark.ini".source = ../../config/mc/skins/ayu-dark.ini;
-
-  # Discord Flatpak -- force XWayland on NVIDIA (GBM can't init inside Flatpak sandbox)
-  # TODO: remove when NVIDIA GBM works inside Flatpak sandbox
-  home.file.".local/share/flatpak/overrides/com.discordapp.Discord" = lib.mkIf host.nvidia {
-    text = ''
-      [Environment]
-      ELECTRON_OZONE_PLATFORM_HINT=x11
-    '';
-  };
-  home.file.".var/app/com.discordapp.Discord/config/discord-flags.conf" = lib.mkIf host.nvidia {
-    text = ''
-      --ignore-gpu-blocklist
-      --ozone-platform=x11
-    '';
-  };
 }
