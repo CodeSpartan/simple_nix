@@ -153,6 +153,19 @@ in
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;  # available, but off until turned on (tray / blueman)
   services.blueman.enable = true;       # Bluetooth GUI manager
+  # powerOnBoot alone isn't enough: systemd-rfkill restores the last session's
+  # on/off state, and blueman's applet powers adapters on when they appear.
+  # So soft-block Bluetooth at every boot; blueman's switch unblocks it.
+  systemd.services.bluetooth-off-at-boot = {
+    description = "Turn Bluetooth off at boot";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-rfkill.service" "bluetooth.service" ];
+    before = [ "display-manager.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.util-linux}/bin/rfkill block bluetooth";
+    };
+  };
 
   # --- Swap ---
   zramSwap.enable = true;              # Compressed RAM swap -- OOM pressure relief without SSD wear
