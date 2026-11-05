@@ -544,6 +544,17 @@ hl.window_rule({
     idle_inhibit = "fullscreen",
 })
 
+-- WoW (Lutris/Proton): open fullscreen, so it never sees the tile's size.
+-- It stays under suppress-maximize-events on purpose: when WoW was allowed
+-- to (un)fullscreen itself, it dropped out in combat and the bar came back.
+-- (gamescope was tried instead: display fine, but it bypasses our mouse
+-- curve.)
+hl.window_rule({
+    name       = "wow-fullscreen",
+    match      = { class = "^steam_app_default$", title = "^World of Warcraft$" },
+    fullscreen = true,
+})
+
 -- Telegram's photo/video viewer: open fullscreen. It asks for fullscreen
 -- itself, but suppress-maximize-events above ignores that request.
 -- Floating: a tiled fullscreen window makes the smart-gaps rules resize the

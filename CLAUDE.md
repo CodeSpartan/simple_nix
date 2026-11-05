@@ -311,9 +311,13 @@ saves are shared with Windows. Notes in
   (Configure → Runner options → Advanced → DPI 192), not in the registry.
 - The login code ("Challenge") pop-up renders black under Wine, and resizing
   it crashes Battle.net. Confirm the login on account.battle.net in Brave.
-- WoW has no Hyprland fullscreen rules. A `wow-fullscreen` rule and a
-  `suppress-maximize-events` exemption were tried (2026-11) and removed:
-  they made WoW act weird.
+- WoW opens fullscreen via the `wow-fullscreen` rule in `user.lua`; in-game
+  Display Mode "Fullscreen (Windowed)" 3840x2160. Don't exempt WoW from
+  `suppress-maximize-events`: allowed to (un)fullscreen itself, it dropped
+  out in combat and the bar came back. Tiled, it adopts the tile's size.
+- Tried and dropped (2026-11-05): Battle.net as a Steam non-Steam game
+  (no better), and gamescope (display fine, but `--force-grab-cursor`
+  bypasses our mouse curve). Keep Lutris.
 
 ## Brave
 
