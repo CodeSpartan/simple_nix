@@ -167,6 +167,11 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
 
 - Kernel/driver pairing comes from `flake.lock`; if a nixpkgs bump breaks the
   `nvidia-open` build, suspect that pairing.
+- **Resizable BAR must stay on in BIOS.** With it off, BAR1 was 256 MiB; on
+  2026-11-05 the desktop froze (kernel alive, Ctrl+Alt+F2 dead) after
+  `NVRM: dmaAllocMapping_GM107: can't alloc VA space for mapping` from
+  `nvidia_drm`. Check: `nvidia-smi -q -d MEMORY | grep -A3 BAR1` (~16 GB).
+  On such a freeze: Alt+SysRq+K, or REISUB (`kernel.sysrq = 1`).
 - **Suspend kills the display** (Xid 13, hard reset). All sleep targets are
   masked in `hardware.nix` -- keep it that way.
 - Log out must use `uwsm stop` (wayle's `dropdown-logout-command`);
