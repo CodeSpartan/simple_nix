@@ -68,6 +68,12 @@ done
 mkdir -p "$HOME/.config/hyprland-per-window-layout"
 ln -sf "$REPO/config/hyprland-per-window-layout/options.toml" "$HOME/.config/hyprland-per-window-layout/options.toml"
 
+# MangoHud per-game configs (FPS counter for WoW, hidden on Battle.net).
+mkdir -p "$HOME/.config/MangoHud"
+for f in "$REPO"/config/MangoHud/*.conf; do
+  ln -sf "$f" "$HOME/.config/MangoHud/$(basename "$f")"
+done
+
 mkdir -p "$HOME/.config/ivpn-bypass"
 ln -sf "$REPO/config/ivpn-bypass/apps" "$HOME/.config/ivpn-bypass/apps"
 

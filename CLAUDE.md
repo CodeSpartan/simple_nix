@@ -315,6 +315,9 @@ saves are shared with Windows. Notes in
   Display Mode "Fullscreen (Windowed)" 3840x2160. Don't exempt WoW from
   `suppress-maximize-events`: allowed to (un)fullscreen itself, it dropped
   out in combat and the bar came back. Tiled, it adopts the tile's size.
+- FPS counter: MangoHud via Lutris' "FPS counter (MangoHud)" toggle;
+  per-exe configs in `config/MangoHud/` (`wine-Wow.conf` = FPS only,
+  top-left; `wine-Battle.net.conf` = hidden). NVIDIA's overlay is Windows-only.
 - Tried and dropped (2026-11-05): Battle.net as a Steam non-Steam game
   (no better), and gamescope (display fine, but `--force-grab-cursor`
   bypasses our mouse curve). Keep Lutris.
