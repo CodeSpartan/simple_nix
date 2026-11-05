@@ -318,6 +318,13 @@ saves are shared with Windows. Notes in
 - Tried and dropped (2026-11-05): Battle.net as a Steam non-Steam game
   (no better), and gamescope (display fine, but `--force-grab-cursor`
   bypasses our mouse curve). Keep Lutris.
+- 2026-11-05 a `/reload` hit an ntfs3 error (`attr_set_size_ex`) and left
+  3 WoW files on C: unreadable/undeletable from Linux. They're parked in
+  `_forever_/WTF/Account/MELANG.broken` (the good files were copied to a new
+  `MELANG`); delete that folder after a `chkdsk C: /f` in Windows.
+  `ntfsck -n` (`ntfsprogs-plus`) also lists ~420 "Allocated/Data size is
+  different with IDX/$FN" entries -- normal on Windows volumes, don't
+  "repair" them with it.
 
 ## Brave
 
