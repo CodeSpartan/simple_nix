@@ -12,3 +12,4 @@ max         # MAX messenger (Flatpak ru.max.MAX); max.ru doesn't answer via the 
 yandex-music  # Yandex Music (nixpkgs); Electron -- the launcher is caught, electron inherits
 qbittorrent   # torrents: around both iVPN and v2rayN (v2rayN keeps its own list)
 wow.exe       # World of Warcraft (Proton; process "Wow.exe"). Not Battle.net -- that stays on the VPN
+wowclassic.exe  # WoW Classic / TBC Anniversary (process "WowClassic.exe"), same as above

@@ -315,6 +315,9 @@ saves are shared with Windows. Notes in
   Display Mode "Fullscreen (Windowed)" 3840x2160. Don't exempt WoW from
   `suppress-maximize-events`: allowed to (un)fullscreen itself, it dropped
   out in combat and the bar came back. Tiled, it adopts the tile's size.
+- TBC Anniversary is `_anniversary_` in the same install (product
+  `wow_anniversary`, exe `WowClassic.exe`): in the iVPN bypass list too;
+  v2rayN's port rules (TCP 3724, UDP 29523 -> direct) cover every WoW.
 - FPS counter: MangoHud via Lutris' "FPS counter (MangoHud)" toggle;
   per-exe configs in `config/MangoHud/` (`wine-Wow.conf` = FPS only,
   top-left; `wine-Battle.net.conf` = hidden). NVIDIA's overlay is Windows-only.
