@@ -108,7 +108,10 @@ inherited from Vitalii stays -- don't trim it.
   dpms on from there -- while the desktop's VT is inactive that's lost (dpms
   reports 1, screen black on return; monitor power-cycle fixed it). Run dpms
   on only with the desktop VT active. A 1-min off/on test woke fine. The
-  monitor is not at fault (no deep sleep).
+  monitor is not at fault (no deep sleep). But after hours off it can drop
+  out for a moment on wake (DP hotplug; 2026-11-06 after 5 h, also once
+  2026-11-05 with no dpms): Qt apps log "There are no outputs". It broke
+  VLC's fonts, hence `QT_FONT_DPI` in its wrapper (`programs.nix`).
 - `hl.exec_cmd` strings starting with `[` are parsed as window rules -- use
   `test`, not `[ ]`.
 - `initial_workspace_tracking = 2`: a window opens on the workspace its

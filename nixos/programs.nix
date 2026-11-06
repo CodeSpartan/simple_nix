@@ -39,6 +39,12 @@ let
   # copied from the Windows drive -- see CLAUDE.md). The alias goes before the
   # system include so the system's Inter preference doesn't win.
   #
+  # QT_FONT_DPI=96 pins the font DPI (XWayland's screen reports 96 anyway).
+  # Without it, when the monitor drops out for a moment (DP hotplug, e.g. on
+  # wake after a long dpms off) Qt 5 sizes fonts from a placeholder screen and
+  # never re-resolves them: menus turn into tiny 4x6 bitmap glyphs until
+  # VLC is restarted.
+  #
   # Opening a file starts a new VLC window instead of replacing what the
   # running one plays (VLC's default reuses it when started from a file).
   vlcFonts = pkgs.writeText "vlc-fonts.conf" ''
@@ -61,7 +67,7 @@ let
         rm "$out/bin/$b"
         makeWrapper "${pkgs.vlc}/bin/$b" "$out/bin/$b" --set QT_SCALE_FACTOR 2 \
           --set QT_QPA_PLATFORMTHEME generic --set QT_STYLE_OVERRIDE Fusion \
-          --set FONTCONFIG_FILE ${vlcFonts} \
+          --set FONTCONFIG_FILE ${vlcFonts} --set QT_FONT_DPI 96 \
           --add-flags --no-one-instance-when-started-from-file
       done
       for d in "$out"/share/applications/*.desktop; do
