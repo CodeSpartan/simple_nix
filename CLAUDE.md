@@ -322,6 +322,14 @@ saves are shared with Windows. Notes in
 - TBC Anniversary is `_anniversary_` in the same install (product
   `wow_anniversary`, exe `WowClassic.exe`): in the iVPN bypass list too;
   v2rayN's port rules (TCP 3724, UDP 29523 -> direct) cover every WoW.
+- Addons: WowUp-CF (`nixos/pkgs/wowup-cf/`, a bumped copy of nixpkgs' --
+  drop it once nixpkgs has >= 2.25.4). Its Lutris auto-detect looks for
+  `~/.config/lutris/system.yml`, which our Lutris doesn't have, so the
+  Forever install was added by hand to `wow_installations` in
+  `~/.config/WowUpCf/preferences.json` (`clientType` 10 = Forever, `location`
+  = `_forever_/Wow.exe`; edit only with WowUp closed -- it ignores SIGTERM,
+  quit from its tray). Outside git; redo after a reinstall, or use Options
+  → WoW Clients → Add New. Windows' CurseForge tracks the same folder.
 - FPS counter: MangoHud via Lutris' "FPS counter (MangoHud)" toggle;
   per-exe configs in `config/MangoHud/` (`wine-Wow.conf`, `wine-WoWClassic.conf` =
   FPS only, top-left; `wine-Battle.net.conf` = hidden). NVIDIA's overlay is Windows-only.
