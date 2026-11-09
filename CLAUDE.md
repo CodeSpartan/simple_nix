@@ -100,7 +100,10 @@ inherited from Vitalii stays -- don't trim it.
   `hl.dsp.dpms({action="on"})` / `{action="off"}`. hypridle (autostarted)
   turns the monitor off after 15 min, no lock; blocked while a window is
   fullscreen (`idle_inhibit` rule, minus VLC) or VLC plays
-  (`vlc-idle-inhibit.sh`: VLC 3 sends no inhibit on Wayland). See locks:
+  (`vlc-idle-inhibit.sh`: VLC 3 sends no inhibit on Wayland). The fullscreen
+  rule only counts while the window's workspace is visible (tested); GameMode's
+  own inhibit is off (`inhibit_screensaver = 0`) since it held the screen on
+  for the idle Battle.net launcher. See locks:
   `systemd-inhibit --list`, `hyprctl clients -j` (`inhibitingIdle`). Log:
   `journalctl --user -t hypridle`. `mouse/key_press_enables_dpms` also wake
   the monitor. Once (2026-11-03) mouse input didn't wake it (dpms stayed 0,

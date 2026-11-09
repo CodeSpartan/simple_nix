@@ -205,7 +205,14 @@ in
   programs.firefox.enable = true;       # Firefox browser
 
   # --- Gaming ---
-  programs.gamemode.enable = true;      # CPU governor + scheduler optimization while gaming
+  programs.gamemode = {
+    enable = true;                      # CPU governor + scheduler optimization while gaming
+    # GameMode would keep the monitor on as long as any "game" runs -- incl.
+    # the Battle.net launcher idling on another workspace. Hyprland's
+    # idle-inhibit-fullscreen rule (user.lua) covers games instead, and only
+    # while their workspace is the one on screen.
+    settings.general.inhibit_screensaver = 0;
+  };
   programs.steam = {
     enable = true;
     gamescopeSession.enable = true;     # Steam Deck-like session selectable at SDDM login
