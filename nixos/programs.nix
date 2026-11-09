@@ -93,8 +93,28 @@ let
   # WoW addon manager (CurseForge + Wago addons); nixpkgs' copy is too old for
   # WoW: Forever, see the package file.
   wowupCf = pkgs.callPackage ./pkgs/wowup-cf { };
-  # Photoshop-like layered image editor (prebuilt release, see the package file).
-  photocraft = pkgs.callPackage ./pkgs/photocraft { };
+  # Storyteller's Craft apps (prebuilt releases, see the package file).
+  storytoldCraft = pkgs.callPackage ./pkgs/storytold-craft { };
+  photocraft = storytoldCraft {
+    pname = "photocraft"; version = "0.21.0";
+    sha256 = "3115e56cc646dbad3541e39b6323b8a24318fee6194d784ddf6d065f7b5d2d37";
+    description = "Layered image editor with PSD support";
+  };
+  pdfcraft = storytoldCraft {
+    pname = "pdfcraft"; version = "0.19.0";
+    sha256 = "3657aa40fe146d4af40fab0507c97f6ee2c6ce5ba9938567194439be3335ba8b";
+    description = "PDF reader and editor";
+  };
+  wordcraft = storytoldCraft {
+    pname = "wordcraft"; version = "0.16.0";
+    sha256 = "325b97f15bbf532628a3176a9c17148a7175f3e4f19b9313de323ab513609752";
+    description = "Word-like document editor (DOCX, ODT, RTF)";
+    # Unlike the other two it runs under XWayland on purpose (file drag-and-
+    # drop doesn't work on Wayland in its toolkit), where it doesn't see the
+    # monitor scale and draws at half size. WORDCRAFT_WAYLAND=1 would force
+    # Wayland instead (crisp too, but no drag-and-drop).
+    wrapperArgs = [ "--set-default" "WINIT_X11_SCALE_FACTOR" host.steamScaling ];
+  };
 
   # Image viewer (default for images, see xdg.mime below).
   # - Unsets LD_LIBRARY_PATH: apps Brave opens (downloads) inherit Brave's
@@ -285,6 +305,10 @@ in
   ] (_: "org.nomacs.ImageLounge.desktop") // {
     "application/x-bittorrent" = "org.qbittorrent.qBittorrent.desktop";
     "x-scheme-handler/magnet" = "org.qbittorrent.qBittorrent.desktop";
+    # Were defaults only by chance; pinned so PdfCraft/WordCraft (which claim
+    # them) don't take over.
+    "application/pdf" = "brave-browser.desktop";
+    "text/markdown" = "glow.desktop";
   };
 
   # --- System Packages ---
@@ -505,7 +529,9 @@ in
 
     # Desktop utilities
     nomacsTuned                # Image viewer (IrfanView-like), default for images
-    photocraft                 # Photoshop-like editor with PSD support (nixos/pkgs/photocraft)
+    photocraft                 # Photoshop-like editor with PSD support (nixos/pkgs/storytold-craft)
+    pdfcraft                   # PDF reader/editor (same package file)
+    wordcraft                  # Word-like document editor (same package file)
     file-roller                # Archive manager GUI (zip/tar/7z)
     hyprsunset                 # Night light (toggled by clicking the bar weather; config/hypr/nightlight.sh)
     vcgtLoader                 # Monitor calibration curve without Hyprland's ICC (nixos/pkgs/vcgt-loader)

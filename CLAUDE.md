@@ -435,6 +435,15 @@ on C:/D:/E: in Notepad++'s tab order (`cd ~/Documents/npp-tabs && nvim`).
 Untouched copy of the Notepad++ folder: `~/Documents/notepad++ from windows`.
 ~600 buffers made NvChad's tab bar take 1.5 s per redraw -- see the TODO.
 
+## PhotoCraft / PdfCraft / WordCraft
+
+One recipe for all three (`nixos/pkgs/storytold-craft/`, versions + hashes in
+`programs.nix`): the official prebuilt tarballs, GPU/window libs on
+`LD_LIBRARY_PATH`. Releases come every few days; bump only when asked.
+WordCraft runs under XWayland on purpose (drag-and-drop), so its wrapper sets
+`WINIT_X11_SCALE_FACTOR` (else half size). PDF and Markdown defaults are
+pinned (Brave, glow) so these apps' MIME claims don't take them over.
+
 ## qBittorrent / NTFS writes
 
 Downloads go to E: (`/mnt/edrive`, HDD). ntfs3 zero-fills a file up to any
