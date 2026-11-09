@@ -93,6 +93,8 @@ let
   # WoW addon manager (CurseForge + Wago addons); nixpkgs' copy is too old for
   # WoW: Forever, see the package file.
   wowupCf = pkgs.callPackage ./pkgs/wowup-cf { };
+  # Photoshop-like layered image editor (prebuilt release, see the package file).
+  photocraft = pkgs.callPackage ./pkgs/photocraft { };
 
   # Image viewer (default for images, see xdg.mime below).
   # - Unsets LD_LIBRARY_PATH: apps Brave opens (downloads) inherit Brave's
@@ -496,6 +498,7 @@ in
 
     # Desktop utilities
     nomacsTuned                # Image viewer (IrfanView-like), default for images
+    photocraft                 # Photoshop-like editor with PSD support (nixos/pkgs/photocraft)
     file-roller                # Archive manager GUI (zip/tar/7z)
     hyprsunset                 # Night light (toggled by clicking the bar weather; config/hypr/nightlight.sh)
     vcgtLoader                 # Monitor calibration curve without Hyprland's ICC (nixos/pkgs/vcgt-loader)
