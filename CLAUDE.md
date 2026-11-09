@@ -81,10 +81,11 @@ inherited from Vitalii stays -- don't trim it.
   root-owned files in `.git` (fix: `sudo chown -R vervain:users ~/code/simple_nix`).
 - Discord exists as both system (managed by install.sh) and user Flatpak --
   leave both.
-- install.sh updates only *system* Flatpaks. User Flatpaks (MAX, user Discord)
-  and claude/codex are updated by `./update-apps.sh` (no sudo, closes nothing;
-  also bumps the Craft apps, see below;
-  skips MAX with a warning if `download.max.ru` is unreachable, i.e. on iVPN).
+- install.sh updates only *system* Flatpaks. The rest: `update-messengers.sh`
+  (all user Flatpaks = MAX, user Discord; skips MAX with a warning if
+  `download.max.ru` is unreachable, i.e. on iVPN), `update-ai.sh`
+  (claude/codex), `update-crafts.sh` (see Craft apps). `update-apps.sh` runs
+  all three. No sudo, closes nothing; shared summary in `scripts/update-lib.sh`.
 
 ## Hyprland
 
@@ -440,7 +441,7 @@ Untouched copy of the Notepad++ folder: `~/Documents/notepad++ from windows`.
 
 One recipe for all three (`nixos/pkgs/storytold-craft/`, versions + hashes in
 `programs.nix`): the official prebuilt tarballs, GPU/window libs on
-`LD_LIBRARY_PATH`. Releases come every few days; `update-apps.sh` checks
+`LD_LIBRARY_PATH`. Releases come every few days; `update-crafts.sh` checks
 GitHub, writes version + hash (from `SHA256SUMS.txt`) into `programs.nix`
 and commits it (not pushed); `./install.sh` installs.
 WordCraft runs under XWayland on purpose (drag-and-drop), so its wrapper sets
