@@ -319,6 +319,12 @@ saves are shared with Windows. Notes in
   Display Mode "Fullscreen (Windowed)" 3840x2160. Don't exempt WoW from
   `suppress-maximize-events`: allowed to (un)fullscreen itself, it dropped
   out in combat and the bar came back. Tiled, it adopts the tile's size.
+- Cursor trapped in WoW / RMB camera swinging to the screen edge: Wine
+  locks the cursor to a window that fills the screen, and after WoW leaves
+  fullscreen (Super+F, or a monitor DP dropout resizing it) it sometimes keeps
+  that stale lock (seen with an X pointer grab test, 2026-11-09). Not WoW's
+  `ClipCursor` (0) nor its display mode. Fix: Super+arrow to another window,
+  then back -- the lock is only held while WoW is focused. No logout needed.
 - TBC Anniversary is `_anniversary_` in the same install (product
   `wow_anniversary`, exe `WowClassic.exe`): in the iVPN bypass list too;
   v2rayN's port rules (TCP 3724, UDP 29523 -> direct) cover every WoW.
