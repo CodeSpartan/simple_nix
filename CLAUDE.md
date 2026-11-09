@@ -83,6 +83,7 @@ inherited from Vitalii stays -- don't trim it.
   leave both.
 - install.sh updates only *system* Flatpaks. User Flatpaks (MAX, user Discord)
   and claude/codex are updated by `./update-apps.sh` (no sudo, closes nothing;
+  also bumps the Craft apps, see below;
   skips MAX with a warning if `download.max.ru` is unreachable, i.e. on iVPN).
 
 ## Hyprland
@@ -439,7 +440,9 @@ Untouched copy of the Notepad++ folder: `~/Documents/notepad++ from windows`.
 
 One recipe for all three (`nixos/pkgs/storytold-craft/`, versions + hashes in
 `programs.nix`): the official prebuilt tarballs, GPU/window libs on
-`LD_LIBRARY_PATH`. Releases come every few days; bump only when asked.
+`LD_LIBRARY_PATH`. Releases come every few days; `update-apps.sh` checks
+GitHub, writes version + hash (from `SHA256SUMS.txt`) into `programs.nix`
+and commits it (not pushed); `./install.sh` installs.
 WordCraft runs under XWayland on purpose (drag-and-drop), so its wrapper sets
 `WINIT_X11_SCALE_FACTOR` (else half size). PDF and Markdown defaults are
 pinned (Brave, glow) so these apps' MIME claims don't take them over.
