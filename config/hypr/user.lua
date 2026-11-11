@@ -602,10 +602,12 @@ hl.window_rule({
 -- Telegram's main window (title "Telegram" or "Telegram (<unread>)") opens
 -- on a new empty workspace and switches there, like Super+N. Telegram unmaps
 -- it when hidden to the tray, so a tray click counts as opening it.
+-- "silent" + the hook below: a plain workspace rule focuses the window the
+-- normal way, which warps the cursor to its center.
 hl.window_rule({
     name      = "telegram-new-workspace",
     match     = { class = "^org.telegram.desktop$", title = "^Telegram( \\(\\d+\\))?$" },
-    workspace = "empty",
+    workspace = "empty silent",
 })
 -- Same for MAX and both Discords (Flatpak + PTB). These Electron apps set
 -- their title only after the window maps, so match on class alone (a title
@@ -614,8 +616,22 @@ hl.window_rule({
 hl.window_rule({
     name      = "messengers-new-workspace",
     match     = { class = "^(max|discord|discord-ptb)$" },
-    workspace = "empty",
+    workspace = "empty silent",
 })
+-- Follow those windows to their new workspace without moving the cursor:
+-- turn warps off only for this switch. (A window that opened on the visible
+-- workspace, like Telegram's media viewer, is left alone.)
+local new_ws_classes = { ["org.telegram.desktop"] = true, max = true,
+                         discord = true, ["discord-ptb"] = true }
+hl.on("window.open", function(w)
+    if not (w and new_ws_classes[w.class] and w.workspace) then return end
+    local active = hl.get_active_workspace()
+    if active and active.id == w.workspace.id then return end
+    hl.config({ cursor = { no_warps = true } })
+    hl.dispatch(hl.dsp.focus({ workspace = w.workspace.id }))
+    hl.dispatch(hl.dsp.focus({ window = w }))
+    hl.config({ cursor = { no_warps = false } })
+end)
 
 -- Keep IVPN's main window tiled and let it fill the tile.
 hl.window_rule({
