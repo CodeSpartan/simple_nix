@@ -20,6 +20,7 @@
   libX11,
   dbus,
   libayatana-appindicator,
+  glib-networking,
 }:
 
 stdenv.mkDerivation rec {
@@ -34,6 +35,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ dpkg autoPatchelfHook wrapGAppsHook3 ];
   buildInputs = [
     webkitgtk_4_1 gtk3 libsoup_3 glib cairo gdk-pixbuf libX11 dbus
+    glib-networking   # TLS for WebKit (else "TLS support is not available")
     stdenv.cc.cc.lib
   ];
 
@@ -51,10 +53,13 @@ stdenv.mkDerivation rec {
   # Tray icon: Tauri loads libayatana-appindicator at runtime (dlopen).
   # WebKitGTK's DMA-BUF renderer crashes on NVIDIA under Wayland a second
   # after start ("Error 71 (Protocol error) dispatching to Wayland display").
+  # Its compositing mode blanks the page after a few seconds (only a few
+  # elements keep redrawing).
   preFixup = ''
     gappsWrapperArgs+=(
       --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ libayatana-appindicator ]}
       --set-default WEBKIT_DISABLE_DMABUF_RENDERER 1
+      --set-default WEBKIT_DISABLE_COMPOSITING_MODE 1
     )
   '';
 

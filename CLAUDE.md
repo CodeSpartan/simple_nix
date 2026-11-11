@@ -336,7 +336,9 @@ AppImage is gone). Update: the unversioned link
 `https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncher-x86_64.deb`
 redirects to a versioned URL (`curl -sI`, see `location:`); put that version
 + new hash in the package. Its wrapper sets `WEBKIT_DISABLE_DMABUF_RENDERER=1`
-(without it: Wayland "Error 71" crash right after start). Data/login:
+(without it: Wayland "Error 71" crash right after start) and
+`WEBKIT_DISABLE_COMPOSITING_MODE=1` (page blanks after a few seconds);
+`glib-networking` gives WebKit TLS. Data/login:
 `~/.config/Epic`, `~/.local/share/com.epicgames.eglv2`.
 
 ## Battle.net / WoW (Lutris)
