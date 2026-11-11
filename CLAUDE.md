@@ -329,6 +329,16 @@ saves are shared with Windows. Notes in
   launcher's Update overwrites it and the cheat.
 - Native Linux build: `~/code/bloodborne_pc` (no DLSS).
 
+## Epic Games Launcher
+
+`nixos/pkgs/epic-games-launcher/` repackages Epic's official .deb (the
+AppImage is gone). Update: the unversioned link
+`https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncher-x86_64.deb`
+redirects to a versioned URL (`curl -sI`, see `location:`); put that version
++ new hash in the package. Its wrapper sets `WEBKIT_DISABLE_DMABUF_RENDERER=1`
+(without it: Wayland "Error 71" crash right after start). Data/login:
+`~/.config/Epic`, `~/.local/share/com.epicgames.eglv2`.
+
 ## Battle.net / WoW (Lutris)
 
 - Battle.net = Lutris's "Battle.net" installer (Proton-GE via umu). Prefix

@@ -93,6 +93,8 @@ let
   # WoW addon manager (CurseForge + Wago addons); nixpkgs' copy is too old for
   # WoW: Forever, see the package file.
   wowupCf = pkgs.callPackage ./pkgs/wowup-cf { };
+  # Epic's launcher, from their .deb (they dropped the AppImage).
+  epicGamesLauncher = pkgs.callPackage ./pkgs/epic-games-launcher { };
   # Storyteller's Craft apps (prebuilt releases, see the package file).
   storytoldCraft = pkgs.callPackage ./pkgs/storytold-craft { };
   photocraft = storytoldCraft {
@@ -251,7 +253,7 @@ in
     };
   };
 
-  # AppImages (e.g. Epic Games Launcher Preview, ~/Applications/) expect a
+  # AppImages (downloaded apps, e.g. in ~/Applications/) expect a
   # normal Linux file layout; this runs them in one (appimage-run) and lets
   # them be started directly, like on Ubuntu.
   programs.appimage = {
@@ -503,6 +505,7 @@ in
     mangohud                   # Real-time FPS/GPU/CPU overlay for games
     lutris                     # Game manager for non-Steam games; installs Battle.net via its Wine/Proton script
     wowupCf                    # WowUp-CF: WoW addon manager (CurseForge), native Linux app
+    epicGamesLauncher          # Epic Games Launcher (Linux Preview, official .deb)
     piper                      # GUI for the G300s: buttons, DPI, polling rate, LED (via ratbagd)
 
     # VPN
