@@ -125,6 +125,11 @@ inherited from Vitalii stays -- don't trim it.
   bar's workspace (1), so bar clicks launch through Hyprland: plain programs
   via `config/wayle/launch.sh <cmd>`, and `clock-open`/`calendar-open` do
   `hyprctl eval 'hl.exec_cmd(...)'` themselves.
+- Tray apps (Telegram, MAX, both Discords, v2rayN): reshown from the tray
+  they open on a new empty workspace (`empty silent` rules), and a tray click
+  on an open one switches to it -- both without the cursor warp: their
+  `focus_on_activate` is off and `window.open`/`window.urgent` hooks switch
+  with `no_warps` on. Electron apps have no title at map: match class only.
 - Per-window keyboard layout: `hyprland-per-window-layout`, config in
   `config/hyprland-per-window-layout/options.toml`. Kill it with
   `pkill -x hyprland-per-wi` (`pgrep/pkill -f` also matches your own shell --
