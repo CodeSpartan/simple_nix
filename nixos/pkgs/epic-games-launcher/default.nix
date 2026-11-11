@@ -51,13 +51,18 @@ stdenv.mkDerivation rec {
   # libEOSSDK sits next to the binary's install dir, not on its rpath.
   appendRunpaths = [ "${placeholder "out"}/lib/epic-games-launcher" ];
   # Tray icon: Tauri loads libayatana-appindicator at runtime (dlopen).
-  # WebKitGTK's DMA-BUF renderer crashes on NVIDIA under Wayland a second
-  # after start ("Error 71 (Protocol error) dispatching to Wayland display").
-  # Its compositing mode blanks the page after a few seconds (only a few
-  # elements keep redrawing).
+  # XWayland: on native Wayland (nixpkgs' WebKitGTK 2.54, NVIDIA) the page
+  # goes blank after a while -- only changing elements keep redrawing.
+  # Nothing helped there: DMA-BUF off, compositing off, CPU rendering,
+  # __NV_DISABLE_EXPLICIT_SYNC. The old AppImage (Ubuntu 22.04 libs) was fine
+  # on Wayland, but its friends panel didn't draw. Downside of XWayland: text
+  # renders slightly differently (same Inter font, X11 hinting).
+  # DMA-BUF off: on Wayland it crashed a second after start ("Error 71"); kept
+  # with compositing off since XWayland was tested that way.
   preFixup = ''
     gappsWrapperArgs+=(
       --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ libayatana-appindicator ]}
+      --set-default GDK_BACKEND x11
       --set-default WEBKIT_DISABLE_DMABUF_RENDERER 1
       --set-default WEBKIT_DISABLE_COMPOSITING_MODE 1
     )

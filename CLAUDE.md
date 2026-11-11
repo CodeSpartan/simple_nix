@@ -335,9 +335,11 @@ saves are shared with Windows. Notes in
 AppImage is gone). Update: the unversioned link
 `https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncher-x86_64.deb`
 redirects to a versioned URL (`curl -sI`, see `location:`); put that version
-+ new hash in the package. Its wrapper sets `WEBKIT_DISABLE_DMABUF_RENDERER=1`
-(without it: Wayland "Error 71" crash right after start) and
-`WEBKIT_DISABLE_COMPOSITING_MODE=1` (page blanks after a few seconds);
++ new hash in the package. Runs on **XWayland** (`GDK_BACKEND=x11` in its
+wrapper): on Wayland the page blanks after a while (WebKitGTK 2.54 + NVIDIA;
+env tweaks didn't help -- details in the package file). The old AppImage
+(bundled Ubuntu 22.04 libs) worked on Wayland but its friends panel was
+broken. Known downside: text looks slightly different from Wayland.
 `glib-networking` gives WebKit TLS. Data/login:
 `~/.config/Epic`, `~/.local/share/com.epicgames.eglv2`.
 
