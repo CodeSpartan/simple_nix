@@ -347,6 +347,13 @@ saves are shared with Windows. Notes in
 - Tried and dropped (2026-11-05): Battle.net as a Steam non-Steam game
   (no better), and gamescope (display fine, but `--force-grab-cursor`
   bypasses our mouse curve). Keep Lutris.
+- WoW AI addon (chat with Claude/Codex in-game): repo `~/code/wow-ai` (not
+  ours; update with `git pull && node setup.js --account MELANG`, since
+  `MELANG.broken` would be picked first). Addon + ~15k slot files in
+  `_forever_/Interface/AddOns`. Its bridge (`npm start` there) screen-grabs the
+  game via X11 with `capture.python = wow-ai-python` (`programs.nix`: libX11
+  for ctypes). It's documented as X11-only; under Hyprland/XWayland check
+  with `npm run probe`, fallback `/wow-ai mode reload`.
 - 2026-11-05 a `/reload` hit an ntfs3 error (`attr_set_size_ex`) and left
   3 WoW files on C: unreadable/undeletable from Linux. They're parked in
   `_forever_/WTF/Account/MELANG.broken` (the good files were copied to a new

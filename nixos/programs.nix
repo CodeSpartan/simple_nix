@@ -201,6 +201,13 @@ let
     ${silmarilEnv}
     exec "$app" "$@"
   '';
+  # `wow-ai-python`: python3 for the wow-ai bridge's X11 screen capture
+  # (~/code/wow-ai, `capture.python` in its bridge/config.json). Its ctypes
+  # find_library("X11") finds nothing on NixOS without libX11 on LD_LIBRARY_PATH.
+  wowAiPython = pkgs.writeShellScriptBin "wow-ai-python" ''
+    export LD_LIBRARY_PATH=${lib.makeLibraryPath [ pkgs.libx11 ]}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    exec ${pkgs.python3}/bin/python3 "$@"
+  '';
   # The app-menu "Silmaril" is the native client (~/code/silmaril-native, Rust): its launch.sh
   # starts the latest `cargo build --release` there (the Kotlin one stays runnable as `silmaril`).
   silmarilNativeDesktop = pkgs.makeDesktopItem {
@@ -372,6 +379,7 @@ in
     # JVM
     jdk kotlin kotlin-language-server
     silmarilGradle silmarilRun silmarilNativeDesktop   # Silmaril MUD client (see the let block)
+    wowAiPython                # python3 + libX11 for the wow-ai bridge (see the let block)
 
     # Haskell
     ghc cabal-install haskell-language-server
