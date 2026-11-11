@@ -329,19 +329,14 @@ saves are shared with Windows. Notes in
   launcher's Update overwrites it and the cheat.
 - Native Linux build: `~/code/bloodborne_pc` (no DLSS).
 
-## Epic Games Launcher
+## Epic Games Launcher (removed)
 
-`nixos/pkgs/epic-games-launcher/` repackages Epic's official .deb (the
-AppImage is gone). Update: the unversioned link
-`https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncher-x86_64.deb`
-redirects to a versioned URL (`curl -sI`, see `location:`); put that version
-+ new hash in the package. Runs on **XWayland** (`GDK_BACKEND=x11` in its
-wrapper): on Wayland the page blanks after a while (WebKitGTK 2.54 + NVIDIA;
-env tweaks didn't help -- details in the package file). The old AppImage
-(bundled Ubuntu 22.04 libs) worked on Wayland but its friends panel was
-broken. Known downside: text looks slightly different from Wayland.
-`glib-networking` gives WebKit TLS. Data/login:
-`~/.config/Epic`, `~/.local/share/com.epicgames.eglv2`.
+Tried and dropped 2026-11-11: the Linux Preview (0.114, official .deb; the
+AppImage was gone) wasn't usable. On Wayland with nixpkgs' WebKitGTK 2.54 +
+NVIDIA the page blanked after a while; on XWayland the friends panel did.
+Its old AppImage (bundled Ubuntu 22.04 libs) never drew the friends panel.
+The working package is in git (`16c562c`, `nixos/pkgs/epic-games-launcher/`)
+if it's worth retrying with a newer release.
 
 ## Battle.net / WoW (Lutris)
 
