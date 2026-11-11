@@ -501,3 +501,9 @@ a reinstall): without it, no popups and no tray icon of its own.
   in the Nix rebuild.
 - `~/Desktop/message to vitalii.txt`: short list of upstream-worthy findings
   for Vitalii. Keep it current, no machine-specific stuff.
+
+## Android phone (adb)
+
+`android-tools` (adb, fastboot) is in `programs.nix`. USB access needs no
+`adbusers` group (systemd's uaccess rules cover it). Phone: Redmi Note 8 Pro
+(Android 10), already authorized for this PC.

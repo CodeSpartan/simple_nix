@@ -357,6 +357,7 @@ in
     ntfs3g                     # NTFS filesystem support
     exfatprogs                 # exFAT filesystem support (mkfs.exfat, fsck.exfat)
     efibootmgr                 # Manage UEFI NVRAM boot entries
+    android-tools              # adb + fastboot for Android phones (USB access via systemd uaccess)
   ] ++ lib.optionals host.nvidia [
     nvtopPackages.nvidia       # GPU process monitoring
   ] ++ [
