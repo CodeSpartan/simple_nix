@@ -607,6 +607,15 @@ hl.window_rule({
     match     = { class = "^org.telegram.desktop$", title = "^Telegram( \\(\\d+\\))?$" },
     workspace = "empty",
 })
+-- Same for MAX and both Discords (Flatpak + PTB). These Electron apps set
+-- their title only after the window maps, so match on class alone (a title
+-- match never fired, tested 2026-11-11). Their rare other windows (popouts,
+-- Discord's startup splash) get a new workspace too.
+hl.window_rule({
+    name      = "messengers-new-workspace",
+    match     = { class = "^(max|discord|discord-ptb)$" },
+    workspace = "empty",
+})
 
 -- Keep IVPN's main window tiled and let it fill the tile.
 hl.window_rule({
