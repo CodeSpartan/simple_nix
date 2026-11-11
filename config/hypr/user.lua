@@ -526,11 +526,12 @@ hl.window_rule({
 
 -- General window rules
 -- Apps can't fullscreen/maximize themselves -- except VLC, so its F key and
--- double-click work. ("negative:" inverts the regex. A later rule with a
--- narrower suppress_event does NOT override this one; tested.)
+-- double-click work, and Unreal, so the maximize button of its floating
+-- editor windows (Blueprints etc.) works. ("negative:" inverts the regex. A
+-- later rule with a narrower suppress_event does NOT override this one; tested.)
 hl.window_rule({
     name           = "suppress-maximize-events",
-    match          = { class = "negative:^(vlc)$" },
+    match          = { class = "negative:^(vlc|UnrealEditor)$" },
     suppress_event = "fullscreen maximize",
 })
 
