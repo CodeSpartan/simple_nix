@@ -630,6 +630,8 @@ hl.window_rule({
 -- is an activation request. Hyprland's own handling (focus_on_activate)
 -- warps the cursor to the window, so for these apps it's off and the
 -- "urgent" event it sends instead does the switch without the warp.
+-- Apps can also activate on their own (Discord reconnecting...); a tray
+-- click is told apart by the cursor being on the bar (top 43 px).
 local tray_classes = "^(org.telegram.desktop|max|discord|discord-ptb|v2rayN)$"
 hl.window_rule({
     name              = "tray-apps-activate",
@@ -638,23 +640,69 @@ hl.window_rule({
 })
 local tray_class_set = { ["org.telegram.desktop"] = true, max = true,
                          discord = true, ["discord-ptb"] = true, v2rayN = true }
+-- Main windows of the class-only apps, once they have a title.
+local main_title = { max = "^MAX$", discord = "Discord$", ["discord-ptb"] = "Discord$" }
+local function cursor_on_bar()
+    local c = hl.get_cursor_pos()
+    return c ~= nil and c.y < 43
+end
 local function focus_no_warp(w)
     hl.config({ cursor = { no_warps = true } })
     hl.dispatch(hl.dsp.focus({ workspace = w.workspace.id }))
     hl.dispatch(hl.dsp.focus({ window = w }))
     hl.config({ cursor = { no_warps = false } })
 end
--- Follow a window that the rules above sent to a new workspace. (One that
--- opened on the visible workspace, like Telegram's media viewer, is left alone.)
-hl.on("window.open", function(w)
-    if not (w and tray_class_set[w.class] and w.workspace) then return end
+local function is_hidden(w)
     local active = hl.get_active_workspace()
-    if active and active.id == w.workspace.id then return end
-    focus_no_warp(w)
+    return w.workspace and not (active and active.id == w.workspace.id)
+end
+-- Follow a window that the rules above sent to a new workspace. Telegram's
+-- and v2rayN's rules match only their main windows. MAX/Discord windows
+-- (class-only rule) are followed after a tray click, or once they get their
+-- main window's title (a launch from the menu); any other window they open
+-- on their own (popout, splash) stays on its new workspace unfollowed.
+local pending = {}   -- address -> time it opened
+hl.on("window.open", function(w)
+    if not (w and tray_class_set[w.class]) then return end
+    -- v2rayN (XWayland) comes back from the tray on the current workspace:
+    -- its workspace rule isn't applied on a remap (tested). Move it here.
+    if w.class == "v2rayN" and w.title and w.title:find("^v2rayN %- ")
+        and not is_hidden(w) then
+        hl.config({ cursor = { no_warps = true } })
+        hl.dispatch(hl.dsp.window.move({ workspace = "empty", window = w }))
+        hl.dispatch(hl.dsp.focus({ window = w }))
+        hl.config({ cursor = { no_warps = false } })
+        return
+    end
+    if not is_hidden(w) then return end
+    if not main_title[w.class] or cursor_on_bar() then
+        focus_no_warp(w)
+    else
+        pending[w.address] = os.time()
+    end
+end)
+hl.on("window.title", function(w)
+    local t = w and pending[w.address]
+    if not t then return end
+    if os.time() - t > 5 then pending[w.address] = nil; return end
+    if w.title and w.title:find(main_title[w.class]) then
+        pending[w.address] = nil
+        if is_hidden(w) then focus_no_warp(w) end
+    end
 end)
 hl.on("window.urgent", function(w)
-    if w and tray_class_set[w.class] and w.workspace then focus_no_warp(w) end
+    if w and tray_class_set[w.class] and w.workspace and cursor_on_bar() then
+        focus_no_warp(w)
+    end
 end)
+
+-- Battle.net (and WoW, same Proton class) may not pull focus to itself, e.g.
+-- when it reconnects: its activation requests only mark it urgent.
+hl.window_rule({
+    name              = "battlenet-no-activate",
+    match             = { class = "^steam_app_default$" },
+    focus_on_activate = false,
+})
 
 -- Keep IVPN's main window tiled and let it fill the tile.
 hl.window_rule({

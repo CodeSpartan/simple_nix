@@ -129,7 +129,13 @@ inherited from Vitalii stays -- don't trim it.
   they open on a new empty workspace (`empty silent` rules), and a tray click
   on an open one switches to it -- both without the cursor warp: their
   `focus_on_activate` is off and `window.open`/`window.urgent` hooks switch
-  with `no_warps` on. Electron apps have no title at map: match class only.
+  with `no_warps` on. A tray click is told apart from an app activating
+  itself by the cursor being on the bar (top 43 px); MAX/Discord windows
+  opened otherwise are followed only once they get the main window's title
+  (Electron sets it after mapping, so their rule matches class only).
+  v2rayN (XWayland) ignores the workspace rule on remap, so the hook moves it.
+  Battle.net/WoW (`steam_app_default`) have `focus_on_activate` off too: the
+  user doesn't want them grabbing focus.
 - Per-window keyboard layout: `hyprland-per-window-layout`, config in
   `config/hyprland-per-window-layout/options.toml`. Kill it with
   `pkill -x hyprland-per-wi` (`pgrep/pkill -f` also matches your own shell --
