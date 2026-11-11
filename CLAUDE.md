@@ -31,6 +31,13 @@ inherited from Vitalii stays -- don't trim it.
 
 ## TODO
 
+- **Remind the user at the start of the next session** (then drop this
+  line once done): system update postponed on 2026-11-11. flake.lock is
+  from 2026-10-23 (upstream was at 2026-11-01). Plan, as its own commit:
+  `cd nixos && nix flake update`, build-check, commit + push; user runs
+  `./install.sh`, then reboots soon after (new kernel + NVIDIA driver; GPU
+  apps may fail until then). If it breaks, pick the previous generation in
+  the boot menu.
 - After WoW: Forever launches (2026-11-04): WoW (not Battle.net) should
   bypass both VPNs. iVPN is done (`wow.exe` in `config/ivpn-bypass/apps`) --
   confirm with `journalctl -u ivpn-bypass` while WoW runs. v2rayN can't tell
