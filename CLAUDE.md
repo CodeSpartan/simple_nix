@@ -270,10 +270,24 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
 ## Unreal Engine / MMOKit
 
 - UE 5.8.4 is the prebuilt Linux zip in `~/code/UE`, run via nix-ld
-  (`unrealRuntimeLibs` in `programs.nix`). Run the editor with
-  `SDL_VIDEODRIVER=x11` (native Wayland puts its dialogs off-screen). Its
-  scripts need `bash <script>` (no `/bin/bash`). The Epic launcher can't
-  install UE on Linux.
+  (`unrealRuntimeLibs` in `programs.nix`). Its scripts need
+  `bash <script>` (no `/bin/bash`). The Epic launcher can't install UE on
+  Linux.
+- The editor runs native Wayland (menu entry
+  `~/.local/share/applications/unreal-editor.desktop`, outside git):
+  `SDL_VIDEODRIVER=wayland SDL_VIDEO_WAYLAND_SCALE_TO_DISPLAY=1
+  SDL_MOUSE_INTEGER_MODE=1`. Without SCALE_TO_DISPLAY it renders at half
+  resolution (UE doesn't ask SDL for HiDPI windows); without INTEGER_MODE
+  mouse-look in Play doesn't move (UE truncates fractional deltas to int).
+  XWayland (`x11`) was dropped: its pointer grabs trapped the mouse in
+  popups and broke mouse-look.
+- Hyprland rules for UE in `user.lua` (after `suppress-maximize-events`,
+  which exempts it so its maximize button works): `min_size 1x1` works
+  around a Hyprland bug that opened its floating windows at their min size;
+  asset editors (Blueprints...) still get the tile-size guess (960x1037,
+  UE's SDL sends the parent too late) and lose UE's remembered size, so a
+  `window.open` hook maximizes them, restoring to 80% height. Debug window
+  sizing with `WAYLAND_DEBUG=1` (grep `xdg_toplevel`).
 - MMOKit: `~/code/MMOKit` (GitLab), remote `windows` = the D: copy.
 - PersistenceServer stays on D: (`/mnt/ddrive/MMO_Kit_Creation/
   PersistenceServer`), built with `dotnet-sdk_8` into `bin-linux/` so

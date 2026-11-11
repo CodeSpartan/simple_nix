@@ -535,6 +535,38 @@ hl.window_rule({
     suppress_event = "fullscreen maximize",
 })
 
+-- Unreal (native Wayland): its floating windows (Blueprint and other asset
+-- editors) opened at their minimum size instead of the size UE remembers.
+-- Hyprland bug (0.56.2, getGeometryForWindow): a client that never sends
+-- xdg_surface.set_window_geometry (SDL doesn't) has a 0x0 geometry, which
+-- Hyprland raises to the client's min size *before* the "no geometry ->
+-- use the drawn buffer's size" fallback, so the min size wins. Overriding
+-- the min size with 1x1 keeps that fallback. Only floating resizes lose
+-- UE's 100x50 px limit. Repro: any SDL3 window with a min size + parent.
+hl.window_rule({
+    name     = "unreal-open-size",
+    match    = { class = "^UnrealEditor$" },
+    min_size = { 1, 1 },
+})
+-- Still open: UE's SDL sends the parent only after the window's first
+-- commit, so Hyprland sizes a new asset editor like a new tile (960x1037)
+-- and SDL then ignores UE's remembered size. Float rules matching its
+-- title at that point didn't help (tested 2026-11-11). So instead: a
+-- floating UE window that opens at that full-height tile size (asset
+-- editors) gets maximized. Fixed-size ones (progress popups) are smaller.
+-- First shrink it to 80% of the screen height and center it: Hyprland
+-- restores that size when it's un-maximized.
+hl.on("window.open", function(w)
+    if w and w.class == "UnrealEditor" and w.floating
+        and w.size and w.size.y >= 1000 then
+        local mh = w.monitor and w.monitor.height
+            and (w.monitor.height / (w.monitor.scale or 1)) or 1080
+        hl.dispatch(hl.dsp.window.resize({ x = w.size.x, y = math.floor(mh * 0.8), window = w }))
+        hl.dispatch(hl.dsp.window.center({ window = w }))
+        hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized", window = w }))
+    end
+end)
+
 -- Any fullscreen window (movie, game) keeps hypridle from turning the
 -- monitor off; the 15-min timer runs again once it leaves fullscreen.
 -- Not VLC: vlc-idle-inhibit.sh keeps it on only while VLC *plays*, so a
