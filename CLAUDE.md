@@ -342,8 +342,9 @@ saves are shared with Windows. Notes in
   quit from its tray). Outside git; redo after a reinstall, or use Options
   → WoW Clients → Add New. Windows' CurseForge tracks the same folder.
 - FPS counter: MangoHud via Lutris' "FPS counter (MangoHud)" toggle;
-  per-exe configs in `config/MangoHud/` (`wine-Wow.conf`, `wine-WoWClassic.conf` =
-  FPS only, top-left; `wine-Battle.net.conf` = hidden). NVIDIA's overlay is Windows-only.
+  per-exe configs in `config/MangoHud/` (`wine-Wow.conf` = FPS only, top-right
+  (top-left is WoW AI's pixel strip); `wine-WoWClassic.conf` = FPS only,
+  top-left; `wine-Battle.net.conf` = hidden). NVIDIA's overlay is Windows-only.
 - Tried and dropped (2026-11-05): Battle.net as a Steam non-Steam game
   (no better), and gamescope (display fine, but `--force-grab-cursor`
   bypasses our mouse curve). Keep Lutris.
