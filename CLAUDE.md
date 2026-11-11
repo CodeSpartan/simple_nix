@@ -227,9 +227,9 @@ via Save Changes and Reset. `sbctl enroll-keys` "File is immutable" → `chattr
 - Pull upstream by **cherry-pick**, never merge. `host.nix`, `hardware.nix`,
   `security.nix`, `secrets/`, `hypr/user.lua` diverge on purpose. Skip
   NordVPN, Razer, and his secrets.
-- Upstream reviewed through **`de6e925`** (2026-10-29): everything up to it was
+- Upstream reviewed through **`f746a4f`** (2026-11-11): everything up to it was
   picked, partly picked, or skipped. Next time only look at
-  `git log --oneline de6e925..upstream/main`, then update this hash.
+  `git log --oneline f746a4f..upstream/main`, then update this hash.
 - Upstream PRs: build in a clean `git worktree` off `upstream/main`.
 - HTTPS git from Claude's shell can pop a password dialog on the desktop --
   prefix `GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=true`.
@@ -443,7 +443,8 @@ sites send their sub CA themselves, so the 2027 expiry of the old one is harmles
 ## Screenshot upload (Gyazo / Cloudinary)
 
 `nixos/screenshot-upload.nix` + `nixos/pkgs/screenshot-upload/`. PrtSc is
-Flameshot; Shift/Ctrl+PrtSc pipe `flameshot gui --raw` to
+Flameshot (asks the running daemon over D-Bus, `captureScreen`; the portal's
+grim runs with `-l 0`, `desktop.nix`); Shift/Ctrl+PrtSc pipe `flameshot gui --raw` to
 `screenshot-upload gyazo|cloudinary` (link -> clipboard + Brave). Also in
 Flameshot's "Open with" and Dolphin's right-click "Upload to". Credentials:
 agenix `gyazo-token` (access token) and `cloudinary`

@@ -382,7 +382,10 @@ end
 hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("hyprctl reload"), { locked = true })
 
 -- Screenshots
-hl.bind("Print",                   hl.dsp.exec_cmd("flameshot gui"))
+-- Reuse the tray daemon: starting a new Qt GUI adds ~50ms to every capture.
+hl.bind("Print", hl.dsp.exec_cmd(
+    "busctl --user --expect-reply=no call org.flameshot.Flameshot / org.flameshot.Flameshot captureScreen"
+))
 -- Same Flameshot screen; Enter uploads (nixos/screenshot-upload.nix)
 hl.bind("SHIFT + Print",           hl.dsp.exec_cmd("flameshot gui --raw | screenshot-upload gyazo"))
 hl.bind("CTRL + Print",            hl.dsp.exec_cmd("flameshot gui --raw | screenshot-upload cloudinary"))
