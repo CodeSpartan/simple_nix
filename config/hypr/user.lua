@@ -599,6 +599,15 @@ hl.window_rule({
     fullscreen = true,
 })
 
+-- Telegram's main window (title "Telegram" or "Telegram (<unread>)") opens
+-- on a new empty workspace and switches there, like Super+N. Telegram unmaps
+-- it when hidden to the tray, so a tray click counts as opening it.
+hl.window_rule({
+    name      = "telegram-new-workspace",
+    match     = { class = "^org.telegram.desktop$", title = "^Telegram( \\(\\d+\\))?$" },
+    workspace = "empty",
+})
+
 -- Keep IVPN's main window tiled and let it fill the tile.
 hl.window_rule({
     name        = "ivpn-main",
