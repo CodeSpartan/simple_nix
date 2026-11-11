@@ -354,7 +354,10 @@ saves are shared with Windows. Notes in
   `_forever_/Interface/AddOns`. Its bridge (`npm start` there) screen-grabs the
   game via X11 with `capture.python = wow-ai-python` (`programs.nix`: libX11
   for ctypes) and `capture.windowName = "World of Warcraft"` (Proton gives
-  every Wine window WM_CLASS `steam_app_default`, not `Wow.exe`). It's documented as X11-only; under Hyprland/XWayland check
+  every Wine window WM_CLASS `steam_app_default`, not `Wow.exe`). Local
+  patch in `bridge/capture_x11.py` (uncommitted there; re-apply if a pull
+  drops it): when grabbing from the root fails (XWayland has no root
+  contents), it grabs the WoW window itself. It's documented as X11-only; under Hyprland/XWayland check
   with `npm run probe`, fallback `/wow-ai mode reload`.
 - 2026-11-05 a `/reload` hit an ntfs3 error (`attr_set_size_ex`) and left
   3 WoW files on C: unreadable/undeletable from Linux. They're parked in
