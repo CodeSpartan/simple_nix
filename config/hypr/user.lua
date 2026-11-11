@@ -618,19 +618,42 @@ hl.window_rule({
     match     = { class = "^(max|discord|discord-ptb)$" },
     workspace = "empty silent",
 })
--- Follow those windows to their new workspace without moving the cursor:
--- turn warps off only for this switch. (A window that opened on the visible
--- workspace, like Telegram's media viewer, is left alone.)
-local new_ws_classes = { ["org.telegram.desktop"] = true, max = true,
-                         discord = true, ["discord-ptb"] = true }
-hl.on("window.open", function(w)
-    if not (w and new_ws_classes[w.class] and w.workspace) then return end
-    local active = hl.get_active_workspace()
-    if active and active.id == w.workspace.id then return end
+-- v2rayN's main window too (title match: its dialogs open on the current
+-- workspace). It unmaps only with its "Hide to tray when closed" option on;
+-- with it off, closing just minimizes, which Hyprland ignores.
+hl.window_rule({
+    name      = "v2rayn-new-workspace",
+    match     = { class = "^v2rayN$", title = "^v2rayN - " },
+    workspace = "empty silent",
+})
+-- A tray click on an app whose window is already open (on some workspace)
+-- is an activation request. Hyprland's own handling (focus_on_activate)
+-- warps the cursor to the window, so for these apps it's off and the
+-- "urgent" event it sends instead does the switch without the warp.
+local tray_classes = "^(org.telegram.desktop|max|discord|discord-ptb|v2rayN)$"
+hl.window_rule({
+    name              = "tray-apps-activate",
+    match             = { class = tray_classes },
+    focus_on_activate = false,
+})
+local tray_class_set = { ["org.telegram.desktop"] = true, max = true,
+                         discord = true, ["discord-ptb"] = true, v2rayN = true }
+local function focus_no_warp(w)
     hl.config({ cursor = { no_warps = true } })
     hl.dispatch(hl.dsp.focus({ workspace = w.workspace.id }))
     hl.dispatch(hl.dsp.focus({ window = w }))
     hl.config({ cursor = { no_warps = false } })
+end
+-- Follow a window that the rules above sent to a new workspace. (One that
+-- opened on the visible workspace, like Telegram's media viewer, is left alone.)
+hl.on("window.open", function(w)
+    if not (w and tray_class_set[w.class] and w.workspace) then return end
+    local active = hl.get_active_workspace()
+    if active and active.id == w.workspace.id then return end
+    focus_no_warp(w)
+end)
+hl.on("window.urgent", function(w)
+    if w and tray_class_set[w.class] and w.workspace then focus_no_warp(w) end
 end)
 
 -- Keep IVPN's main window tiled and let it fill the tile.
