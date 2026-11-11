@@ -26,6 +26,7 @@
 --   Super+Alt+Shift+1-0  = move window to workspace 11-20
 --   Super+N              = jump to a new empty workspace
 --   Super+Shift+N        = move window to a new empty workspace
+--   Super+Shift+M        = same, but numbered from 20 up
 --   Super+scroll          = cycle workspaces
 --   Super+`              = show desktop (press again to go back)
 --   Super+S              = toggle scratchpad
@@ -421,6 +422,15 @@ end
 -- First unused workspace number (no limit)
 hl.bind(mainMod .. " + N",         hl.dsp.focus({ workspace = "empty" }))
 hl.bind(mainMod .. " + SHIFT + N", hl.dsp.window.move({ workspace = "empty" }))
+-- Like Super+Shift+N, but to the first free workspace from 20 up, out of
+-- the way of 1-10 (Hyprland's "empty" always takes the lowest free number).
+hl.bind(mainMod .. " + SHIFT + M", function()
+    local used = {}
+    for _, ws in ipairs(hl.get_workspaces()) do used[ws.id] = true end
+    local id = 20
+    while used[id] do id = id + 1 end
+    hl.dispatch(hl.dsp.window.move({ workspace = id }))
+end)
 
 -- Show desktop: Super+` jumps to an empty workspace named "desktop" (just the
 -- wallpaper); pressing it again goes back to the workspace you came from.
