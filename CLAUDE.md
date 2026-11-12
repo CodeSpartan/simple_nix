@@ -169,7 +169,9 @@ inherited from Vitalii stays -- don't trim it.
   Its float/size rules are launch rules (`[...] dolphin`), so only that
   process's window gets them; other Dolphins tile (Super+Shift+E). Super+Ctrl+S
   sends any window to the Super+S scratchpad, floating. Wayle hides special
-  workspaces (`show-special = false`).
+  workspaces (`show-special = false`). `input.special_fallthrough = true` lets
+  the pointer through a shown special workspace's empty area -- without it
+  files can't be dragged from that Dolphin into Brave below.
 - Per-window keyboard layout: `hyprland-per-window-layout`, config in
   `config/hyprland-per-window-layout/options.toml`. Kill it with
   `pkill -x hyprland-per-wi` (`pgrep/pkill -f` also matches your own shell --

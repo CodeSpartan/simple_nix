@@ -312,6 +312,11 @@ hl.config({
 
         follow_mouse = 1,
 
+        -- A shown special workspace (Super+E Dolphin, Super+S scratchpad)
+        -- with only floating windows lets the pointer through to the
+        -- windows below it, so files can be dragged from Dolphin into Brave.
+        special_fallthrough = true,
+
         sensitivity = 0, -- -1.0 - 1.0, 0 means no modification (ignored by the custom curve below).
 
         -- Windows "Enhance pointer precision" curve for the G300s (1750 DPI, 1000 Hz,
