@@ -7,7 +7,7 @@
 # bar from whatever terminal ran it. Wrapping the `wayle` binary covers every
 # way it starts. A thin wrapper, so nothing is recompiled.
 #
-# Must come after wayle-pr255.nix in nixpkgs.overlays.
+# Must come after wayle-patches.nix in nixpkgs.overlays.
 final: prev:
 
 {

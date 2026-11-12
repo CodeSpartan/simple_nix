@@ -185,9 +185,11 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
 - Tray icons whose app reports SNI status "Passive" are hidden (our wayle
   patches `wayle-systray-*.patch`). Blueman is patched to go Passive while
   Bluetooth is off (`blueman-hide-when-off`); turn it on in Bluetooth Manager.
-- Harmless: `missing field overFullscreen` log spam; two iVPN tray icons.
-- Hyprland 0.57 gives special workspaces no `id`; `wayle-hyprland-057.patch`
-  fills it in (else the bar stops updating workspaces). Re-check on wayle bumps.
+- Harmless: two iVPN tray icons.
+- Wayle is nixpkgs' package plus our patches (`nixos/overlays/wayle-patches.nix`,
+  rebuilt from source). Its library versions come from wayle's own
+  `Cargo.lock`, so they move only when nixpkgs bumps wayle. If a patch stops
+  applying after an update, check whether upstream fixed that bug.
 - Logs: `~/.local/state/wayle/wayle-shell.<date>.log`. Restart with
   `wayle panel restart`, not kill + relaunch.
 - **From Claude's shell, don't `wayle panel restart`**: the new bar inherits
@@ -479,7 +481,7 @@ Timers page (the date is a separate custom module that still opens calcurse).
 `kclockd` runs the timers and rings until dismissed. Clicking the popup's
 body stops it. The X needs `popup-close-behavior = "remove"` (default just
 hides the popup) plus two notification patches in
-`nixos/overlays/wayle-pr255-package.nix`: wayle dropped "never expires"
+`nixos/overlays/wayle-patches.nix`: wayle dropped "never expires"
 notifications from its list, and gave a resent notification a new id that
 KClock doesn't listen for.
 Its "timer running" notification is off: `link.sh` sets

@@ -45,8 +45,8 @@
   nixpkgs.overlays = [
     (import ./overlays/amduprof.nix)
     (import ./overlays/nsight-graphics.nix)
-    (import ./overlays/wayle-pr255.nix)   # TEMPORARY, see that file -- drop once wayle-rs/wayle#255 merges
-    (import ./overlays/wayle-english-dates.nix)   # LC_TIME=en_US for wayle only; after wayle-pr255
+    (import ./overlays/wayle-patches.nix)   # our fixes on nixpkgs' wayle, see that file
+    (import ./overlays/wayle-english-dates.nix)   # LC_TIME=en_US for wayle only; after wayle-patches
     (import ./overlays/blueman-hide-when-off.nix)   # tray icon only while Bluetooth is on
   ];
   nixpkgs.config.allowUnfree = true;
