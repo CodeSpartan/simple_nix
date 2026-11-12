@@ -390,18 +390,44 @@ hl.bind(mainMod .. " + ALT + N",   hl.dsp.exec_cmd("kitty --class=notif-log sh -
 
 -- Ctrl+Shift switches keyboard layout on *release*, like Windows. XKB's own
 -- grp:ctrl_shift_toggle fires on press, so Ctrl+Shift+C/V/T also flipped the
--- layout. Release binds on the modifier keys themselves; whichever of the two
--- is let go first triggers it. The released key still counts as held at that
--- moment, so the mod mask is CTRL + SHIFT (like the documented SUPER + SUPER_L).
+-- layout. Hyprland 0.57's release binds on the modifier keys stopped firing
+-- while the other one is still held, so this watches raw key events instead:
+-- once Ctrl and Shift are both down with no other key pressed in between,
+-- letting go of either one switches; any other key (Ctrl+Shift+C) cancels.
 -- Not exec_cmd("hyprctl switchxkblayout ..."): every exec forks Hyprland and
 -- the switch landed ~50 ms late, so a fast first letter came out in the old
--- layout. The bind only emits an event; kb-switch.py (AUTOSTART) switches.
-local next_layout = hl.dsp.event("kb-switch")
-for _, k in ipairs({ "Shift_L", "Shift_R" }) do
-    hl.bind("CTRL + SHIFT + " .. k, next_layout, { release = true })
-end
-for _, k in ipairs({ "Control_L", "Control_R" }) do
-    hl.bind("CTRL + SHIFT + " .. k, next_layout, { release = true })
+-- layout. This only emits an event; kb-switch.py (AUTOSTART) switches.
+do
+    -- xkb keycodes (evdev + 8)
+    local CTRL  = { [37] = true, [105] = true }   -- Control_L, Control_R
+    local SHIFT = { [50] = true, [62] = true }    -- Shift_L, Shift_R
+    local held, armed, spoiled = {}, false, false
+    hl.on("input.keyboard.key", function(code, _, state)
+        if state == 1 then
+            held[code] = true
+            if CTRL[code] or SHIFT[code] then
+                local ctrl, shift = false, false
+                for k in pairs(held) do
+                    ctrl  = ctrl or CTRL[k] ~= nil
+                    shift = shift or SHIFT[k] ~= nil
+                end
+                if ctrl and shift and not spoiled then armed = true end
+            else
+                -- another key while Ctrl/Shift are down: a shortcut, not a switch
+                for k in pairs(held) do
+                    if CTRL[k] or SHIFT[k] then armed, spoiled = false, true end
+                end
+            end
+        else
+            held[code] = nil
+            if armed and (CTRL[code] or SHIFT[code]) then
+                armed = false
+                spoiled = true   -- the other modifier's release mustn't switch back
+                hl.dispatch(hl.dsp.event("kb-switch"))
+            end
+            if next(held) == nil then armed, spoiled = false, false end
+        end
+    end)
 end
 
 -- Black screen after a monitor replug: aquamarine 0.15.0 leaves the output at 0x0 and
