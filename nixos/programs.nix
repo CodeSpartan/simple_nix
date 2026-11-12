@@ -333,6 +333,7 @@ in
     # Modern CLI replacements & tools
     bat                        # cat alternative (syntax highlighting, git integration)
     cloc                       # count lines of code by language
+    tokei                      # count lines of code by language (prettier table, faster)
     duf                        # df alternative (disk usage with colors)
     fd                         # find alternative
     ripgrep                    # grep alternative
