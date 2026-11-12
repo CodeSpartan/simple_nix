@@ -47,7 +47,7 @@
     enableCompletion = true;
     # eza: modern ls with extras like `ls --code`. Interactive
     # shells only -- scripts still get GNU ls. `command ls` / `\ls` = GNU ls.
-    shellAliases.ls = "eza";
+    shellAliases.ls = "eza --icons";
     oh-my-zsh = {
       enable = true;
       plugins = [ "git" "z" "sudo" "extract" "command-not-found" "fzf" "docker" ];
