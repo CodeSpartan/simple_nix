@@ -59,7 +59,7 @@ in
   ];
 
   # Today's notes as a notification, once a day: at the first login of the day
-  # and at 08:00 if the PC was already on. The script skips days it already
+  # and at 01:00 if the PC was already on. The script skips days it already
   # notified and waits for the notification daemon (Wayle) to come up.
   systemd.user.services.calendar-notes-notify = {
     description = "Notify about today's calendar notes";
@@ -76,7 +76,7 @@ in
   systemd.user.timers.calendar-notes-notify = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      OnCalendar = "*-*-* 08:00:00";
+      OnCalendar = "*-*-* 01:00:00";
       Persistent = true;
     };
   };
