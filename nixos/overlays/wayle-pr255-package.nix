@@ -145,6 +145,11 @@ rustPlatform.buildRustPackage (finalAttrs: {
     # it from PropertiesChanged, which blueman never sends). See `patches`.
     patch -d "$(echo "$cargoDepsCopy"/*/wayle-systray-0.1.3)" -p1 < ${./wayle-systray-newstatus.patch}
 
+    # Tray: after a bar restart, the scan for "orphaned" tray items re-added
+    # apps that had registered by well-known name (org.kde.StatusNotifierItem-
+    # <pid>-1) under their unique name too -> duplicate icons (v2rayN).
+    patch -d "$(echo "$cargoDepsCopy"/*/wayle-systray-0.1.3)" -p1 < ${./wayle-systray-dedup.patch}
+
     # Hyprland 0.57 gives special workspaces no id (left out of JSON; their
     # name or nothing in events). wayle-hyprland 0.1.2 requires one, so the
     # whole workspaces/clients/monitors reply failed to parse and the bar

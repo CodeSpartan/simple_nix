@@ -1,0 +1,56 @@
+diff --color -ru a/src/watcher/discovery.rs b/src/watcher/discovery.rs
+--- a/src/watcher/discovery.rs
++++ b/src/watcher/discovery.rs
+@@ -61,6 +61,15 @@
+             continue;
+         }
+ 
++        // Checked here, after the probe, not once before the loop: apps
++        // re-register while this scan runs (it starts with the watcher).
++        // An app that registered under a well-known name (Qt/Avalonia/Electron:
++        // org.kde.StatusNotifierItem-<pid>-1) is also reachable by its unique
++        // name; without this it got a second icon after a bar restart.
++        if owns_registered_item(&connection, &registered_items, name_str).await {
++            continue;
++        }
++
+         if register_item(name_str, &registered_items, &event_tx, &connection).await {
+             info!(service = %name_str, "recovered orphaned SNI item");
+             found += 1;
+@@ -103,6 +112,36 @@
+     Some(candidates)
+ }
+ 
++async fn owns_registered_item(
++    connection: &Connection,
++    items: &Arc<RwLock<Vec<String>>>,
++    bus_name: &str,
++) -> bool {
++    let names: Vec<String> = items
++        .read()
++        .await
++        .iter()
++        .filter(|item| !item.starts_with(':'))
++        .map(|item| item.split('/').next().unwrap_or(item).to_string())
++        .collect();
++
++    let Ok(dbus_proxy) = DBusProxy::new(connection).await else {
++        return false;
++    };
++
++    for name in names {
++        let Ok(well_known) = zbus::names::BusName::try_from(name.as_str()) else {
++            continue;
++        };
++        if let Ok(owner) = dbus_proxy.get_name_owner(well_known).await {
++            if owner.as_str() == bus_name {
++                return true;
++            }
++        }
++    }
++    false
++}
++
+ async fn is_registered(items: &Arc<RwLock<Vec<String>>>, bus_name: &str) -> bool {
+     let items = items.read().await;
+     let prefix = format!("{bus_name}/");
