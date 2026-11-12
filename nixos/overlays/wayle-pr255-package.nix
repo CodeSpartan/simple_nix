@@ -14,6 +14,7 @@
   pixman,
   pkg-config,
   rustPlatform,
+  sqlite,
   stdenv,
   udev,
   wrapGAppsHook4,
@@ -72,6 +73,9 @@ rustPlatform.buildRustPackage (finalAttrs: {
     fftw.dev
     libpulseaudio
     pipewire.dev
+    # libsqlite3-sys links the system sqlite; it used to come in through
+    # another library, but no longer does since the 2026-11-09 nixpkgs.
+    sqlite
   ];
 
   # Two unrelated pre-existing bugs in this branch, patched just to get the

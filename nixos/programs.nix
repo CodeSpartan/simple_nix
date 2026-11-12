@@ -90,9 +90,6 @@ let
   # Middle-click in text fields still pastes, on links still opens a tab.
   # Loads the monitor's ICC calibration curve (see config/hypr/user.lua).
   vcgtLoader = pkgs.callPackage ./pkgs/vcgt-loader { };
-  # WoW addon manager (CurseForge + Wago addons); nixpkgs' copy is too old for
-  # WoW: Forever, see the package file.
-  wowupCf = pkgs.callPackage ./pkgs/wowup-cf { };
   # Storyteller's Craft apps (prebuilt releases, see the package file).
   storytoldCraft = pkgs.callPackage ./pkgs/storytold-craft { };
   photocraft = storytoldCraft {
@@ -502,7 +499,7 @@ in
     yandex-music               # Official Yandex Music app, repackaged for Linux
     mangohud                   # Real-time FPS/GPU/CPU overlay for games
     lutris                     # Game manager for non-Steam games; installs Battle.net via its Wine/Proton script
-    wowupCf                    # WowUp-CF: WoW addon manager (CurseForge), native Linux app
+    wowup-cf                   # WowUp-CF: WoW addon manager (CurseForge), native Linux app
     piper                      # GUI for the G300s: buttons, DPI, polling rate, LED (via ratbagd)
 
     # VPN
