@@ -457,7 +457,10 @@ hl.bind(mainMod .. " + SHIFT + N", hl.dsp.window.move({ workspace = "empty" }))
 -- the way of 1-10 (Hyprland's "empty" always takes the lowest free number).
 hl.bind(mainMod .. " + SHIFT + M", function()
     local used = {}
-    for _, ws in ipairs(hl.get_workspaces()) do used[ws.id] = true end
+    -- Special workspaces have no id since Hyprland 0.57 (nil can't be a key).
+    for _, ws in ipairs(hl.get_workspaces()) do
+        if ws.id then used[ws.id] = true end
+    end
     local id = 20
     while used[id] do id = id + 1 end
     hl.dispatch(hl.dsp.window.move({ workspace = id }))
@@ -705,13 +708,16 @@ local function cursor_on_bar()
 end
 local function focus_no_warp(w)
     hl.config({ cursor = { no_warps = true } })
-    hl.dispatch(hl.dsp.focus({ workspace = w.workspace.id }))
+    if w.workspace.id then   -- nil on special workspaces (Hyprland 0.57)
+        hl.dispatch(hl.dsp.focus({ workspace = w.workspace.id }))
+    end
     hl.dispatch(hl.dsp.focus({ window = w }))
     hl.config({ cursor = { no_warps = false } })
 end
 local function is_hidden(w)
     local active = hl.get_active_workspace()
-    return w.workspace and not (active and active.id == w.workspace.id)
+    -- By name: special workspaces have no id since Hyprland 0.57.
+    return w.workspace and not (active and active.name == w.workspace.name)
 end
 -- Follow a window that the rules above sent to a new workspace. Telegram's
 -- and v2rayN's rules match only their main windows. MAX/Discord windows
