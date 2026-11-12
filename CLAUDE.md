@@ -94,6 +94,23 @@ inherited from Vitalii stays -- don't trim it.
   (claude/codex), `update-crafts.sh` (see Craft apps). `update-apps.sh` runs
   all three. No sudo, closes nothing; shared summary in `scripts/update-lib.sh`.
 
+## System updates (`nix flake update`)
+
+- nixpkgs is `nixos-unstable`; one update moves everything (kernel, driver,
+  Hyprland, apps). Last: 2026-11-12 (nixpkgs 2026-11-09).
+- Before the user installs, build-check from Claude's shell:
+  `nix build --no-link "path:$PWD?dir=nixos#nixosConfigurations.nixos.config.system.build.toplevel"`
+  (`?dir=nixos` because the config reads `../config`; `path:` because
+  `hardware-configuration.nix` is gitignored).
+- Look at the Hyprland version jump first and read its release notes for
+  breaking changes -- 0.57 (Lua config) broke the bar's workspaces, special
+  workspace ids in `user.lua`, and release binds on modifiers.
+  `hyprctl --verify-config` only checks parsing, not runtime behavior.
+- Our overlays/patches are the usual breakage: a hash pin or patch that no
+  longer applies. If upstream fixed the bug, drop ours instead of refreshing it.
+- After install, the user restarts (or at least logs out) and checks: bar
+  workspaces, tray, Ctrl+Shift layout switch, a KClock timer.
+
 ## Hyprland
 
 - Real config is `config/hypr/user.lua` (`~/.config/hypr/hyprland.lua` just
