@@ -92,8 +92,6 @@ let
   vcgtLoader = pkgs.callPackage ./pkgs/vcgt-loader { };
   # Storyteller's Craft apps (prebuilt releases, see the package file).
   storytoldCraft = pkgs.callPackage ./pkgs/storytold-craft { };
-  # lez: eza fork with `--code` (see the package file); `ls` is aliased to it.
-  lez = pkgs.callPackage ./pkgs/lez { };
   photocraft = storytoldCraft {
     pname = "photocraft"; version = "0.21.0";
     sha256 = "3115e56cc646dbad3541e39b6323b8a24318fee6194d784ddf6d065f7b5d2d37";
@@ -335,7 +333,7 @@ in
     # Modern CLI replacements & tools
     bat                        # cat alternative (syntax highlighting, git integration)
     cloc                       # count lines of code by language
-    lez                        # ls replacement (eza fork); `ls --code` = lines of code (nixos/pkgs/lez)
+    eza                        # ls replacement; `ls --code` = lines of code by language
     duf                        # df alternative (disk usage with colors)
     fd                         # find alternative
     ripgrep                    # grep alternative
