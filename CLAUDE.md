@@ -545,8 +545,6 @@ a reinstall): without it, no popups and no tray icon of its own.
   `coredumpctl list`.
 - `claude`/`codex` are in `~/.local/bin` (`scripts/install-ai-tools.sh`), not
   in the Nix rebuild.
-- `~/Desktop/message to vitalii.txt`: short list of upstream-worthy findings
-  for Vitalii. Keep it current, no machine-specific stuff.
 
 ## Android phone (adb)
 
