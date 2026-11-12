@@ -143,6 +143,12 @@ inherited from Vitalii stays -- don't trim it.
   v2rayN (XWayland) ignores the workspace rule on remap, so the hook moves it.
   Battle.net/WoW (`steam_app_default`) have `focus_on_activate` off too: the
   user doesn't want them grabbing focus.
+- Super+E = floating Dolphin on its own hidden workspace `special:files`
+  (started hidden at login; Super+E shows/hides it, relaunches it if closed).
+  Its float/size rules are launch rules (`[...] dolphin`), so only that
+  process's window gets them; other Dolphins tile (Super+Shift+E). Super+Ctrl+S
+  sends any window to the Super+S scratchpad, floating. Wayle hides special
+  workspaces (`show-special = false`).
 - Per-window keyboard layout: `hyprland-per-window-layout`, config in
   `config/hyprland-per-window-layout/options.toml`. Kill it with
   `pkill -x hyprland-per-wi` (`pgrep/pkill -f` also matches your own shell --

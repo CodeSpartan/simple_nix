@@ -3,7 +3,8 @@
 -- Apps:
 --   Super+Q              = kitty
 --   Super+R              = rofi launcher
---   Super+E              = file manager
+--   Super+E              = floating Dolphin (show/hide; starts it if closed)
+--   Super+Shift+E        = file manager (normal tiled window)
 --
 -- Windows:
 --   Super+C              = close window
@@ -39,7 +40,7 @@
 --   Super+L              = lock screen
 --   Super+/              = keybind cheatsheet
 --   Super+Alt+N          = notification history (full bodies)
---   Super+Ctrl+S         = move window to scratchpad
+--   Super+Ctrl+S         = move window to scratchpad (floating, centred)
 --   Print                = screenshot region
 --   Shift+Print          = screenshot region -> Gyazo (link copied + opened)
 --   Ctrl+Print           = screenshot region -> Cloudinary (link copied + opened)
@@ -88,6 +89,15 @@ hl.monitor({
 
 local terminal    = "kitty"
 local fileManager = "dolphin"
+-- The floating Dolphin (Super+E) lives alone on the hidden workspace
+-- special:files. These launch rules apply only to the window of the
+-- process they start, so Dolphins opened any other way (Brave's "Show
+-- in folder", Super+Shift+E) stay normal tiled windows.
+local function dropFilesCmd(silent)
+    return "[workspace special:files" .. (silent and " silent" or "")
+        .. "; float on; size (monitor_w*0.6) (monitor_h*0.7); center on] "
+        .. fileManager
+end
 local menu        = "rofi -show drun"
 
 
@@ -119,6 +129,9 @@ hl.on("hyprland.start", function()
 
     -- Polkit agent (for admin password prompts)
     hl.exec_cmd("lxqt-policykit-agent")
+
+    -- Floating Dolphin, started hidden so the first Super+E is instant
+    hl.exec_cmd(dropFilesCmd(true))
 end)
 
 -- No notification popups over true fullscreen (Super+Shift+F, games).
@@ -350,7 +363,18 @@ local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
 hl.bind(mainMod .. " + Q",         hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + C",         hl.dsp.window.close())
-hl.bind(mainMod .. " + E",         hl.dsp.exec_cmd(fileManager))
+hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(fileManager))
+-- Super+E: show/hide the floating Dolphin; start it if it was closed.
+hl.bind(mainMod .. " + E", function()
+    for _, w in ipairs(hl.get_windows()) do
+        if w.class == "org.kde.dolphin" and w.workspace
+            and w.workspace.name == "special:files" then
+            hl.dispatch(hl.dsp.workspace.toggle_special("files"))
+            return
+        end
+    end
+    hl.exec_cmd(dropFilesCmd(false))
+end)
 hl.bind(mainMod .. " + V",         hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R",         hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + F",         hl.dsp.window.fullscreen({ mode = "maximized" }))
@@ -470,7 +494,23 @@ hl.bind("CTRL + mouse_up",   brave_tab_scroll("Prior"), { non_consuming = true }
 
 -- Scratchpad (hidden overlay workspace)
 hl.bind(mainMod .. " + S",        hl.dsp.workspace.toggle_special("magic"))
-hl.bind(mainMod .. " + CTRL + S", hl.dsp.window.move({ workspace = "special:magic" }))
+-- Super+Ctrl+S sends the window there floating, 60% x 70% of the screen,
+-- centred, so it hovers over the workspace below instead of covering it
+-- (e.g. Dolphin to drag files into Brave). Super+V tiles it again.
+hl.bind(mainMod .. " + CTRL + S", function()
+    local w = hl.get_active_window()
+    if not w then return end
+    hl.dispatch(hl.dsp.window.move({ workspace = "special:magic", window = w }))
+    if not w.floating then
+        hl.dispatch(hl.dsp.window.float({ action = "toggle", window = w }))
+    end
+    local m = w.monitor
+    local s = (m and m.scale) or 1
+    local mw = (m and m.width) and m.width / s or 1920
+    local mh = (m and m.height) and m.height / s or 1080
+    hl.dispatch(hl.dsp.window.resize({ x = math.floor(mw * 0.6), y = math.floor(mh * 0.7), window = w }))
+    hl.dispatch(hl.dsp.window.center({ window = w }))
+end)
 
 -- Scroll through existing workspaces with mainMod + scroll
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))

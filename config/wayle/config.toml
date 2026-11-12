@@ -101,6 +101,9 @@ dropdown-logout-command = "uwsm stop"
 # HyprPanel: hideUnoccupied = true -> min-workspace-count 0 shows only
 # active + occupied workspaces.
 min-workspace-count = 0
+# Hide the hidden workspaces: Super+S scratchpad and the Super+E Dolphin
+# (they showed as -98/-99).
+show-special = false
 label-size = 0.889
 active-indicator = "underline"
 active-color = "#D2A6FF"
