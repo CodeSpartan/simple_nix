@@ -101,6 +101,9 @@ inherited from Vitalii stays -- don't trim it.
   `hyprctl eval 'hl.config({...})'`.
 - Ctrl+Shift layout switch is a **release** bind; a release bind on a modifier
   needs it in its own mask (`CTRL + SHIFT + Shift_L`).
+  The bind only emits `hl.dsp.event("kb-switch")`; `kb-switch.py` (autostarted)
+  does the switch over the socket. Any `exec_cmd` forks Hyprland (~50 ms), so the
+  first letter typed came out in the old layout. Ctrl+Shift dead = helper not running.
 - `wtype` keys never trigger Hyprland binds (and don't reach XWayland apps) --
   bind changes need a real keypress from the user.
 - `suppress-maximize-events` blocks apps' own fullscreen requests; exempt apps

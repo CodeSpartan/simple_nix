@@ -117,6 +117,7 @@ hl.on("hyprland.start", function()
     -- monitor off after 15 min idle (no lock), see hypridle.conf; log: journalctl --user -t hypridle
     hl.exec_cmd("systemd-cat -t hypridle hypridle")
     hl.exec_cmd(configDir .. "/vlc-idle-inhibit.sh")  -- keep monitor on while VLC plays (windowed too)
+    hl.exec_cmd("systemd-cat -t kb-switch " .. configDir .. "/kb-switch.py")  -- does the Ctrl+Shift layout switch, see the binds
     hl.exec_cmd("nm-applet --indicator")
     hl.exec_cmd("blueman-applet")
 
@@ -392,7 +393,10 @@ hl.bind(mainMod .. " + ALT + N",   hl.dsp.exec_cmd("kitty --class=notif-log sh -
 -- layout. Release binds on the modifier keys themselves; whichever of the two
 -- is let go first triggers it. The released key still counts as held at that
 -- moment, so the mod mask is CTRL + SHIFT (like the documented SUPER + SUPER_L).
-local next_layout = hl.dsp.exec_cmd("hyprctl switchxkblayout all next")
+-- Not exec_cmd("hyprctl switchxkblayout ..."): every exec forks Hyprland and
+-- the switch landed ~50 ms late, so a fast first letter came out in the old
+-- layout. The bind only emits an event; kb-switch.py (AUTOSTART) switches.
+local next_layout = hl.dsp.event("kb-switch")
 for _, k in ipairs({ "Shift_L", "Shift_R" }) do
     hl.bind("CTRL + SHIFT + " .. k, next_layout, { release = true })
 end
