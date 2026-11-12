@@ -45,6 +45,9 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     enableCompletion = true;
+    # lez (nixos/pkgs/lez): eza fork with extras like `ls --code`. Interactive
+    # shells only -- scripts still get GNU ls. `command ls` / `\ls` = GNU ls.
+    shellAliases.ls = "lez";
     oh-my-zsh = {
       enable = true;
       plugins = [ "git" "z" "sudo" "extract" "command-not-found" "fzf" "docker" ];
