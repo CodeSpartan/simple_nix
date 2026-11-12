@@ -185,6 +185,8 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   patches `wayle-systray-*.patch`). Blueman is patched to go Passive while
   Bluetooth is off (`blueman-hide-when-off`); turn it on in Bluetooth Manager.
 - Harmless: `missing field overFullscreen` log spam; two iVPN tray icons.
+- Hyprland 0.57 gives special workspaces no `id`; `wayle-hyprland-057.patch`
+  fills it in (else the bar stops updating workspaces). Re-check on wayle bumps.
 - Logs: `~/.local/state/wayle/wayle-shell.<date>.log`. Restart with
   `wayle panel restart`, not kill + relaunch.
 - **From Claude's shell, don't `wayle panel restart`**: the new bar inherits

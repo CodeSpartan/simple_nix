@@ -1,0 +1,152 @@
+diff --color -ru a/src/ipc/events/monitor.rs b/src/ipc/events/monitor.rs
+--- a/src/ipc/events/monitor.rs
++++ b/src/ipc/events/monitor.rs
+@@ -39,7 +39,7 @@
+             value: data.to_string(),
+         });
+     };
+-    let workspace_id = workspace_id.parse().map_err(|_| Error::EventParseError {
++    let workspace_id = crate::types::parse_workspace_id(workspace_id).ok_or(()).map_err(|_| Error::EventParseError {
+         event_data,
+         field: "workspace_id",
+         expected: "integer",
+diff --color -ru a/src/ipc/events/window.rs b/src/ipc/events/window.rs
+--- a/src/ipc/events/window.rs
++++ b/src/ipc/events/window.rs
+@@ -125,7 +125,7 @@
+             value: data.to_string(),
+         });
+     };
+-    let workspace_id = workspace_id.parse().map_err(|_| Error::EventParseError {
++    let workspace_id = crate::types::parse_workspace_id(workspace_id).ok_or(()).map_err(|_| Error::EventParseError {
+         event_data,
+         field: "workspace_id",
+         expected: "integer",
+diff --color -ru a/src/ipc/events/workspace.rs b/src/ipc/events/workspace.rs
+--- a/src/ipc/events/workspace.rs
++++ b/src/ipc/events/workspace.rs
+@@ -24,7 +24,7 @@
+             value: data.to_string(),
+         });
+     };
+-    let id = id.parse().map_err(|_| Error::EventParseError {
++    let id = crate::types::parse_workspace_id(id).ok_or(()).map_err(|_| Error::EventParseError {
+         event_data,
+         field: "workspace_id",
+         expected: "integer",
+@@ -64,7 +64,7 @@
+             value: data.to_string(),
+         });
+     };
+-    let id = id.parse().map_err(|_| Error::EventParseError {
++    let id = crate::types::parse_workspace_id(id).ok_or(()).map_err(|_| Error::EventParseError {
+         event_data,
+         field: "workspace_id",
+         expected: "integer",
+@@ -104,7 +104,7 @@
+             value: data.to_string(),
+         });
+     };
+-    let id = id.parse().map_err(|_| Error::EventParseError {
++    let id = crate::types::parse_workspace_id(id).ok_or(()).map_err(|_| Error::EventParseError {
+         event_data,
+         field: "workspace_id",
+         expected: "integer",
+@@ -156,7 +156,7 @@
+             value: data.to_string(),
+         });
+     };
+-    let id = id.parse().map_err(|_| Error::EventParseError {
++    let id = crate::types::parse_workspace_id(id).ok_or(()).map_err(|_| Error::EventParseError {
+         event_data,
+         field: "workspace_id",
+         expected: "integer",
+@@ -186,7 +186,7 @@
+             value: data.to_string(),
+         });
+     };
+-    let id = id.parse().map_err(|_| Error::EventParseError {
++    let id = crate::types::parse_workspace_id(id).ok_or(()).map_err(|_| Error::EventParseError {
+         event_data,
+         field: "workspace_id",
+         expected: "integer",
+@@ -238,7 +238,7 @@
+             value: data.to_string(),
+         });
+     };
+-    let id = id.parse().map_err(|_| Error::EventParseError {
++    let id = crate::types::parse_workspace_id(id).ok_or(()).map_err(|_| Error::EventParseError {
+         event_data,
+         field: "workspace_id",
+         expected: "integer",
+diff --color -ru a/src/ipc/query.rs b/src/ipc/query.rs
+--- a/src/ipc/query.rs
++++ b/src/ipc/query.rs
+@@ -161,7 +161,12 @@
+ where
+     T: DeserializeOwned,
+ {
+-    serde_json::from_str(response).map_err(|error| {
++    serde_json::from_str::<serde_json::Value>(response)
++        .and_then(|mut value| {
++            crate::types::fill_missing_workspace_ids(&mut value);
++            serde_json::from_value(value)
++        })
++        .map_err(|error| {
+         let (preview, truncated) = response_preview(response);
+         warn!(
+             %command,
+diff --color -ru a/src/types/mod.rs b/src/types/mod.rs
+--- a/src/types/mod.rs
++++ b/src/types/mod.rs
+@@ -22,6 +22,50 @@
+ pub type MonitorId = i64;
+ /// Unique identifier for a workspace.
+ pub type WorkspaceId = i64;
++
++/// Workspace id from a Hyprland id field. Hyprland 0.57 sends no number for
++/// special workspaces: JSON leaves `id` out and events put the workspace's
++/// name (`special:files`) or nothing where the number was. Give those what
++/// older Hyprland sent: 0 for "no workspace", and a stable negative id per
++/// special workspace (callers treat id < 0 as special).
++pub(crate) fn parse_workspace_id(raw: &str) -> Option<WorkspaceId> {
++    if let Ok(id) = raw.parse() {
++        return Some(id);
++    }
++    if raw.is_empty() {
++        return Some(0);
++    }
++    if raw.starts_with("special") {
++        // FNV-1a: stable across runs, unlike std's randomized hasher.
++        let hash = raw
++            .bytes()
++            .fold(0xcbf2_9ce4_8422_2325_u64, |h, b| {
++                (h ^ u64::from(b)).wrapping_mul(0x0100_0000_01b3)
++            });
++        return Some(-1000 - (hash % 1_000_000) as WorkspaceId);
++    }
++    None
++}
++
++/// Adds the `id` that Hyprland 0.57 leaves out of special workspace objects
++/// (`{"address","type","name"}` with no `id`), see [`parse_workspace_id`].
++pub(crate) fn fill_missing_workspace_ids(value: &mut serde_json::Value) {
++    match value {
++        serde_json::Value::Array(items) => items.iter_mut().for_each(fill_missing_workspace_ids),
++        serde_json::Value::Object(map) => {
++            let is_workspace = map.contains_key("address")
++                && map.contains_key("type")
++                && map.contains_key("name");
++            if is_workspace && !map.contains_key("id") {
++                let name = map.get("name").and_then(|n| n.as_str()).unwrap_or("");
++                let id = parse_workspace_id(name).unwrap_or(0);
++                map.insert("id".to_string(), serde_json::Value::from(id));
++            }
++            map.values_mut().for_each(fill_missing_workspace_ids);
++        }
++        _ => {}
++    }
++}
+ /// Process identifier.
+ pub type ProcessId = i32;
+ /// Focus history identifier.

@@ -144,6 +144,14 @@ rustPlatform.buildRustPackage (finalAttrs: {
     # Tray: update an icon's status on the NewStatus signal (wayle only read
     # it from PropertiesChanged, which blueman never sends). See `patches`.
     patch -d "$(echo "$cargoDepsCopy"/*/wayle-systray-0.1.3)" -p1 < ${./wayle-systray-newstatus.patch}
+
+    # Hyprland 0.57 gives special workspaces no id (left out of JSON; their
+    # name or nothing in events). wayle-hyprland 0.1.2 requires one, so the
+    # whole workspaces/clients/monitors reply failed to parse and the bar
+    # stopped updating workspaces. The patch fills in what older Hyprland
+    # sent (0 = none, negative = special). Newer wayle-hyprland (0.3) has a
+    # different API; drop this when wayle moves past 0.1.x.
+    patch -d "$(echo "$cargoDepsCopy"/*/wayle-hyprland-0.1.2)" -p1 < ${./wayle-hyprland-057.patch}
   '';
 
   cargoBuildFlags = [
