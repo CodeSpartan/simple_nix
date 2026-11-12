@@ -54,6 +54,7 @@ final: prev:
       # Tray: after a bar restart, the scan for "orphaned" tray items re-added
       # apps that had registered by well-known name (org.kde.StatusNotifierItem-
       # <pid>-1) under their unique name too -> duplicate icons (v2rayN).
+      # Drop once wayle-rs/wayle-services#34 (fixes the same bug) ships here.
       patch -d "$(echo "$cargoDepsCopy"/*/wayle-systray-0.1.3)" -p1 < ${./wayle-systray-dedup.patch}
     '';
   });

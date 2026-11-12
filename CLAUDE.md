@@ -53,6 +53,13 @@ inherited from Vitalii stays -- don't trim it.
   via `ui.tabufline.modules` in `chadrc.lua`) anyway: it also keeps one tab
   visible after the current one when the bar scrolls (user wants that;
   upstream doesn't do it). Drop it only if upstream gains that too.
+- Wayle tray duplicates: our `wayle-systray-dedup.patch` (in
+  `nixos/overlays/wayle-patches.nix`) can go once wayle-rs/wayle-services
+  PR #34 (tray rewrite, fixes the same bug) is merged *and* nixpkgs' wayle
+  uses that wayle-systray (check wayle's `Cargo.lock`). Check on system
+  updates: `gh pr view 34 -R wayle-rs/wayle-services`. Not sending our own
+  PR (decided 2026-11-12). #34 also rewrites `src/core/item/monitoring.rs`,
+  so `wayle-systray-newstatus.patch` will need checking then too.
 
 ## Where to make a change
 
