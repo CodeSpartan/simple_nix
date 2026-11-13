@@ -146,6 +146,10 @@ inherited from Vitalii stays -- don't trim it.
   unplugged/replugged (2026-11-05 16:42 with no dpms, 2026-11-06 01:45 on
   wake after 5 h). Qt apps log "There are no outputs". It broke VLC's
   fonts, hence `QT_FONT_DPI` in its wrapper (`programs.nix`).
+- `vrr = 2` (VRR in any fullscreen). Video players in fullscreen with a still
+  mouse drop the refresh to the video's fps and the panel flickers -- VLC has a
+  `no_vrr` rule; add other players there if they flicker. Not `vrr = 3`: Proton
+  games report no content type and would lose G-Sync.
 - `hl.exec_cmd` strings starting with `[` are parsed as window rules -- use
   `test`, not `[ ]`.
 - `initial_workspace_tracking = 2`: a window opens on the workspace its
