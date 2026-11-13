@@ -502,6 +502,7 @@ in
     lutris                     # Game manager for non-Steam games; installs Battle.net via its Wine/Proton script
     wowup-cf                   # WowUp-CF: WoW addon manager (CurseForge), native Linux app
     piper                      # GUI for the G300s: buttons, DPI, polling rate, LED (via ratbagd)
+    anydesk                    # Remote desktop client (connect to Windows PCs); runs via XWayland
 
     # VPN
     ookla-speedtest            # `speedtest`: Ookla speed test CLI (compare VPNs)
