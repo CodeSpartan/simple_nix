@@ -290,7 +290,10 @@ hl.config({
     misc = {
         force_default_wallpaper    = 0,
         disable_hyprland_logo      = true,
-        vrr                        = 2,    -- G-Sync in fullscreen games only
+        -- G-Sync only for fullscreen windows of content type game/video. With 2
+        -- (any fullscreen) VLC flickered: a still mouse = refresh at the video's
+        -- 24-30 fps, too low for this panel. Proton games are tagged "game" below.
+        vrr                        = 3,
         focus_on_activate          = true, -- clicking notifications switches to that workspace+window
         initial_workspace_tracking = 2,    -- open windows on the workspace they were launched from, including late child windows
         on_focus_under_fullscreen  = 0,    -- keep current window fullscreen when another window spawns; new one opens behind
@@ -892,9 +895,10 @@ hl.window_rule({
 -- utility/dialog titles here if one needs forced floating.
 -- hl.window_rule({ match = { class = "^(steam)$", title = "^(Friends List|Settings|Properties)$" }, float = true })
 
--- Gaming - tearing for reduced input latency
-hl.window_rule({ match = { class = "^(steam_app_.*)$" }, immediate = true })
-hl.window_rule({ match = { class = [[^(.*\.exe)$]] },    immediate = true })
+-- Gaming - tearing for reduced input latency; content "game" enables VRR
+-- (misc.vrr = 3) since Wine/Proton windows report no content type.
+hl.window_rule({ match = { class = "^(steam_app_.*)$" }, immediate = true, content = "game" })
+hl.window_rule({ match = { class = [[^(.*\.exe)$]] },    immediate = true, content = "game" })
 
 -- XWayland fix
 hl.window_rule({
