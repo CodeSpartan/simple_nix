@@ -529,6 +529,10 @@ and auto-session's session for that folder lists them plus the real files
 on C:/D:/E: in Notepad++'s tab order (`cd ~/Documents/npp-tabs && nvim`).
 Untouched copy of the Notepad++ folder: `~/Documents/notepad++ from windows`.
 ~600 buffers made NvChad's tab bar take 1.5 s per redraw -- see the TODO.
+Neovim auto-saves changed files (3 s after the last edit, on buffer switch,
+focus loss, quit) and recovers a dead Neovim's swap file into the buffer
+without the ATTENTION prompt (`config/nvim/lua/autosave.lua`; `u` undoes the
+recovery). hardtime.nvim's `disable_mouse` is off: it killed tab clicks.
 
 ## PhotoCraft / PdfCraft / WordCraft
 
