@@ -563,6 +563,16 @@ Default for images (`nomacsTuned` + `xdg.mime.defaultApplications` in
 it only while nomacs is closed. `config/nomacs/default.ini` seeds it on a
 fresh install only.
 
+## Desktop portal (xdg-desktop-portal)
+
+Qt 6 apps open every file/folder through the portal's OpenURI (not
+xdg-open), so a broken portal shows GTK's "No Apps available" dialog. NixOS
+gave the unit a coreutils-only PATH and GIO hides apps whose Exec isn't on
+PATH -- `desktop.nix` overrides it. Check what the portal sees: run
+`gio mime <type>` with the portal process's env (`/proc/<pid>/environ`).
+Folders default to Dolphin (`programs.nix`). After changing the unit:
+`systemctl --user restart xdg-desktop-portal`.
+
 ## Flatpak
 
 Apps are outside Nix (`flatpak install --user flathub <id>`). Discord is
