@@ -171,7 +171,10 @@ inherited from Vitalii stays -- don't trim it.
 - Super+E = floating Dolphin on its own hidden workspace `special:files`
   (started hidden at login; Super+E shows/hides it, relaunches it if closed).
   Its float/size rules are launch rules (`[...] dolphin`), so only that
-  process's window gets them; other Dolphins tile (Super+Shift+E). Super+Ctrl+S
+  process's window gets them; other Dolphins tile (Super+Shift+E). Tiled
+  windows of other apps opening on `special:files` (launched from that
+  Dolphin) are moved to the workspace under it by a `window.open` hook,
+  which also hides the overlay. Super+Ctrl+S
   sends any window to the Super+S scratchpad, floating. Wayle hides special
   workspaces (`show-special = false`). `input.special_fallthrough = true` lets
   the pointer through a shown special workspace's empty area -- without it

@@ -156,6 +156,29 @@ let
   # Opened from Brave (.torrent / magnet), qBittorrent inherits Brave's
   # LD_LIBRARY_PATH and comes up with no tray icon -- closing the window
   # then leaves it running invisibly. Same fix as nomacsTuned.
+  # Music types opened by Elisa: VLC's audio list + Elisa's extras, minus
+  # MIDI (no SoundFont installed, neither player can render it).
+  musicMimeTypes = [
+    "audio/aac" "audio/x-aac" "audio/mp4" "audio/m4a" "audio/x-m4a"
+    "audio/mpeg" "audio/mpg" "audio/mp1" "audio/mp2" "audio/mp3" "audio/x-mp1"
+    "audio/x-mp2" "audio/x-mp3" "audio/x-mpeg" "audio/x-mpg"
+    "audio/ogg" "audio/vorbis" "audio/x-vorbis" "audio/x-vorbis+ogg"
+    "audio/opus" "audio/x-opus+ogg" "audio/x-speex" "audio/x-speex+ogg"
+    "audio/flac" "audio/x-flac" "audio/x-flac+ogg" "application/x-ogm-audio"
+    "audio/wav" "audio/x-wav" "audio/x-pn-wav" "audio/x-aiff" "audio/x-pn-aiff"
+    "audio/basic" "audio/x-pn-au" "audio/x-adpcm"
+    "audio/x-ape" "audio/x-wavpack" "audio/x-musepack" "audio/x-tta"
+    "audio/x-shorten" "audio/x-gsm"
+    "audio/x-ms-wma" "audio/x-ms-asf" "audio/x-ms-asx" "audio/x-ms-wax"
+    "audio/vnd.rn-realaudio" "audio/x-pn-realaudio" "audio/x-realaudio"
+    "audio/x-real-audio" "audio/x-pn-windows-acm"
+    "audio/x-matroska" "audio/webm" "audio/3gpp" "audio/3gpp2" "audio/AMR"
+    "audio/AMR-WB" "audio/ac3" "audio/eac3" "audio/vnd.dts" "audio/vnd.dts.hd"
+    "audio/vnd.dolby.heaac.1" "audio/vnd.dolby.heaac.2" "audio/vnd.dolby.mlp"
+    "audio/dv" "audio/x-it" "audio/x-mod" "audio/x-s3m" "audio/x-xm"
+    "audio/mpegurl" "audio/x-mpegurl" "audio/scpls" "audio/x-scpls"
+  ];
+
   qbittorrentClean = pkgs.symlinkJoin {
     name = "qbittorrent-${pkgs.qbittorrent.version}-clean-env";
     inherit (pkgs.qbittorrent) version meta;
@@ -315,7 +338,11 @@ in
     "text/markdown" = "glow.desktop";
     # Folders: otherwise the first claimant wins (VS Code).
     "inode/directory" = "org.kde.dolphin.desktop";
-  };
+  } // lib.genAttrs musicMimeTypes (_: "org.kde.elisa.desktop");
+  # Elisa plays through libvlc (APE, WavPack, Musepack, TTA, trackers...)
+  # but its .desktop lists only common types; this makes KDE offer it for
+  # the rest. Dolphin's middle-click (2nd app) then opens VLC.
+  xdg.mime.addedAssociations = lib.genAttrs musicMimeTypes (_: "org.kde.elisa.desktop");
 
   # --- System Packages ---
   environment.systemPackages = with pkgs; [

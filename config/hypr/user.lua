@@ -381,6 +381,25 @@ hl.bind(mainMod .. " + E", function()
     end
     hl.exec_cmd(dropFilesCmd(false))
 end)
+-- Apps started from that Dolphin (an mp3 -> Elisa) would open on
+-- special:files too (initial_workspace_tracking). Move them to the
+-- workspace under the overlay and hide the overlay. Dolphin's own windows
+-- and floating dialogs (copy progress, Open With...) stay with it.
+hl.on("window.open", function(w)
+    if not (w and w.workspace and w.workspace.name == "special:files") then return end
+    if w.class == "org.kde.dolphin" or w.floating then return end
+    local m = w.monitor
+    local ws = m and m.active_workspace
+    if not (ws and ws.id) then return end
+    hl.config({ cursor = { no_warps = true } })
+    hl.dispatch(hl.dsp.window.move({ workspace = ws.id, window = w }))
+    local sp = m.active_special_workspace
+    if sp and sp.name == "special:files" then
+        hl.dispatch(hl.dsp.workspace.toggle_special("files"))
+    end
+    hl.dispatch(hl.dsp.focus({ window = w }))
+    hl.config({ cursor = { no_warps = false } })
+end)
 hl.bind(mainMod .. " + V",         hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R",         hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + F",         hl.dsp.window.fullscreen({ mode = "maximized" }))
