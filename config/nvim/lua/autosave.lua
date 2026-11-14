@@ -2,7 +2,8 @@
 --
 -- Auto-save: a changed file is written 3 s after the last edit (also in
 -- Insert mode), when you switch to another buffer, when Neovim loses focus,
--- and on quit. Undo history survives writes (undofile), so `u` still works.
+-- and on quit (QuitPre, so :q/:qa never stop at "No write since last
+-- change"). Undo history survives writes (undofile), so `u` still works.
 -- Only real files are saved: no unnamed buffers, help, terminals, read-only
 -- or nonexistent-folder files, nor files over 1 MB (each save rewrites the
 -- whole file; a one-time notice says to use :w). A file changed on disk by
@@ -137,7 +138,7 @@ api.nvim_create_autocmd("BufLeave", {
   end,
 })
 
-api.nvim_create_autocmd({ "FocusLost", "VimLeavePre" }, {
+api.nvim_create_autocmd({ "FocusLost", "QuitPre", "VimLeavePre" }, {
   group = group,
   callback = save_all,
 })
