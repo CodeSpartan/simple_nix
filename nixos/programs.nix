@@ -313,6 +313,8 @@ in
     # them) don't take over.
     "application/pdf" = "brave-browser.desktop";
     "text/markdown" = "glow.desktop";
+    # Folders: otherwise the first claimant wins (VS Code).
+    "inode/directory" = "org.kde.dolphin.desktop";
   };
 
   # --- System Packages ---

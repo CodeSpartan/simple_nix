@@ -112,6 +112,13 @@ in
   systemd.user.services.xdg-desktop-portal = {
     partOf = [ "xdg-desktop-portal-hyprland.service" ];
     after = [ "xdg-desktop-portal-hyprland.service" ];
+    # NixOS gives the unit a PATH of just coreutils/systemd. GIO hides apps
+    # whose Exec isn't on PATH, so OpenURI/OpenFile found no handler at all
+    # ("No Apps available" when Qt apps -- qBittorrent's "Open destination
+    # folder" -- open a folder or file; Qt 6 always goes through the portal).
+    # %u = user name (systemd specifier).
+    environment.PATH = pkgs.lib.mkForce
+      "/run/wrappers/bin:/etc/profiles/per-user/%u/bin:/run/current-system/sw/bin";
   };
 
   # Dolphin needs the Plasma menu definition to discover apps for "Open With".
