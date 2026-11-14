@@ -143,3 +143,20 @@ map("n", "<leader>ws", "<cmd>AutoSession save<CR>", { desc = "Save latest sessio
 map("n", "<leader>wn", save_named_session, { desc = "Save named session" })
 map("n", "<leader>wd", "<cmd>AutoSession deletePicker<CR>", { desc = "Delete session" })
 map("n", "<leader>wa", "<cmd>AutoSession toggle<CR>", { desc = "Toggle session autosave" })
+
+-- Mouse wheel over the tab bar (row 1) switches buffers: down = next tab,
+-- up = previous. Elsewhere the wheel scrolls as usual. Clicking a tab
+-- already works (NvChad makes each tab a click button).
+local function tabline_shown()
+  local stal = vim.o.showtabline
+  return stal == 2 or (stal == 1 and vim.fn.tabpagenr "$" > 1)
+end
+
+for key, step in pairs { ["<ScrollWheelDown>"] = "next", ["<ScrollWheelUp>"] = "prev" } do
+  map({ "n", "i", "v" }, key, function()
+    if tabline_shown() and vim.fn.getmousepos().screenrow == 1 then
+      return "<Cmd>lua require('nvchad.tabufline')." .. step .. "()<CR>"
+    end
+    return key
+  end, { expr = true, desc = "Wheel over tab bar switches buffers" })
+end

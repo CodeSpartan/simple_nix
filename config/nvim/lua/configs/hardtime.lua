@@ -1,6 +1,9 @@
 -- hardtime configuration.
 
 return {
+  -- Its default turns the mouse off on every buffer switch; we want clicks
+  -- and the wheel (tab bar, scrolling) to work.
+  disable_mouse = false,
   hint = true,
   notification = true,
   timeout = 5000,
