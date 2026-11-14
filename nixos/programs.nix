@@ -338,11 +338,16 @@ in
     "text/markdown" = "glow.desktop";
     # Folders: otherwise the first claimant wins (VS Code).
     "inode/directory" = "org.kde.dolphin.desktop";
-  } // lib.genAttrs musicMimeTypes (_: "org.kde.elisa.desktop");
+  } // lib.genAttrs musicMimeTypes (_: "org.kde.elisa.desktop") // {
+    # CUE sheets (whole-album .ape/.flac + .cue): Tauon splits them into tracks.
+    "application/x-cue" = "tauonmb.desktop";
+  };
   # Elisa plays through libvlc (APE, WavPack, Musepack, TTA, trackers...)
   # but its .desktop lists only common types; this makes KDE offer it for
   # the rest. Dolphin's middle-click (2nd app) then opens VLC.
-  xdg.mime.addedAssociations = lib.genAttrs musicMimeTypes (_: "org.kde.elisa.desktop");
+  xdg.mime.addedAssociations = lib.genAttrs musicMimeTypes (_: "org.kde.elisa.desktop") // {
+    "application/x-cue" = "tauonmb.desktop";   # Tauon doesn't claim .cue itself
+  };
 
   # --- System Packages ---
   environment.systemPackages = with pkgs; [
@@ -527,6 +532,7 @@ in
     # Desktop apps
     braveAutoscroll vscode vlcScaled telegram-desktop yt-dlp qbittorrentClean obsidian
     yandex-music               # Official Yandex Music app, repackaged for Linux
+    tauon                      # Music player for whole-album files + CUE sheets (Elisa can't split them)
     mangohud                   # Real-time FPS/GPU/CPU overlay for games
     lutris                     # Game manager for non-Steam games; installs Battle.net via its Wine/Proton script
     wowup-cf                   # WowUp-CF: WoW addon manager (CurseForge), native Linux app
