@@ -4,9 +4,10 @@
 -- Insert mode), when you switch to another buffer, when Neovim loses focus,
 -- and on quit. Undo history survives writes (undofile), so `u` still works.
 -- Only real files are saved: no unnamed buffers, help, terminals, read-only
--- or nonexistent-folder files. A file changed on disk by another program
--- since we read it is not overwritten (we warn instead; `:e` reloads it,
--- `:w!` overwrites it).
+-- or nonexistent-folder files, nor files over 1 MB (each save rewrites the
+-- whole file; a one-time notice says to use :w). A file changed on disk by
+-- another program since we read it is not overwritten (we warn instead;
+-- `:e!` reloads it, `:w!` overwrites it).
 --
 -- Swap recovery: after a crash or reboot, a swap file with unsaved edits
 -- would normally bring up Neovim's "ATTENTION" prompt (and an empty tab if
@@ -21,7 +22,15 @@ local api = vim.api
 local uv = vim.uv
 
 local DELAY_MS = 3000
+local MAX_BYTES = 1024 * 1024
 local group = api.nvim_create_augroup("UserAutosave", { clear = true })
+
+-- Buffers we've told "too big for auto-save".
+local big_noted = {}
+
+local function too_big(buf)
+  return api.nvim_buf_get_offset(buf, api.nvim_buf_line_count(buf)) > MAX_BYTES
+end
 
 -- mtime of each buffer's file as of our last read/write, to notice when
 -- another program changed it.
@@ -50,7 +59,7 @@ local function savable(buf)
     return false
   end
   local name = api.nvim_buf_get_name(buf)
-  return name ~= "" and vim.fn.isdirectory(vim.fs.dirname(name)) == 1
+  return name ~= "" and vim.fn.isdirectory(vim.fs.dirname(name)) == 1 and not too_big(buf)
 end
 
 local function save(buf)
@@ -106,8 +115,17 @@ api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "FileChangedShellPost" 
 api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
   group = group,
   callback = function(args)
-    if savable(args.buf) then
-      schedule_save(args.buf)
+    local buf = args.buf
+    if savable(buf) then
+      schedule_save(buf)
+    elseif not big_noted[buf] and vim.bo[buf].modified and vim.bo[buf].buftype == ""
+      and api.nvim_buf_get_name(buf) ~= "" and too_big(buf) then
+      big_noted[buf] = true
+      vim.notify(
+        vim.fn.fnamemodify(api.nvim_buf_get_name(buf), ":~:.") .. " is over 1 MB: not auto-saved, use :w.",
+        vim.log.levels.INFO,
+        { title = "Auto-save" }
+      )
     end
   end,
 })
@@ -133,7 +151,7 @@ api.nvim_create_autocmd("BufWipeout", {
       t:close()
       timers[args.buf] = nil
     end
-    known_mtime[args.buf], warned[args.buf] = nil, nil
+    known_mtime[args.buf], warned[args.buf], big_noted[args.buf] = nil, nil, nil
   end,
 })
 
