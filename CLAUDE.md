@@ -543,9 +543,18 @@ pinned (Brave, glow) so these apps' MIME claims don't take them over.
 Downloads go to E: (`/mnt/edrive`, HDD). ntfs3 zero-fills a file up to any
 write past its written part, so torrents stalled the whole desktop for
 minutes. Fixes: NTFS drives mount with `sparse` (`hardware.nix`), and
-qBittorrent's Options → Advanced → Disk IO type = **POSIX-compliant** (the
-default memory-mapped mode `fallocate`s files, which ntfs3 zero-fills even
-when sparse). Pre-allocate disk space stays off.
+qBittorrent's Options → Advanced → Disk IO type = **Pread/pwrite**
+(libtorrent 2.1's `pread_disk_io`; not "Simple pread/pwrite", which is the
+memory-mapped backend that `fallocate`s files -- ntfs3 zero-fills that even
+when sparse). Pre-allocate disk space stays off; the user wants downloads on
+the HDD, not an SSD incomplete folder.
+POSIX-compliant (used until 2026-11-14) wrote each 16 KiB block on its own:
+on a sparse file every one became an NTFS fragment, and a 4K movie hit
+ntfs3's fragment limit (`File too large` in qBittorrent, `ntfs3 ...
+attr_data_get_block_locked` in the kernel log), after which the file was
+unreadable/undeletable (`Invalid argument`) until a remount. Pread/pwrite
+buffers blocks and writes whole pieces (fragments = piece size, ~4 MiB).
+Check a download: `filefrag <file>` (via `nix-shell -p e2fsprogs`).
 
 ## Image viewer (nomacs)
 
