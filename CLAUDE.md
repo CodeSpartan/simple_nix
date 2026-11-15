@@ -622,7 +622,9 @@ a reinstall): without it, no popups and no tray icon of its own.
 - Reach the desktop: `export XDG_RUNTIME_DIR=/run/user/1000
   WAYLAND_DISPLAY=wayland-1`, then e.g. `grim <file>` to screenshot.
 - `sudo`, `gh auth login` or anything needing a password/browser prompt can't
-  run here -- hand the user the exact command (they can use the `!` prefix).
+  run here -- hand the user the exact command. `sudo` doesn't work via the
+  `!` prefix either (no terminal for the password): have them run it in
+  kitty, piping to `tee ~/<name>.txt` if Claude needs the output.
 - Crash forensics: `journalctl --list-boots`, `journalctl -b -1`,
   `coredumpctl list`.
 - `claude`/`codex` are in `~/.local/bin` (`scripts/install-ai-tools.sh`), not
