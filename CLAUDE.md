@@ -460,6 +460,10 @@ if it's worth retrying with a newer release.
 - Windows fonts (incl. Tahoma) were copied into `~/.local/share/fonts/windows`
   -- outside git, redo after a reinstall.
 - Ctrl+scroll over the tab bar switching tabs = Hyprland binds in `user.lua`.
+- Links from other apps open as a tab in the last-used Brave window: our
+  `brave` wrapper runs `braveFocus` (`programs.nix`) first, which focuses
+  that window (switching workspace). Without it Brave opened a new window
+  on the messenger's workspace.
 - Userscripts are kept in `config/userscripts/`.
 - Writing userscripts: Chromium 136+ ignores `--remote-debugging-port` on
   the real profile, so a separate dev Brave is used: launch via Hyprland

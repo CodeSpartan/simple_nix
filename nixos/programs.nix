@@ -127,9 +127,35 @@ let
       wrapProgram $out/bin/nomacs --unset LD_LIBRARY_PATH
     '';
   });
-  braveAutoscroll = pkgs.brave.override {
+  # Links opened from other apps (Discord, Telegram...) went into a new Brave
+  # window on that app's workspace. braveFocus runs before every `brave ...`
+  # with a link (not --app/--new-window/... launches): it focuses the most
+  # recently used Brave window first (Hyprland switches to its workspace),
+  # so Brave adds the link there as a tab. The .desktop file's Exec is this
+  # same $out/bin/brave, so xdg-open and the portal go through it too.
+  braveFocus = pkgs.writeShellScript "brave-focus" ''
+    url=
+    for a in "$@"; do
+      case "$a" in
+        --app*|--new-window|--incognito|--user-data-dir*|--profile-directory*) exit 0 ;;
+        -*) ;;
+        *) url=1 ;;
+      esac
+    done
+    test -n "$url" || exit 0
+    addr=$(${pkgs.hyprland}/bin/hyprctl clients -j 2>/dev/null | ${pkgs.jq}/bin/jq -r \
+      '[.[] | select(.class == "brave-browser")] | sort_by(.focusHistoryID) | .[0].address // empty') || exit 0
+    test -n "$addr" || exit 0
+    ${pkgs.hyprland}/bin/hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })" >/dev/null 2>&1
+    exit 0
+  '';
+  braveAutoscroll = (pkgs.brave.override {
     commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
-  };
+  }).overrideAttrs (old: {
+    postFixup = (old.postFixup or "") + ''
+      wrapProgram $out/bin/brave --run '${braveFocus} "$@"'
+    '';
+  });
   chromeAutoscroll = pkgs.google-chrome.override {
     commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
   };
