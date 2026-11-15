@@ -601,6 +601,7 @@ in
     photocraft                 # Photoshop-like editor with PSD support (nixos/pkgs/storytold-craft)
     pdfcraft                   # PDF reader/editor (same package file)
     wordcraft                  # Word-like document editor (same package file)
+    calibre                    # E-book library manager + reader (epub/mobi/azw3, format conversion)
     file-roller                # Archive manager GUI (zip/tar/7z)
     hyprsunset                 # Night light (toggled by clicking the bar weather; config/hypr/nightlight.sh)
     vcgtLoader                 # Monitor calibration curve without Hyprland's ICC (nixos/pkgs/vcgt-loader)
