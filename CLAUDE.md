@@ -60,6 +60,15 @@ inherited from Vitalii stays -- don't trim it.
   updates: `gh pr view 34 -R wayle-rs/wayle-services`. Not sending our own
   PR (decided 2026-11-12). #34 also rewrites `src/core/item/monitoring.rs`,
   so `wayle-systray-newstatus.patch` will need checking then too.
+- Lutris patch `nixos/overlays/lutris-gnome-desktop-51.nix` (added 2026-11-15:
+  Lutris 0.5.22 crashed at startup with gnome-desktop 51, `GnomeDesktop` has
+  no `RRScreen`, so Battle.net didn't launch). Remove it once nixpkgs' Lutris
+  copes on its own. Check on system updates: comment the overlay out in
+  `configuration.nix`, build `...#nixosConfigurations.nixos.pkgs.lutris`
+  (like the build-check under System updates), and run its `bin/lutris
+  --version` with the desktop env from Claude's shell. No traceback means
+  drop the file and its line. If the patch stops applying, upstream changed
+  that code: check the same way first instead of refreshing it.
 
 ## Where to make a change
 
