@@ -558,6 +558,17 @@ WordCraft runs under XWayland on purpose (drag-and-drop), so its wrapper sets
 `WINIT_X11_SCALE_FACTOR` (else half size). PDF and Markdown defaults are
 pinned (Brave, glow) so these apps' MIME claims don't take them over.
 
+## Calibre
+
+nixpkgs `calibre` (`programs.nix`). Library `~/Calibre Library` was copied
+(2026-11-15) from Windows' `E:/Progs/Calibre2/Books`; the E: copy is no
+longer in sync. Settings in `~/.config/calibre` (outside git) were ported
+from `C:/Users/Delfosse/AppData/Roaming/calibre` without window geometry:
+viewer font/sepia/user CSS, search history, columns, Kindle e-mail, and the
+DeDRM + KFX Input/Output plugins. Reader font Caecilia is in
+`~/.local/share/fonts/windows`. KFX Output needs Kindle Previewer
+(Windows/macOS only), so it doesn't work here.
+
 ## qBittorrent / NTFS writes
 
 Downloads go to E: (`/mnt/edrive`, HDD). ntfs3 zero-fills a file up to any
