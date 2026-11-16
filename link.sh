@@ -86,11 +86,15 @@ v2n="$HOME/.local/share/v2rayN/bin"
 mkdir -p "$v2n/xray" "$v2n/sing_box"
 ln -sf /run/current-system/sw/bin/xray "$v2n/xray/xray"
 ln -sf /run/current-system/sw/bin/sing-box "$v2n/sing_box/sing-box"
-xray_assets=$(grep -o "/nix/store/[^']*-v2ray-assets/share/v2ray" \
+xray_assets=$(grep -oE "/nix/store/[^']*-(v2ray|xray)-assets/share/v2ray" \
   "$(readlink -f /run/current-system/sw/bin/xray)" 2>/dev/null | head -1)
 if [ -n "$xray_assets" ]; then
   ln -sf "$xray_assets/geoip.dat" "$v2n/geoip.dat"
   ln -sf "$xray_assets/geosite.dat" "$v2n/geosite.dat"
+else
+  # The store name changed once (v2ray-assets -> xray-assets, 2026-11); the
+  # old links then dangle after GC and xray exits at start ("Failed to run Core").
+  echo "WARNING: xray's geoip/geosite path not found -- v2rayN's links in $v2n not updated" >&2
 fi
 
 echo "==> Symlinking wallpaper..."
