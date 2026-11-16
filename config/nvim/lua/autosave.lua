@@ -84,6 +84,14 @@ local function save(buf)
   api.nvim_buf_call(buf, function()
     vim.cmd "silent! lockmarks update"
   end)
+  -- Remember the new mtime here, not only in BufWritePost: when save() runs
+  -- from an autocmd (BufLeave, FocusLost, QuitPre) the write's own autocmds
+  -- don't fire (autocmds don't nest), and the stale mtime made our own write
+  -- look like "changed by another program" -- auto-save then stopped for
+  -- that file.
+  if not vim.bo[buf].modified then
+    remember(buf)
+  end
 end
 
 local function save_all()
