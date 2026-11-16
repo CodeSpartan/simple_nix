@@ -627,6 +627,9 @@ a reinstall): without it, no popups and no tray icon of its own.
   kitty, piping to `tee ~/<name>.txt` if Claude needs the output.
 - Crash forensics: `journalctl --list-boots`, `journalctl -b -1`,
   `coredumpctl list`.
+- `ls` is GNU ls here, eza only in real terminals (`shell.nix`): without a
+  path and with no terminal, eza reads file names from stdin and printed
+  nothing or hung. In an old session's snapshot, use `command ls`.
 - `claude`/`codex` are in `~/.local/bin` (`scripts/install-ai-tools.sh`), not
   in the Nix rebuild.
 

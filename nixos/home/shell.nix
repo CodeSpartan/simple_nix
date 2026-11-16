@@ -62,6 +62,13 @@
     initContent = ''
       [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
+      # Agents (Claude Code snapshots these aliases) get GNU ls: with no path
+      # and stdin not a terminal, eza reads file names from stdin, so a bare
+      # `ls -la` printed nothing (the dir looked empty) or hung.
+      if [[ -n ''${CLAUDECODE-} || -n ''${CODEX_THREAD_ID-} || -n ''${CODEX_SESSION_ID-} ]]; then
+        unalias ls 2>/dev/null
+      fi
+
       # Alert on available upstream config updates
       if [[ -f ~/.local/state/nixos-update-available ]]; then
         printf '\e[1;33m%s\e[0m\n' "$(cat ~/.local/state/nixos-update-available)"
