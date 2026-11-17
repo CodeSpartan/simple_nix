@@ -71,9 +71,10 @@ inherited from Vitalii stays -- don't trim it.
   that code: check the same way first instead of refreshing it.
 - KClock patch `nixos/overlays/kclock-oneshot-dismiss.nix` (added 2026-11-17:
   uninitialized `m_justSnoozed` made a dismissed one-time alarm ring again
-  next day). Upstream fix not sent yet: the user needs a KDE Identity
-  account for invent.kde.org; commit ready as
-  `~/code/upstream-patches/0001-kclockd-initialize-m_justSnoozed.patch`.
+  next day). Upstream MR https://invent.kde.org/utilities/kclock/-/merge_requests/281
+  (user's KDE account `glabrezu`; glab: `GITLAB_HOST=invent.kde.org glab mr
+  view 281 -R utilities/kclock`; KDE needs a full-name author: "Jean-Pierre
+  Delfosse"). Check on system updates.
   Once merged and in nixpkgs' kclock, drop the overlay file and its line in
   `configuration.nix` (the `--replace-fail` then fails the build anyway).
 
