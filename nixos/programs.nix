@@ -275,6 +275,9 @@ in
 
   # Stable JBR path for IDEs (JDK home: /etc/jbr-25/lib/openjdk).
   environment.etc."jbr-25".source = jbr25;
+  # Chrome: stop the "make this the default browser" prompt (Brave stays default).
+  environment.etc."opt/chrome/policies/managed/no-default-browser-prompt.json".text =
+    builtins.toJSON { DefaultBrowserSettingEnabled = false; };
   programs.firefox.enable = true;       # Firefox browser
 
   # --- Gaming ---
