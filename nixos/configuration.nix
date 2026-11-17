@@ -49,6 +49,7 @@
     (import ./overlays/wayle-english-dates.nix)   # LC_TIME=en_US for wayle only; after wayle-patches
     (import ./overlays/blueman-hide-when-off.nix)   # tray icon only while Bluetooth is on
     (import ./overlays/lutris-gnome-desktop-51.nix)   # Lutris crashed at startup (RRScreen)
+    (import ./overlays/kclock-oneshot-dismiss.nix)   # one-time alarms rang again next day
   ];
   nixpkgs.config.allowUnfree = true;
 
