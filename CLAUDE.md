@@ -535,7 +535,6 @@ Prompts ("Press (s) to confirm", `[yn]`) have hardcoded letters, not the
 keys file: `nixos/overlays/calcurse-ru-prompts.nix` patches calcurse so they
 take the Cyrillic key in the same place too. If the patch stops applying
 after an update, refresh it (upstream has no such feature).
-Ctrl shortcuts need nothing: foot already sends ^G for Ctrl+П (tested).
 Rainlendar's original data: `/mnt/cdrive/Users/Delfosse/.rainlendar2/Default.ics`.
 
 ## Timer / stopwatch (KClock)
