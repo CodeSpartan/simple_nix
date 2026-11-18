@@ -526,6 +526,11 @@ a once-a-day notification (user unit `calendar-notes-notify`, at login +
 01:00; stamp in `~/.local/state/calendar-notes/`). calcurse follows
 `XDG_DATA_HOME`/`XDG_CONFIG_HOME`, not `HOME` -- override those when testing.
 GNOME Calendar was tried and dropped as too heavy (user wants lightweight).
+Hotkeys also work on the Russian layout: `calendar-open` runs
+`calcurse-ru-keys` (`nixos/pkgs/calcurse-ru-keys/`) before calcurse starts,
+which adds each key's ЙЦУКЕН twin to `~/.config/calcurse/keys` (re-derived
+every start, so calcurse's own key menu stays usable). A key bound twice
+makes calcurse refuse to start -- the script skips twins already in use.
 Rainlendar's original data: `/mnt/cdrive/Users/Delfosse/.rainlendar2/Default.ics`.
 
 ## Timer / stopwatch (KClock)

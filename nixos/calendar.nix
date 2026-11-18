@@ -17,6 +17,12 @@ let
     flakeIgnore = [ "E501" ];
   } (builtins.readFile ./pkgs/calendar-notes/calendar-notes.py);
 
+  # Russian-layout twins for every calcurse hotkey (`ф` = `a`), so they work
+  # without switching layout while writing notes in Russian.
+  calcurseRuKeys = pkgs.writers.writePython3Bin "calcurse-ru-keys" {
+    flakeIgnore = [ "E501" ];
+  } (builtins.readFile ./pkgs/calcurse-ru-keys/calcurse-ru-keys.py);
+
   # Starting settings, copied in only if calcurse has no config yet (its own
   # settings menu rewrites the file). periodicsave: save every minute, so the
   # bar sees new notes while calcurse is still open.
@@ -45,6 +51,7 @@ let
     if [ -z "''${CALENDAR_OPEN_VIA_HYPRLAND:-}" ]; then
       exec hyprctl eval "hl.exec_cmd(\"CALENDAR_OPEN_VIA_HYPRLAND=1 $0\")"
     fi
+    ${calcurseRuKeys}/bin/calcurse-ru-keys "$(dirname "$conf")/keys" || true
     exec ${pkgs.foot}/bin/foot --app-id=calcurse \
       -o 'main.font=JetBrainsMono Nerd Font Mono:size=12' \
       -o colors.background=0B0E14 -o colors.foreground=B8B5AC \
