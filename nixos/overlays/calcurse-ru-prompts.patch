@@ -1,0 +1,41 @@
+--- a/src/utils.c
++++ b/src/utils.c
+@@ -200,6 +200,28 @@
+  * Returns the index of the key pressed by the user (starting from 1),
+  * or -1 if the user doesn't want to answer (e.g. by escaping).
+  */
++/*
++ * The Latin key in the same place as a Cyrillic (Russian layout) one, so
++ * prompts accept their letters without switching layout; else ch itself.
++ */
++static int ru_to_latin(int ch)
++{
++	static const char ru[] =
++		"йцукенгшщзхъфывапролджэячсмитьбюё"
++		"ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ";
++	static const char en[] =
++		"qwertyuiop[]asdfghjkl;'zxcvbnm,.`"
++		"QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>~";
++	int i, n;
++
++	if (ch <= KEY_MAX)
++		return ch;
++	for (i = 0, n = 0; ru[i]; i += UTF8_LENGTH(ru[i]), n++)
++		if (utf8_decode(ru + i) + KEY_MAX == ch)
++			return en[n];
++	return ch;
++}
++
+ int status_ask_choice(const char *message, const char choice[],
+ 		      int nb_choice)
+ {
+@@ -233,6 +255,9 @@
+ 		for (i = 0; i < nb_choice; i++)
+ 			if (ch == ichoice[i])
+ 				return i + 1;
++		for (i = 0; i < nb_choice; i++)
++			if (ru_to_latin(ch) == ichoice[i])
++				return i + 1;
+ 		if (ch == ESCAPE)
+ 			return (-1);
+ 		if (ch == RETURN)

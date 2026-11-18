@@ -531,6 +531,10 @@ Hotkeys also work on the Russian layout: `calendar-open` runs
 which adds each key's ЙЦУКЕН twin to `~/.config/calcurse/keys` (re-derived
 every start, so calcurse's own key menu stays usable). A key bound twice
 makes calcurse refuse to start -- the script skips twins already in use.
+Prompts ("Press (s) to confirm", `[yn]`) have hardcoded letters, not the
+keys file: `nixos/overlays/calcurse-ru-prompts.nix` patches calcurse so they
+take the Cyrillic key in the same place too. If the patch stops applying
+after an update, refresh it (upstream has no such feature).
 Rainlendar's original data: `/mnt/cdrive/Users/Delfosse/.rainlendar2/Default.ics`.
 
 ## Timer / stopwatch (KClock)

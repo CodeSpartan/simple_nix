@@ -50,6 +50,7 @@
     (import ./overlays/blueman-hide-when-off.nix)   # tray icon only while Bluetooth is on
     (import ./overlays/lutris-gnome-desktop-51.nix)   # Lutris crashed at startup (RRScreen)
     (import ./overlays/kclock-oneshot-dismiss.nix)   # one-time alarms rang again next day
+    (import ./overlays/calcurse-ru-prompts.nix)   # prompts accept Russian-layout letters
   ];
   nixpkgs.config.allowUnfree = true;
 
