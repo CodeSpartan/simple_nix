@@ -723,10 +723,20 @@ hl.window_rule({
 -- their title only after the window maps, so match on class alone (a title
 -- match never fired, tested 2026-11-11). Their rare other windows (popouts,
 -- Discord's startup splash) get a new workspace too.
+-- Except MAX's image viewer: a separate window titled "max" (lowercase; the
+-- main one is "MAX") already at map time. On a new hidden workspace it left
+-- MAX just showing its dimmed backdrop (2026-11-19).
 hl.window_rule({
     name      = "messengers-new-workspace",
-    match     = { class = "^(max|discord|discord-ptb)$" },
+    match     = { class = "^(max|discord|discord-ptb)$", title = "negative:^max$" },
     workspace = "empty silent",
+})
+-- MAX's image viewer: fullscreen over MAX, like Telegram's media viewer.
+hl.window_rule({
+    name       = "max-media-viewer",
+    match      = { class = "^max$", title = "^max$" },
+    float      = true,
+    fullscreen = true,
 })
 -- v2rayN's main window too (title match: its dialogs open on the current
 -- workspace). It unmaps only with its "Hide to tray when closed" option on;
