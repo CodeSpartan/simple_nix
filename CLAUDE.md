@@ -69,14 +69,20 @@ inherited from Vitalii stays -- don't trim it.
   --version` with the desktop env from Claude's shell. No traceback means
   drop the file and its line. If the patch stops applying, upstream changed
   that code: check the same way first instead of refreshing it.
-- KClock patch `nixos/overlays/kclock-oneshot-dismiss.nix` (added 2026-11-17:
-  uninitialized `m_justSnoozed` made a dismissed one-time alarm ring again
-  next day). Upstream MR https://invent.kde.org/utilities/kclock/-/merge_requests/281
-  (user's KDE account `glabrezu`; glab: `GITLAB_HOST=invent.kde.org glab mr
-  view 281 -R utilities/kclock`; KDE needs a full-name author: "Jean-Pierre
-  Delfosse"). Check on system updates.
-  Once merged and in nixpkgs' kclock, drop the overlay file and its line in
-  `configuration.nix` (the `--replace-fail` then fails the build anyway).
+- KClock patches `nixos/overlays/kclock-fixes.nix`, two fixes:
+  - dismissed one-time alarm rang again next day (uninitialized
+    `m_justSnoozed`, added 2026-11-17): upstream MR
+    https://invent.kde.org/utilities/kclock/-/merge_requests/281, **merged**
+    2026-11-17 (commit `00b0721d`), not in a release yet.
+  - renamed alarm's notification showed its old name (title set only at
+    load, added 2026-11-19): MR
+    https://invent.kde.org/utilities/kclock/-/merge_requests/283, open.
+  User's KDE account `glabrezu`; check with `GITLAB_HOST=invent.kde.org glab
+  mr view 283 -R utilities/kclock`; KDE needs a full-name author:
+  "Jean-Pierre Delfosse". Check on system updates: once nixpkgs' kclock
+  includes a fix, drop its `substituteInPlace` (it fails the build with
+  `--replace-fail` anyway); drop the file and its `configuration.nix` line
+  when both are gone.
 
 ## Where to make a change
 
