@@ -39,6 +39,12 @@ inherited from Vitalii stays -- don't trim it.
   direct rule by destination, and add it only with the user's OK (back up
   `guiNDB.db` first; user clicks Reload).
 - `config/hypr/user.conf` is dead (see Hyprland) -- could be deleted.
+- `~/Documents/work2.txt` (UTF-16 Notepad file, was on D:) holds account
+  logins and passwords in plain text; a few lines ended up in a Claude
+  session on 2026-11-21. Discuss with the user what to do with it, incl.
+  password managers -- they have reservations about them, so hear those out
+  first rather than pushing one. Never print the file's contents.
+  `work2.txt.backup` next to it is a copy from 2026-11-21.
 - From ~2026-12: check if the `discord-openh264` user unit (`nixos/home/apps.nix`)
   is still needed. It's a workaround for a Discord bug (deletes OpenH264 2.5.1
   at startup but its voice engine still loads it -> streams error 2012).
