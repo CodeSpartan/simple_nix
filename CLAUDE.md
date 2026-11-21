@@ -278,8 +278,11 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
 - **D: is gone** (2026-11-21): everything on it was copied (checksum-verified)
   to `~/former-D`; things that used `/mnt/ddrive` were re-pointed there
   (backups of the edited files in `~/repoint-backup-2026-11-21`). Its
-  partition `nvme0n1p2` joins the root btrfs (`btrfs device add`): it sits
-  before the boot partition, so root can't simply grow into it. Windows
+  partition `nvme0n1p2` was added to the root btrfs (`btrfs device add`,
+  done 2026-11-21; root = p4 + p2, ~1.82 TiB, one filesystem): it sits
+  before the boot partition, so root couldn't simply grow into it. Its GPT
+  type is Linux (8300, name `NIXOS-2`) so Windows ignores it -- never let
+  Windows "initialize"/format it. Windows
   still has C: and E: and is kept for League/CS2 on FACEIT.
 - NTFS can be checked/repaired from Linux (no Windows needed)
   with `ntfsck` (`ntfsprogs-plus`) on the unmounted partition. First `ntfsck
