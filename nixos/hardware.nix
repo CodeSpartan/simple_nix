@@ -100,6 +100,11 @@ in
   fileSystems."/mnt/cdrive" = ntfs "5E22E87B79FB8B5A";   # Samsung 990 Pro 1 -- Windows C:
   # D: (Samsung 990 Pro 2, nvme0n1p2) was emptied into ~/former-D on
   # 2026-11-21 and its partition added to the root btrfs.
+  # File managers list each partition of a multi-device btrfs separately, so
+  # that half showed up in Dolphin as a second, unmounted "NIXOS" -- hide it.
+  services.udev.extraRules = ''
+    ENV{ID_PART_ENTRY_UUID}=="ec177e25-96ab-4e5f-b831-135636db003b", ENV{UDISKS_IGNORE}="1"
+  '';
   fileSystems."/mnt/edrive" = ntfs "5E1E77E0C57314E1";   # WD Blue 4TB HDD
 
   # --- GPU ---
