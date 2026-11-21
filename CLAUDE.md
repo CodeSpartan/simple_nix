@@ -268,8 +268,21 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   `loginctl terminate-session` kills SDDM's greeter too. In `user.lua` event
   handlers, don't query workspaces from `window.destroy` -- it crashes
   Hyprland at exit.
-- After a hard reset an NTFS drive can be "dirty" and `/mnt/ddrive` is empty:
-  `sudo nix-shell -p ntfs3g --run "ntfsfix -d /dev/<part>"`, then mount.
+- After a hard reset an NTFS drive can be "dirty" and its `/mnt/*drive` is
+  empty (`systemctl --failed` shows the mount):
+  `sudo nix-shell -p ntfs3g --run "ntfsfix -d /dev/<part>"`, then
+  `sudo systemctl start mnt-<x>drive.mount`.
+- The user doesn't boot Windows any more, so no chkdsk: check/repair NTFS
+  with `ntfsck` (`ntfsprogs-plus`) on the unmounted partition. First `ntfsck
+  -n -q` (read-only) into a file in `~`. Its record numbers are the files'
+  inodes (`find /mnt/x -inum N`), so damaged files can be named. Then `-a`
+  to repair. Done 2026-11-21 on C: and E: (both "Clean" after; damaged files
+  were dropped, orphans re-added to their folders, lost+found stayed empty).
+- 2026-11-21 reboot = `kernel.hung_task_panic`: qBittorrent writes on E:
+  stuck >120 s in ntfs3's zero-fill (`ntfs_extend_initialized_size`). The
+  panic log is in `/var/lib/systemd/pstore/` (root-only). The user wants to
+  keep the panic setting and leave NTFS entirely later; don't propose
+  ntfs-3g.
 - Builds failing with "gzip: unexpected end of file" after a power cut:
   `sudo nix-store --verify --check-contents --repair`.
 
@@ -452,8 +465,8 @@ if it's worth retrying with a newer release.
   (no better), and gamescope (display fine, but `--force-grab-cursor`
   bypasses our mouse curve). Keep Lutris.
 - WoW AI addon (chat with Claude/Codex in-game): repo `~/code/wow-ai` (not
-  ours; update with `git pull && node setup.js --account MELANG`, since
-  `MELANG.broken` would be picked first). Addon + ~15k slot files in
+  ours; update with `git pull && node setup.js`; setup also re-creates
+  missing slot files). Addon + ~15k slot files in
   `_forever_/Interface/AddOns`. Its bridge (`npm start` there) screen-grabs the
   game via X11 with `capture.python = wow-ai-python` (`programs.nix`: libX11
   for ctypes) and `capture.windowName = "World of Warcraft"` (Proton gives
@@ -462,13 +475,6 @@ if it's worth retrying with a newer release.
   drops it): when grabbing from the root fails (XWayland has no root
   contents), it grabs the WoW window itself. It's documented as X11-only; under Hyprland/XWayland check
   with `npm run probe`, fallback `/wow-ai mode reload`.
-- 2026-11-05 a `/reload` hit an ntfs3 error (`attr_set_size_ex`) and left
-  3 WoW files on C: unreadable/undeletable from Linux. They're parked in
-  `_forever_/WTF/Account/MELANG.broken` (the good files were copied to a new
-  `MELANG`); delete that folder after a `chkdsk C: /f` in Windows.
-  `ntfsck -n` (`ntfsprogs-plus`) also lists ~420 "Allocated/Data size is
-  different with IDX/$FN" entries -- normal on Windows volumes, don't
-  "repair" them with it.
 
 ## Brave
 
