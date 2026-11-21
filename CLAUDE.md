@@ -330,7 +330,7 @@ via Save Changes and Reset. `sbctl enroll-keys` "File is immutable" → `chattr
 ## AMD uProf / Nsight Graphics
 
 Enabled (`host.nix`). Their downloads can't be fetched by Nix (vendor
-login); copies live in `vendorDir` (`~/former-D/NixOS-installers`), which
+login); copies live in `vendorDir` (`~/code/NixOS-installers`, outside git), which
 `install.sh` re-adds to the store, and `system.extraDependencies` keeps them
 from GC. A version bump = new download into that folder + version/hash in
 the overlay. `AMDuProfPcm` doesn't support this CPU (desktop Zen 2).
