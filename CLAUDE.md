@@ -282,7 +282,10 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   stuck >120 s in ntfs3's zero-fill (`ntfs_extend_initialized_size`). The
   panic log is in `/var/lib/systemd/pstore/` (root-only). The user wants to
   keep the panic setting and leave NTFS entirely later; don't propose
-  ntfs-3g.
+  ntfs-3g. Resuming a torrent whose files have big unwritten gaps restarts
+  the zero-fill (qBittorrent threads in D state at `ntfs_file_write_iter` /
+  `balance_dirty_pages`). Then the user runs `sudo sysctl
+  kernel.hung_task_timeout_secs=0` (until reboot only) first.
 - Builds failing with "gzip: unexpected end of file" after a power cut:
   `sudo nix-store --verify --check-contents --repair`.
 
