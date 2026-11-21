@@ -272,7 +272,13 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   empty (`systemctl --failed` shows the mount):
   `sudo nix-shell -p ntfs3g --run "ntfsfix -d /dev/<part>"`, then
   `sudo systemctl start mnt-<x>drive.mount`.
-- The user doesn't boot Windows any more, so no chkdsk: check/repair NTFS
+- **D: is gone** (2026-11-21): everything on it was copied (checksum-verified)
+  to `~/former-D`; things that used `/mnt/ddrive` were re-pointed there
+  (backups of the edited files in `~/repoint-backup-2026-11-21`). Its
+  partition `nvme0n1p2` joins the root btrfs (`btrfs device add`): it sits
+  before the boot partition, so root can't simply grow into it. Windows
+  still has C: and E: and is kept for League/CS2 on FACEIT.
+- NTFS can be checked/repaired from Linux (no Windows needed)
   with `ntfsck` (`ntfsprogs-plus`) on the unmounted partition. First `ntfsck
   -n -q` (read-only) into a file in `~`. Its record numbers are the files'
   inodes (`find /mnt/x -inum N`), so damaged files can be named. Then `-a`
@@ -324,7 +330,7 @@ via Save Changes and Reset. `sbctl enroll-keys` "File is immutable" → `chattr
 ## AMD uProf / Nsight Graphics
 
 Enabled (`host.nix`). Their downloads can't be fetched by Nix (vendor
-login); copies live in `vendorDir` (`/mnt/ddrive/NixOS-installers`), which
+login); copies live in `vendorDir` (`~/former-D/NixOS-installers`), which
 `install.sh` re-adds to the store, and `system.extraDependencies` keeps them
 from GC. A version bump = new download into that folder + version/hash in
 the overlay. `AMDuProfPcm` doesn't support this CPU (desktop Zen 2).
@@ -388,9 +394,9 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
   UE's SDL sends the parent too late) and lose UE's remembered size, so a
   `window.open` hook maximizes them, restoring to 80% height. Debug window
   sizing with `WAYLAND_DEBUG=1` (grep `xdg_toplevel`).
-- MMOKit: `~/code/MMOKit` (GitLab), remote `windows` = the D: copy.
-- PersistenceServer stays on D: (`/mnt/ddrive/MMO_Kit_Creation/
-  PersistenceServer`), built with `dotnet-sdk_8` into `bin-linux/` so
+- MMOKit: `~/code/MMOKit` (GitLab), remote `windows` = the former D: copy
+  (`~/former-D/MMO_Kit_Creation/MMOKit`).
+- PersistenceServer: `~/former-D/MMO_Kit_Creation/PersistenceServer`, built with `dotnet-sdk_8` into `bin-linux/` so
   Windows' `bin/` is untouched; its launcher shares Windows' `mmokit.db`. That
   repo needs `core.autocrlf=true`.
 
@@ -409,9 +415,9 @@ Its hover tooltips are XWayland dialogs titled `silmaril-tooltip`; the
 
 ## Bloodborne (bbport)
 
-The Windows install on D: runs via Proton-GE (`~/.local/bin/bloodborne`);
-saves are shared with Windows. Notes in
-`/mnt/ddrive/Games/bb_cheat/CLAUDE.md`.
+The Windows install (`~/former-D/Games/bbport-windows`) runs via Proton-GE
+(`~/.local/bin/bloodborne`); the prefix's `D:` (`dosdevices/d:`) points to
+`~/former-D`. Notes in `~/former-D/Games/bb_cheat/CLAUDE.md`.
 - Its launcher settings in the Proton prefix need `present_mode = Immediate`
   (FIFO halves FPS). DLSS works with `PROTON_ENABLE_NVAPI=1`.
 - `scripts\mods.py` is patched for Wine (hard links instead of symlinks); the
@@ -574,7 +580,7 @@ so only that key is set, not symlinked).
 The Windows Notepad++ session (portable install `D:\Progs\Notepad++`) was
 converted for nvim: unsaved tabs became files in `~/Documents/npp-tabs`,
 and auto-session's session for that folder lists them plus the real files
-on C:/D:/E: in Notepad++'s tab order (`cd ~/Documents/npp-tabs && nvim`).
+on C:/E: and in `~/former-D` (was D:) in Notepad++'s tab order (`cd ~/Documents/npp-tabs && nvim`).
 Untouched copy of the Notepad++ folder: `~/Documents/notepad++ from windows`.
 ~600 buffers made NvChad's tab bar take 1.5 s per redraw -- see the TODO.
 Neovim auto-saves changed files up to 1 MB (3 s after the last edit, on buffer switch,

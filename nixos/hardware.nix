@@ -98,7 +98,8 @@ in
   #    everything before it -- tens of GB on the HDD, stalling the whole
   #    desktop. Windows' qBittorrent makes sparse files too.
   fileSystems."/mnt/cdrive" = ntfs "5E22E87B79FB8B5A";   # Samsung 990 Pro 1 -- Windows C:
-  fileSystems."/mnt/ddrive" = ntfs "01DD6502633B8D10";   # Samsung 990 Pro 2
+  # D: (Samsung 990 Pro 2, nvme0n1p2) was emptied into ~/former-D on
+  # 2026-11-21 and its partition added to the root btrfs.
   fileSystems."/mnt/edrive" = ntfs "5E1E77E0C57314E1";   # WD Blue 4TB HDD
 
   # --- GPU ---
