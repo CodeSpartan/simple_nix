@@ -360,7 +360,10 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
   before editing; applies on the user's Reload). `guiNConfig.json` is
   rewritten by the app -- change those settings in the UI.
 - Process rules match the exe name per socket (no child inheritance), so
-  Electron apps need domain rules.
+  Electron apps need domain rules. Nix-wrapped apps run as
+  `.<name>-wrapped` (qBittorrent = `.qbittorrent-wrapped`, added
+  2026-11-21; plain `qbittorrent` never matched, so its torrent traffic went
+  through the proxy). Check the real name in `/connections` (`processPath`).
 - `link.sh` links the Nix `xray`/`sing-box` into v2rayN's `bin/` -- don't use
   its in-app core update.
 
