@@ -107,6 +107,9 @@ inherited from Vitalii stays -- don't trim it.
   missing after a rebuild, run `./link.sh`.
 - It stages the gitignored `nixos/hardware-configuration.nix` for the flake;
   after an aborted run check `git status` so it isn't committed.
+- It **regenerates** that file every run (`nixos-generate-config`) from
+  what's mounted right then, so hand edits to it are lost. To drop a mount,
+  unmount it before `./install.sh` (D: came back in `/etc/fstab` once).
 - Never `sudo ./install.sh` -- it calls sudo itself; as root it leaves
   root-owned files in `.git` (fix: `sudo chown -R vervain:users ~/code/simple_nix`).
 - Discord exists as both system (managed by install.sh) and user Flatpak --
