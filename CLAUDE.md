@@ -451,9 +451,10 @@ if it's worth retrying with a newer release.
   `~/Games/battlenet`, Lutris config `~/.local/share/lutris/games/battlenet-*.yml`
   -- outside git, redo after a reinstall. App-menu "Battle.net" starts it
   through Lutris without the Lutris window.
-- WoW is the Windows install on C: (`/mnt/cdrive/Games/World of Warcraft`,
-  product `wowf` = WoW: Forever), shared with Windows. The prefix's
-  `drive_c/Games` symlinks to `/mnt/cdrive/Games` so paths match the
+- WoW (product `wowf` = WoW: Forever) is in `~/Games/Blizzard/World of
+  Warcraft`, moved from Windows' C: on 2026-11-22.
+  It's kept outside the prefix so a prefix reinstall can't delete it. The
+  prefix's `drive_c/Games` symlinks to `~/Games/Blizzard` so paths match the
   install's own records (`C:/Games/...`). "Locate" still didn't register it:
   its entry was copied from Windows' `C:\ProgramData\Battle.net\Agent\product.db`
   into the prefix's (protobuf; one top-level field 1 per game).
@@ -480,7 +481,7 @@ if it's worth retrying with a newer release.
   `~/.config/WowUpCf/preferences.json` (`clientType` 10 = Forever, `location`
   = `_forever_/Wow.exe`; edit only with WowUp closed -- it ignores SIGTERM,
   quit from its tray). Outside git; redo after a reinstall, or use Options
-  → WoW Clients → Add New. Windows' CurseForge tracks the same folder.
+  → WoW Clients → Add New.
 - FPS counter: MangoHud via Lutris' "FPS counter (MangoHud)" toggle;
   per-exe configs in `config/MangoHud/` (`wine-Wow.conf` = FPS only, top-right
   (top-left is WoW AI's pixel strip); `wine-WoWClassic.conf` = FPS only,
