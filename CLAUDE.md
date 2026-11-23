@@ -281,15 +281,10 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   empty (`systemctl --failed` shows the mount):
   `sudo nix-shell -p ntfs3g --run "ntfsfix -d /dev/<part>"`, then
   `sudo systemctl start mnt-<x>drive.mount`.
-- **D: is gone** (2026-11-21): everything on it was copied (checksum-verified)
-  to `~/former-D`; things that used `/mnt/ddrive` were re-pointed there
-  (backups of the edited files in `~/repoint-backup-2026-11-21`). Its
-  partition `nvme0n1p2` was added to the root btrfs (`btrfs device add`,
-  done 2026-11-21; root = p4 + p2, ~1.82 TiB, one filesystem): it sits
-  before the boot partition, so root couldn't simply grow into it. Its GPT
-  type is Linux (8300, name `NIXOS-2`) so Windows ignores it -- never let
-  Windows "initialize"/format it. Windows
-  still has C: and is kept for League/CS2 on FACEIT.
+- Windows (only C: now) is kept for League/CS2 on FACEIT. Old D: is part of
+  the root btrfs (root = `nvme0n1p4` + `nvme0n1p2`, GPT type Linux, name
+  `NIXOS-2`); its files are in `~/former-D`. Never let Windows
+  "initialize"/format that partition.
 - **E:** (WD Blue HDD, `/mnt/edrive`) is btrfs, GPT type Linux (8300,
   `E-DATA`) -- Windows doesn't see it; never let Windows format it.
 - Copying from NTFS: Linux allows 255 *bytes* per file name (NTFS 255
@@ -299,16 +294,13 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   with `ntfsck` (`ntfsprogs-plus`) on the unmounted partition. First `ntfsck
   -n -q` (read-only) into a file in `~`. Its record numbers are the files'
   inodes (`find /mnt/x -inum N`), so damaged files can be named. Then `-a`
-  to repair. Done 2026-11-21 on C: and E: (both "Clean" after; damaged files
-  were dropped, orphans re-added to their folders, lost+found stayed empty).
+  to repair.
   Windows' read-only flag makes ntfs3 refuse to delete a file ("Access
   denied"); `chmod u+w` clears it.
-- 2026-11-21 reboot = `kernel.hung_task_panic`: qBittorrent writes on E:
-  (NTFS then) stuck >120 s in ntfs3's zero-fill
-  (`ntfs_extend_initialized_size`). The panic log is in
-  `/var/lib/systemd/pstore/` (root-only). The user keeps the panic setting;
-  don't propose ntfs-3g. E: is btrfs now, so this is over for torrents; it
-  could only recur for big sparse writes on C:.
+- `kernel.hung_task_panic` reboots when a task is stuck >120 s (e.g. ntfs3
+  zero-filling a big sparse write, `ntfs_extend_initialized_size`). Panic
+  logs: `/var/lib/systemd/pstore/` (root-only). The user keeps the setting;
+  don't propose ntfs-3g.
 - Builds failing with "gzip: unexpected end of file" after a power cut:
   `sudo nix-store --verify --check-contents --repair`.
 
@@ -457,8 +449,7 @@ if it's worth retrying with a newer release.
   -- outside git, redo after a reinstall. App-menu "Battle.net" starts it
   through Lutris without the Lutris window.
 - WoW (product `wowf` = WoW: Forever) is in `~/Games/Blizzard/World of
-  Warcraft`, moved from Windows' C: on 2026-11-22.
-  It's kept outside the prefix so a prefix reinstall can't delete it. The
+  Warcraft`, kept outside the prefix so a prefix reinstall can't delete it. The
   prefix's `drive_c/Games` symlinks to `~/Games/Blizzard` so paths match the
   install's own records (`C:/Games/...`). "Locate" still didn't register it:
   its entry was copied from Windows' `C:\ProgramData\Battle.net\Agent\product.db`
@@ -630,24 +621,13 @@ DeDRM + KFX Input/Output plugins. Reader font Caecilia is in
 
 ## qBittorrent
 
-Downloads go to E: (`/mnt/edrive`, HDD), btrfs since 2026-11-23. Options →
-Advanced → Disk IO type = **Pread/pwrite** (libtorrent 2.1's
-`pread_disk_io`) stays: it writes whole pieces (~4 MiB), which keeps
-fragments big on the copy-on-write HDD. Pre-allocate disk space stays off;
-the user wants downloads on the HDD, not an SSD incomplete folder.
-
-History, from when E: was NTFS: ntfs3 zero-fills a file up to any write past
-its written part, so torrents stalled the whole desktop for minutes (and
-once tripped `hung_task_panic`). Fixes then: the `sparse` mount option and
-Pread/pwrite ("Simple pread/pwrite" is the memory-mapped backend that
-`fallocate`s files -- ntfs3 zero-filled that even when sparse).
-POSIX-compliant (used until 2026-11-14) wrote each 16 KiB block on its own:
-on a sparse file every one became an NTFS fragment, and a 4K movie hit
-ntfs3's fragment limit (`File too large` in qBittorrent, `ntfs3 ...
-attr_data_get_block_locked` in the kernel log), after which the file was
-unreadable/undeletable (`Invalid argument`) until a remount. Pread/pwrite
-buffers blocks and writes whole pieces (fragments = piece size, ~4 MiB).
-Check a download: `filefrag <file>` (via `nix-shell -p e2fsprogs`).
+Downloads go to E: (`/mnt/edrive`, btrfs HDD). Options → Advanced → Disk IO
+type = **Pread/pwrite** (libtorrent 2.1's `pread_disk_io`; not "Simple
+pread/pwrite", the memory-mapped backend): it writes whole pieces (~4 MiB),
+keeping fragments big on the copy-on-write HDD. Pre-allocate disk space
+stays off; the user wants downloads on the HDD, not an SSD incomplete
+folder. Check a download's fragments: `filefrag <file>` (via `nix-shell -p
+e2fsprogs`).
 
 ## Image viewer (nomacs)
 
