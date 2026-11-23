@@ -289,21 +289,28 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   before the boot partition, so root couldn't simply grow into it. Its GPT
   type is Linux (8300, name `NIXOS-2`) so Windows ignores it -- never let
   Windows "initialize"/format it. Windows
-  still has C: and E: and is kept for League/CS2 on FACEIT.
+  still has C: and is kept for League/CS2 on FACEIT.
+- **E: is btrfs** (2026-11-23): the WD Blue HDD (`sda2`, label "WD Blue")
+  was emptied to `~/E-staging`, reformatted (`~/e-reformat.sh`) and filled
+  back, both copies checksum-verified. Same mount point `/mnt/edrive`
+  (`hardware.nix`), so paths didn't change. GPT type Linux (8300, name
+  `E-DATA`): Windows no longer sees it. Linux allows 255 *bytes* per file
+  name (NTFS 255 characters), so 3 long Cyrillic names didn't copy and were
+  shortened by hand -- watch for that when copying from C:.
 - NTFS can be checked/repaired from Linux (no Windows needed)
   with `ntfsck` (`ntfsprogs-plus`) on the unmounted partition. First `ntfsck
   -n -q` (read-only) into a file in `~`. Its record numbers are the files'
   inodes (`find /mnt/x -inum N`), so damaged files can be named. Then `-a`
   to repair. Done 2026-11-21 on C: and E: (both "Clean" after; damaged files
   were dropped, orphans re-added to their folders, lost+found stayed empty).
+  Windows' read-only flag makes ntfs3 refuse to delete a file ("Access
+  denied"); `chmod u+w` clears it.
 - 2026-11-21 reboot = `kernel.hung_task_panic`: qBittorrent writes on E:
-  stuck >120 s in ntfs3's zero-fill (`ntfs_extend_initialized_size`). The
-  panic log is in `/var/lib/systemd/pstore/` (root-only). The user wants to
-  keep the panic setting and leave NTFS entirely later; don't propose
-  ntfs-3g. Resuming a torrent whose files have big unwritten gaps restarts
-  the zero-fill (qBittorrent threads in D state at `ntfs_file_write_iter` /
-  `balance_dirty_pages`). Then the user runs `sudo sysctl
-  kernel.hung_task_timeout_secs=0` (until reboot only) first.
+  (NTFS then) stuck >120 s in ntfs3's zero-fill
+  (`ntfs_extend_initialized_size`). The panic log is in
+  `/var/lib/systemd/pstore/` (root-only). The user keeps the panic setting;
+  don't propose ntfs-3g. E: is btrfs now, so this is over for torrents; it
+  could only recur for big sparse writes on C:.
 - Builds failing with "gzip: unexpected end of file" after a power cut:
   `sudo nix-store --verify --check-contents --repair`.
 
@@ -623,16 +630,19 @@ DeDRM + KFX Input/Output plugins. Reader font Caecilia is in
 `~/.local/share/fonts/windows`. KFX Output needs Kindle Previewer
 (Windows/macOS only), so it doesn't work here.
 
-## qBittorrent / NTFS writes
+## qBittorrent
 
-Downloads go to E: (`/mnt/edrive`, HDD). ntfs3 zero-fills a file up to any
-write past its written part, so torrents stalled the whole desktop for
-minutes. Fixes: NTFS drives mount with `sparse` (`hardware.nix`), and
-qBittorrent's Options → Advanced → Disk IO type = **Pread/pwrite**
-(libtorrent 2.1's `pread_disk_io`; not "Simple pread/pwrite", which is the
-memory-mapped backend that `fallocate`s files -- ntfs3 zero-fills that even
-when sparse). Pre-allocate disk space stays off; the user wants downloads on
-the HDD, not an SSD incomplete folder.
+Downloads go to E: (`/mnt/edrive`, HDD), btrfs since 2026-11-23. Options →
+Advanced → Disk IO type = **Pread/pwrite** (libtorrent 2.1's
+`pread_disk_io`) stays: it writes whole pieces (~4 MiB), which keeps
+fragments big on the copy-on-write HDD. Pre-allocate disk space stays off;
+the user wants downloads on the HDD, not an SSD incomplete folder.
+
+History, from when E: was NTFS: ntfs3 zero-fills a file up to any write past
+its written part, so torrents stalled the whole desktop for minutes (and
+once tripped `hung_task_panic`). Fixes then: the `sparse` mount option and
+Pread/pwrite ("Simple pread/pwrite" is the memory-mapped backend that
+`fallocate`s files -- ntfs3 zero-filled that even when sparse).
 POSIX-compliant (used until 2026-11-14) wrote each 16 KiB block on its own:
 on a sparse file every one became an NTFS fragment, and a 4K movie hit
 ntfs3's fragment limit (`File too large` in qBittorrent, `ntfs3 ...

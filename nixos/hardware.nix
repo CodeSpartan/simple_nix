@@ -105,7 +105,14 @@ in
   services.udev.extraRules = ''
     ENV{ID_PART_ENTRY_UUID}=="ec177e25-96ab-4e5f-b831-135636db003b", ENV{UDISKS_IGNORE}="1"
   '';
-  fileSystems."/mnt/edrive" = ntfs "5E1E77E0C57314E1";   # WD Blue 4TB HDD
+  # E: (WD Blue 4TB HDD, sda2) was NTFS until 2026-11-23; reformatted as
+  # btrfs (label "WD Blue", GPT type Linux so Windows ignores it). Same
+  # mount point, so qBittorrent's save paths etc. didn't change.
+  fileSystems."/mnt/edrive" = {
+    device = "/dev/disk/by-uuid/be8818c5-7bc3-45e2-9ef2-11b93b6bcf51";
+    fsType = "btrfs";
+    options = [ "noatime" "compress=zstd" "nofail" "x-systemd.device-timeout=10s" "x-gvfs-show" ];
+  };
 
   # --- GPU ---
   hardware.graphics = {
