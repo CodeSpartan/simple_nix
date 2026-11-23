@@ -3,6 +3,9 @@
 local home = vim.fn.expand "~"
 
 return {
+  -- Off in windows opened by double-clicking a file (nvim-kitty.desktop in
+  -- nixos/home/apps.nix sets NVIM_NO_SESSION).
+  enabled = vim.env.NVIM_NO_SESSION == nil,
   auto_save = true,
   -- `nvim` with no file arguments reopens the last session for this folder
   -- (home included); `nvim somefile` opens just that file.

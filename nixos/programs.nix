@@ -365,6 +365,8 @@ in
     # them) don't take over.
     "application/pdf" = "brave-browser.desktop";
     "text/markdown" = "glow.desktop";
+    # Otherwise Calibre's e-book viewer (first claimant) opened .txt files.
+    "text/plain" = "nvim-kitty.desktop";
     # Folders: otherwise the first claimant wins (VS Code).
     "inode/directory" = "org.kde.dolphin.desktop";
   } // lib.genAttrs musicMimeTypes (_: "org.kde.elisa.desktop") // {

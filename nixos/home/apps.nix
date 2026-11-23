@@ -26,6 +26,16 @@ in
     mimeType = [ "text/markdown" "text/x-markdown" ];
   };
 
+  # Text files opened from a file manager/browser: a new kitty window with
+  # Neovim. NVIM_NO_SESSION turns auto-session off for that window, so it
+  # neither restores nor overwrites the session of whatever folder it starts in.
+  xdg.desktopEntries.nvim-kitty = {
+    name = "Neovim (new window)";
+    exec = "env NVIM_NO_SESSION=1 kitty --title Neovim nvim %F";
+    terminal = false;
+    mimeType = [ "text/plain" ];
+  };
+
   # --- Dotfile deployments (edit in repo, then nixos-rebuild switch) ---
   xdg.configFile."mc/ini".source = ../../config/mc/ini;
   xdg.configFile."mc/menu".source = ../../config/mc/menu;
