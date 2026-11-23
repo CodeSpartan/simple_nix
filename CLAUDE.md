@@ -290,18 +290,11 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   type is Linux (8300, name `NIXOS-2`) so Windows ignores it -- never let
   Windows "initialize"/format it. Windows
   still has C: and is kept for League/CS2 on FACEIT.
-- **E: is btrfs** (2026-11-23): the WD Blue HDD (`sda2`, label "WD Blue")
-  was emptied to `~/E-staging`, reformatted (`~/e-reformat.sh`) and filled
-  back, both copies checksum-verified. Same mount point `/mnt/edrive`
-  (`hardware.nix`), so paths didn't change. GPT type Linux (8300, name
-  `E-DATA`): Windows no longer sees it. Linux allows 255 *bytes* per file
-  name (NTFS 255 characters), so 3 long Cyrillic names didn't copy and were
-  shortened by hand -- watch for that when copying from C:.
-  On 2026-11-23 the user's Desktop, Documents, Videos, Pictures (from
-  `C:\Users\Delfosse`) and `C:\kindle` moved to `OLD FILES/Windows <name>`
-  on E:; C:'s Downloads and Saved Games were emptied (folders + `desktop.ini`
-  kept for Windows). Copies from NTFS keep Windows' read-only flag as a
-  missing write bit -- `chmod -R u+w` after copying.
+- **E:** (WD Blue HDD, `/mnt/edrive`) is btrfs, GPT type Linux (8300,
+  `E-DATA`) -- Windows doesn't see it; never let Windows format it.
+- Copying from NTFS: Linux allows 255 *bytes* per file name (NTFS 255
+  characters), so long Cyrillic names fail and need shortening; Windows'
+  read-only flag arrives as a missing write bit (`chmod -R u+w`).
 - NTFS can be checked/repaired from Linux (no Windows needed)
   with `ntfsck` (`ntfsprogs-plus`) on the unmounted partition. First `ntfsck
   -n -q` (read-only) into a file in `~`. Its record numbers are the files'
