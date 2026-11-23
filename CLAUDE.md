@@ -297,6 +297,11 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   `E-DATA`): Windows no longer sees it. Linux allows 255 *bytes* per file
   name (NTFS 255 characters), so 3 long Cyrillic names didn't copy and were
   shortened by hand -- watch for that when copying from C:.
+  On 2026-11-23 the user's Desktop, Documents, Videos, Pictures (from
+  `C:\Users\Delfosse`) and `C:\kindle` moved to `OLD FILES/Windows <name>`
+  on E:; C:'s Downloads and Saved Games were emptied (folders + `desktop.ini`
+  kept for Windows). Copies from NTFS keep Windows' read-only flag as a
+  missing write bit -- `chmod -R u+w` after copying.
 - NTFS can be checked/repaired from Linux (no Windows needed)
   with `ntfsck` (`ntfsprogs-plus`) on the unmounted partition. First `ntfsck
   -n -q` (read-only) into a file in `~`. Its record numbers are the files'
