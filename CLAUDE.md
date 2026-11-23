@@ -403,8 +403,8 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
   UE's SDL sends the parent too late) and lose UE's remembered size, so a
   `window.open` hook maximizes them, restoring to 80% height. Debug window
   sizing with `WAYLAND_DEBUG=1` (grep `xdg_toplevel`).
-- MMOKit: `~/code/MMOKit` (GitLab), remote `windows` = the former D: copy
-  (`~/former-D/MMO_Kit_Creation/MMOKit`).
+- MMOKit: `~/code/MMOKit` (GitLab). Windows builds use a separate clone at
+  `C:\MMOKit` (`/mnt/cdrive/MMOKit`), remote `windows` in the Linux repo.
 - PersistenceServer: `~/former-D/MMO_Kit_Creation/PersistenceServer`, built with `dotnet-sdk_8` into `bin-linux/` so
   Windows' `bin/` is untouched; its launcher shares Windows' `mmokit.db`. That
   repo needs `core.autocrlf=true`.
