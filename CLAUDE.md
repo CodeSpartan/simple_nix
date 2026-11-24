@@ -42,7 +42,11 @@ inherited from Vitalii stays -- don't trim it.
   issue chelinho139/wow-ai#29, our comment posted). Fix committed, not
   pushed: branch `fix/opt-in-reply-hook` in worktree `~/code/wow-ai-pr`
   (hook opt-in via `/wow-ai reply on`); its `WoWAI.lua` is copied into the
-  game's AddOns. Next: user tests `/s`/`/i` in a BG and `/ai hello`; then
+  game's AddOns. Next: user tests `/s`/`/i` in a BG, typed `/tar <mob>`
+  and `/ai hello`. Polestar's rare Target button also failed -- likely not
+  WoWAI (secure macros run in Blizzard's private `MacroEditBox`,
+  `MacroExecutionManager.lua`); if it still fails, read `Logs/taint.log`
+  after `/console taintLog 2` + `/reload` + click + `/reload`. Then
   fork to CodeSpartan, push, show the user the PR text before opening it
   (say tested on Forever `1.60.1.71037`). After merge: `git pull` +
   `node setup.js` in `~/code/wow-ai`, remove the worktree.
