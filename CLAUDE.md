@@ -38,6 +38,14 @@ inherited from Vitalii stays -- don't trim it.
   `curl 127.0.0.1:10814/connections` for WoW's server IPs/ports, propose a
   direct rule by destination, and add it only with the user's OK (back up
   `guiNDB.db` first; user clicks Reload).
+- WoW AI `/r` hook taints the chat box (all chat blocked in battlegrounds,
+  issue chelinho139/wow-ai#29, our comment posted). Fix committed, not
+  pushed: branch `fix/opt-in-reply-hook` in worktree `~/code/wow-ai-pr`
+  (hook opt-in via `/wow-ai reply on`); its `WoWAI.lua` is copied into the
+  game's AddOns. Next: user tests `/s`/`/i` in a BG and `/ai hello`; then
+  fork to CodeSpartan, push, show the user the PR text before opening it
+  (say tested on Forever `1.60.1.71037`). After merge: `git pull` +
+  `node setup.js` in `~/code/wow-ai`, remove the worktree.
 - `config/hypr/user.conf` is dead (see Hyprland) -- could be deleted.
 - `~/Documents/work2.txt` (UTF-16 Notepad file, was on D:) holds account
   logins and passwords in plain text; a few lines ended up in a Claude
