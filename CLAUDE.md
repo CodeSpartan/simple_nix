@@ -643,7 +643,10 @@ xdg-open), so a broken portal shows GTK's "No Apps available" dialog. NixOS
 gave the unit a coreutils-only PATH and GIO hides apps whose Exec isn't on
 PATH -- `desktop.nix` overrides it. Check what the portal sees: run
 `gio mime <type>` with the portal process's env (`/proc/<pid>/environ`).
-Folders default to Dolphin (`programs.nix`). After changing the unit:
+Folders default to Dolphin (`programs.nix`). Open/save dialogs use the KDE
+backend (`FileChooser = kde`): user wanted a clickable path bar. GTK's
+dialog has none (Ctrl+L only; its `location-mode` gsetting is never read
+back). After changing the unit:
 `systemctl --user restart xdg-desktop-portal`.
 
 ## Flatpak

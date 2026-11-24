@@ -96,12 +96,16 @@ in
     enable = true;
     extraPortals = with pkgs; [
       xdg-desktop-portal-gtk
+      kdePackages.xdg-desktop-portal-kde   # file dialogs (see FileChooser below)
     ];
     config = {
       common.default = [ "*" ];
       hyprland = {
         default = [ "hyprland" "gtk" ];
         "org.freedesktop.impl.portal.OpenURI" = [ "gtk" ];
+        # KDE's open/save dialog: its path bar is always clickable/editable.
+        # GTK's only shows a path entry after Ctrl+L.
+        "org.freedesktop.impl.portal.FileChooser" = [ "kde" ];
         "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
       };
     };
