@@ -412,6 +412,11 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
   UE's SDL sends the parent too late) and lose UE's remembered size, so a
   `window.open` hook maximizes them, restoring to 80% height. Debug window
   sizing with `WAYLAND_DEBUG=1` (grep `xdg_toplevel`).
+  UE's drag-and-drop hint (pin/asset drags) is a parentless toplevel on
+  Wayland; when it took focus UE cancelled the drag. The `unreal-drag-hint`
+  rule (empty title at map) gives it no focus. If a real UE window ever
+  won't take focus, suspect that match. UE's window types show with
+  `log LogLinuxWindowType Verbose` in its console.
 - MMOKit: `~/code/MMOKit` (GitLab). Windows builds use a separate clone at
   `C:\MMOKit` (`/mnt/cdrive/MMOKit`), remote `windows` in the Linux repo.
 - PersistenceServer: `~/former-D/MMO_Kit_Creation/PersistenceServer`, built with `dotnet-sdk_8` into `bin-linux/` so

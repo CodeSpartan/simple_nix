@@ -658,6 +658,20 @@ hl.window_rule({
     match    = { class = "^UnrealEditor$" },
     min_size = { 1, 1 },
 })
+-- Unreal's drag-and-drop hint (dragging a Blueprint pin, an asset...) is a
+-- parentless toplevel on Wayland (UE marks it DND only for X11). Mapped
+-- normally it took focus -- UE then cancelled the drag at once -- and
+-- opened in the screen center. Its title is empty when it maps; real UE
+-- windows already have one. It can't follow the cursor (toplevel), so it
+-- stays where the drag started, offset so the pointer isn't over it.
+hl.window_rule({
+    name             = "unreal-drag-hint",
+    match            = { class = "^UnrealEditor$", title = "^$", float = true },
+    no_focus         = true,
+    no_initial_focus = true,
+    move             = { "cursor_x+16", "cursor_y+16" },
+    no_anim          = true,
+})
 -- Still open: UE's SDL sends the parent only after the window's first
 -- commit, so Hyprland sizes a new asset editor like a new tile (960x1037)
 -- and SDL then ignores UE's remembered size. Float rules matching its
