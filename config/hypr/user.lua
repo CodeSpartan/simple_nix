@@ -384,10 +384,22 @@ end)
 -- Apps started from that Dolphin (an mp3 -> Elisa) would open on
 -- special:files too (initial_workspace_tracking). Move them to the
 -- workspace under the overlay and hide the overlay. Dolphin's own windows
--- and floating dialogs (copy progress, Open With...) stay with it.
+-- and dialogs (copy progress, Open With...: same process) stay with it.
+-- Floating windows of other apps move too: the token is inherited by
+-- everything started further down (Dolphin -> kitty -> Unreal), so e.g.
+-- Unreal's dialogs opened on special:files and popped the overlay up.
+local function isFilesDolphinPid(pid)
+    for _, d in ipairs(hl.get_windows()) do
+        if d.class == "org.kde.dolphin" and d.pid == pid and d.workspace
+            and d.workspace.name == "special:files" then
+            return true
+        end
+    end
+    return false
+end
 hl.on("window.open", function(w)
     if not (w and w.workspace and w.workspace.name == "special:files") then return end
-    if w.class == "org.kde.dolphin" or w.floating then return end
+    if w.class == "org.kde.dolphin" or isFilesDolphinPid(w.pid) then return end
     local m = w.monitor
     local ws = m and m.active_workspace
     if not (ws and ws.id) then return end
