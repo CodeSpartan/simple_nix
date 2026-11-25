@@ -48,6 +48,13 @@ inherited from Vitalii stays -- don't trim it.
   `Logs/taint.log` after `/console taintLog 2` + `/reload` + click +
   `/reload`.
 - `config/hypr/user.conf` is dead (see Hyprland) -- could be deleted.
+- `sdl-wayland-untile` (Unreal's empty dialogs, see Unreal Engine) works
+  around SDL issue libsdl-org/SDL#16093, fixed on SDL `main` (fcb5ef8a9,
+  2026-08-01) but in no release up to 3.4.20. UE links SDL statically, so
+  it can go only once a UE update ships an SDL with that commit: check
+  `~/code/UE/Engine/Source/ThirdParty/SDL3/SDL-gui-backend/include/SDL3/SDL_version.h`
+  after each UE update (3.4.4 in UE 5.8.4). Then test a variable-type
+  change dialog with the bare binary before dropping the shim.
 - `~/Documents/work2.txt` (UTF-16 Notepad file, was on D:) holds account
   logins and passwords in plain text; a few lines ended up in a Claude
   session on 2026-11-21. Discuss with the user what to do with it, incl.
