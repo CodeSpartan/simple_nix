@@ -38,14 +38,11 @@ inherited from Vitalii stays -- don't trim it.
   `curl 127.0.0.1:10814/connections` for WoW's server IPs/ports, propose a
   direct rule by destination, and add it only with the user's OK (back up
   `guiNDB.db` first; user clicks Reload).
-- WoW AI `/r` hook tainted the chat box (all chat blocked in BGs, typed
-  `/tar` blocked). Our PR https://github.com/chelinho139/wow-ai/pull/37
-  (branch `fix/opt-in-reply-hook`, worktree `~/code/wow-ai-pr`, remote
-  `fork` = CodeSpartan/wow-ai) makes it opt-in; its `WoWAI.lua` is copied
-  into the game's AddOns, so a `node setup.js` from `~/code/wow-ai` before
-  the merge undoes the fix. Check on the PR when WoW AI comes up. After
-  merge: `git pull` + `node setup.js` in `~/code/wow-ai`, then
-  `git worktree remove ~/code/wow-ai-pr`. Polestar's rare Target button
+- WoW AI PRs in our `local` branch (see Battle.net / WoW): check on
+  updates whether #37 (ours: `/r` hook tainted the chat box, all chat
+  blocked in BGs), #36, #33, #31, #19 got merged, and slim `local` down.
+  Pending: user runs `/wow-ai diag` (for #15) and tries a Russian chat
+  title (#19). Polestar's rare Target button
   also failed once -- likely not WoWAI (secure macros run in Blizzard's
   private `MacroEditBox`, `MacroExecutionManager.lua`); if it recurs, read
   `Logs/taint.log` after `/console taintLog 2` + `/reload` + click +
@@ -498,16 +495,25 @@ if it's worth retrying with a newer release.
   (no better), and gamescope (display fine, but `--force-grab-cursor`
   bypasses our mouse curve). Keep Lutris.
 - WoW AI addon (chat with Claude/Codex in-game): repo `~/code/wow-ai` (not
-  ours; update with `git pull && node setup.js`; setup also re-creates
-  missing slot files). Addon + ~15k slot files in
+  ours). We run branch **`local`** = upstream `main` + open PRs we want:
+  #37 (ours, branch `fix/opt-in-reply-hook`, remote `fork` =
+  CodeSpartan/wow-ai), #36, #33, #31 (merged as `prN` branches; #31
+  conflicts with #36 only by position -- keep both functions), and #19
+  cherry-picked (`171c8f2`, `552d73f`; predates upstream's squashed history).
+  Update: `git fetch origin`, `git checkout -B local origin/main`, re-merge
+  the PRs still open (`git fetch origin pull/N/head:prN`, `git merge prN`;
+  `CHANGELOG.md merge=union` in `.git/info/attributes` avoids its
+  conflicts), `npm test`, `node setup.js` (also re-creates missing slot
+  files), `/reload`. Drop a PR from the list once upstream has merged it.
+  Plain `git pull` on `main` loses all of them. Candidate: #15 (signal
+  files) if `/wow-ai diag` says `sound channel: UNUSABLE` (old history,
+  needs cherry-pick). Addon + ~15k slot files in
   `_forever_/Interface/AddOns`. Its bridge (`npm start` there) screen-grabs the
   game via X11 with `capture.python = wow-ai-python` (`programs.nix`: libX11
   for ctypes) and `capture.windowName = "World of Warcraft"` (Proton gives
-  every Wine window WM_CLASS `steam_app_default`, not `Wow.exe`). Local
-  patch in `bridge/capture_x11.py` (uncommitted there; re-apply if a pull
-  drops it): when grabbing from the root fails (XWayland has no root
-  contents), it grabs the WoW window itself. It's documented as X11-only; under Hyprland/XWayland check
-  with `npm run probe`, fallback `/wow-ai mode reload`.
+  every Wine window WM_CLASS `steam_app_default`, not `Wow.exe`). Under
+  rootless XWayland grabbing the root fails; #33 grabs the WoW window
+  itself instead. Check with `npm run probe`, fallback `/wow-ai mode reload`.
 
 ## Brave
 
