@@ -48,13 +48,17 @@ inherited from Vitalii stays -- don't trim it.
   `Logs/taint.log` after `/console taintLog 2` + `/reload` + click +
   `/reload`.
 - `config/hypr/user.conf` is dead (see Hyprland) -- could be deleted.
-- `sdl-wayland-untile` (Unreal's empty dialogs, see Unreal Engine) works
-  around SDL issue libsdl-org/SDL#16093, fixed on SDL `main` (fcb5ef8a9,
-  2026-08-01) but in no release up to 3.4.20. UE links SDL statically, so
-  it can go only once a UE update ships an SDL with that commit: check
-  `~/code/UE/Engine/Source/ThirdParty/SDL3/SDL-gui-backend/include/SDL3/SDL_version.h`
-  after each UE update (3.4.4 in UE 5.8.4). Then test a variable-type
-  change dialog with the bare binary before dropping the shim.
+- `sdl-wayland-fixes` (see Unreal Engine) holds two SDL workarounds. UE
+  links SDL statically, so each can go only once a UE update ships a fixed
+  SDL: check `~/code/UE/Engine/Source/ThirdParty/SDL3/SDL-gui-backend/include/SDL3/SDL_version.h`
+  after each UE update (3.4.4 in UE 5.8.4), then test with the bare binary.
+  - Empty dialogs: SDL issue libsdl-org/SDL#16093, fixed on SDL `main`
+    (fcb5ef8a9, 2026-08-01), in no release up to 3.4.20. Test: change a
+    Blueprint variable to an array.
+  - Pointer locked under viewport context menus: not reported upstream
+    yet (found 2026-11-25; the same early return is still on SDL `main`).
+    Test: right-click an actor in the level viewport, the menu must be
+    clickable. User may want an SDL issue/PR filed -- ask first.
 - `~/Documents/work2.txt` (UTF-16 Notepad file, was on D:) holds account
   logins and passwords in plain text; a few lines ended up in a Claude
   session on 2026-11-21. Discuss with the user what to do with it, incl.
@@ -409,10 +413,12 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
   the menu entry `~/.local/share/applications/unreal-editor.desktop`,
   outside git, runs it), never the bare binary. It runs native Wayland:
   `SDL_VIDEODRIVER=wayland SDL_VIDEO_WAYLAND_SCALE_TO_DISPLAY=1
-  SDL_MOUSE_INTEGER_MODE=1`, plus `LD_PRELOAD` of `sdl-wayland-untile`
-  (`nixos/pkgs/`): Hyprland marks every window tiled, and SDL then never
-  saves a fixed-size window's resize, so UE's autosized dialogs (created
-  1x1) showed as empty frames. Without SCALE_TO_DISPLAY it renders at half
+  SDL_MOUSE_INTEGER_MODE=1`, plus `LD_PRELOAD` of `sdl-wayland-fixes`
+  (`nixos/pkgs/`, details in its .c): without it UE's autosized dialogs
+  show as empty frames, and a viewport right-click menu leaves the pointer
+  hidden and locked (menu unclickable). UE's calls into SDL go through the
+  PLT, so a tracing `LD_PRELOAD` can log them when debugging
+  (`SDL_SetWindowRelativeMouseMode` etc.). Without SCALE_TO_DISPLAY it renders at half
   resolution (UE doesn't ask SDL for HiDPI windows); without INTEGER_MODE
   mouse-look in Play doesn't move (UE truncates fractional deltas to int).
   XWayland (`x11`) was dropped: its pointer grabs trapped the mouse in

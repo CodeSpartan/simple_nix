@@ -1,18 +1,34 @@
-// LD_PRELOAD shim: hide the xdg_toplevel TILED_* states from the client.
+// LD_PRELOAD shim for SDL3 apps (Unreal) on Hyprland. Two workarounds:
 //
-// Hyprland marks every toplevel as tiled on all four edges, floating ones
-// too. SDL3 (checked 3.4.4 - main) then stops saving programmatic resizes of
-// a fixed-size (non-resizable) window (SDL_windowevents.c: floating.w is only
-// updated when !window->tiled), and answers each configure with that stale
-// saved size. Unreal's autosized dialogs are created at 1x1 and resized to
-// fit their content, so they collapse back to 1x1: an empty frame.
+// 1. Empty fixed-size windows -- hide the xdg_toplevel TILED_* states.
+//    Hyprland marks every toplevel as tiled on all four edges, floating
+//    ones too. SDL3 then stops saving programmatic resizes of a fixed-size
+//    (non-resizable) window (SDL_windowevents.c: floating.w is only updated
+//    when !window->tiled), and answers each configure with that stale saved
+//    size. Unreal's autosized dialogs are created at 1x1 and resized to fit
+//    their content, so they collapsed back to 1x1: an empty frame.
+//    SDL issue #16093, fixed on SDL main (fcb5ef8a9), in no 3.4.x release.
 //
-// SDL loads libwayland-client with dlopen + dlsym, so dlsym is hooked to
-// hand out our wl_proxy_add_listener; programs linked directly against
-// libwayland get the exported one.
+//    SDL loads libwayland-client with dlopen + dlsym, so dlsym is hooked to
+//    hand out our wl_proxy_add_listener; programs linked directly against
+//    libwayland get the exported one.
+//
+// 2. Pointer stays locked after relative mode ends while a popup is open.
+//    Showing a popup menu moves SDL's keyboard focus to it, which turns the
+//    global relative mode off -- but the Wayland backend keeps the lock, as
+//    the toplevel under the pointer still has the relative flag and seat
+//    focus. When the app then clears that flag, SDL_UpdateRelativeMouseMode
+//    sees no global change and never re-runs the Wayland grab update.
+//    Unreal: right-click in a viewport (camera look = relative mode) opens a
+//    context menu; the cursor stayed hidden and locked, the menu unclickable.
+//    After the app turns relative mode off we nudge the window's mouse rect
+//    (to an empty rect that differs from the stored one, then back): SDL
+//    compares rects by value, so this runs the grab update with no
+//    confinement in between.
 #define _GNU_SOURCE
 #include <dlfcn.h>
 #include <pthread.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -117,4 +133,49 @@ void *dlsym(void *handle, const char *name)
     if (strcmp(name, "wl_proxy_add_listener") == 0)
         return (void *)wl_proxy_add_listener;
     return real_dlsym(handle, name);
+}
+
+// --- 2. Release a stale pointer lock when relative mode is turned off ---
+
+typedef struct SDL_Window SDL_Window;
+typedef struct { int x, y, w, h; } SDL_Rect;
+
+static bool (*real_set_relative)(SDL_Window *, bool);
+static bool (*sdl_set_mouse_rect)(SDL_Window *, const SDL_Rect *);
+static const SDL_Rect *(*sdl_get_mouse_rect)(SDL_Window *);
+
+// The SDL that defines the real function (libSDL3, or Unreal's
+// ApplicationCore with SDL linked in) also has the mouse-rect calls.
+static int resolve_sdl(void)
+{
+    if (real_set_relative)
+        return 1;
+    if (!real_dlsym)
+        init();
+    void *f = real_dlsym(RTLD_NEXT, "SDL_SetWindowRelativeMouseMode");
+    Dl_info info;
+    if (!f || !dladdr(f, &info))
+        return 0;
+    void *h = dlopen(info.dli_fname, RTLD_LAZY | RTLD_NOLOAD);
+    if (!h)
+        return 0;
+    sdl_set_mouse_rect = real_dlsym(h, "SDL_SetWindowMouseRect");
+    sdl_get_mouse_rect = real_dlsym(h, "SDL_GetWindowMouseRect");
+    real_set_relative = f;
+    return 1;
+}
+
+bool SDL_SetWindowRelativeMouseMode(SDL_Window *window, bool enabled)
+{
+    if (!resolve_sdl())
+        abort();
+    bool ok = real_set_relative(window, enabled);
+    if (ok && !enabled && sdl_set_mouse_rect && sdl_get_mouse_rect) {
+        const SDL_Rect *cur = sdl_get_mouse_rect(window);
+        SDL_Rect saved = cur ? *cur : (SDL_Rect){ 0, 0, 0, 0 };
+        SDL_Rect nudge = { saved.x + 1, saved.y, 0, 0 };  // empty: no confinement
+        sdl_set_mouse_rect(window, &nudge);
+        sdl_set_mouse_rect(window, cur ? &saved : NULL);
+    }
+    return ok;
 }
