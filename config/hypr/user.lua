@@ -664,11 +664,14 @@ hl.window_rule({
 -- opened in the screen center. Its title is empty when it maps; real UE
 -- windows already have one. It can't follow the cursor (toplevel), so it
 -- stays where the drag started, offset so the pointer isn't over it.
+-- Also matches the modal "Saving..." dialog (compile, autosave): it sends
+-- an activation request, and focus_on_activate warped the cursor into it.
 hl.window_rule({
-    name             = "unreal-drag-hint",
-    match            = { class = "^UnrealEditor$", title = "^$", float = true },
-    no_focus         = true,
-    no_initial_focus = true,
+    name              = "unreal-drag-hint",
+    match             = { class = "^UnrealEditor$", title = "^$", float = true },
+    no_focus          = true,
+    no_initial_focus  = true,
+    focus_on_activate = false,
     move             = { "cursor_x+16", "cursor_y+16" },
     no_anim          = true,
 })
