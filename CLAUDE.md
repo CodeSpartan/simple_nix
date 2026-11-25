@@ -47,6 +47,11 @@ inherited from Vitalii stays -- don't trim it.
   private `MacroEditBox`, `MacroExecutionManager.lua`); if it recurs, read
   `Logs/taint.log` after `/console taintLog 2` + `/reload` + click +
   `/reload`.
+- UE autosave's modal "Saving..." dialog (654x142, empty title) seemed
+  to pull the cursor to it. Since 2026-11-25 the `unreal-drag-hint` rule
+  matches it too (no focus, placed by the cursor). Ask the user whether the
+  cursor still jumps; if so, look for warps in UE's Linux code
+  (`FLinuxCursor::SetPosition`) or Hyprland's activation (it sends `urgent`).
 - `config/hypr/user.conf` is dead (see Hyprland) -- could be deleted.
 - `~/Documents/work2.txt` (UTF-16 Notepad file, was on D:) holds account
   logins and passwords in plain text; a few lines ended up in a Claude
