@@ -90,6 +90,16 @@ let
   # Middle-click in text fields still pastes, on links still opens a tab.
   # Loads the monitor's ICC calibration curve (see config/hypr/user.lua).
   vcgtLoader = pkgs.callPackage ./pkgs/vcgt-loader { };
+  # Unreal editor, native Wayland (see CLAUDE.md "Unreal Engine"). The
+  # preloaded shim keeps its confirmation dialogs from opening as empty
+  # frames (nixos/pkgs/sdl-wayland-untile). Children (UBT, shader workers)
+  # inherit it; harmless, it only touches xdg_toplevel listeners.
+  sdlWaylandUntile = pkgs.callPackage ./pkgs/sdl-wayland-untile { };
+  unrealEditor = pkgs.writeShellScriptBin "unreal-editor" ''
+    export SDL_VIDEODRIVER=wayland SDL_VIDEO_WAYLAND_SCALE_TO_DISPLAY=1 SDL_MOUSE_INTEGER_MODE=1
+    export LD_PRELOAD="${sdlWaylandUntile}/lib/libsdl-wayland-untile.so''${LD_PRELOAD:+:$LD_PRELOAD}"
+    exec "$HOME/code/UE/Engine/Binaries/Linux/UnrealEditor" "$@"
+  '';
   # Storyteller's Craft apps (prebuilt releases, see the package file).
   storytoldCraft = pkgs.callPackage ./pkgs/storytold-craft { };
   photocraft = storytoldCraft {
@@ -627,6 +637,7 @@ in
     file-roller                # Archive manager GUI (zip/tar/7z)
     hyprsunset                 # Night light (toggled by clicking the bar weather; config/hypr/nightlight.sh)
     vcgtLoader                 # Monitor calibration curve without Hyprland's ICC (nixos/pkgs/vcgt-loader)
+    unrealEditor               # `unreal-editor`: UE with its Wayland env + dialog fix (nixos/pkgs/sdl-wayland-untile)
     mission-center             # System monitor (CPU/GPU/RAM/disk, GTK4 Wayland native)
 
     # Desktop services

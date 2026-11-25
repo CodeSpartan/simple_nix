@@ -212,10 +212,11 @@ inherited from Vitalii stays -- don't trim it.
 - Super+E = floating Dolphin on its own hidden workspace `special:files`
   (started hidden at login; Super+E shows/hides it, relaunches it if closed).
   Its float/size rules are launch rules (`[...] dolphin`), so only that
-  process's window gets them; other Dolphins tile (Super+Shift+E). Tiled
-  windows of other apps opening on `special:files` (launched from that
-  Dolphin) are moved to the workspace under it by a `window.open` hook,
-  which also hides the overlay. Super+Ctrl+S
+  process's window gets them; other Dolphins tile (Super+Shift+E). Windows
+  of other apps opening on `special:files` are moved to the workspace under
+  it by a `window.open` hook, which also hides the overlay. Its workspace
+  token is inherited down the process tree (Dolphin -> kitty -> anything
+  started there). Super+Ctrl+S
   sends any window to the Super+S scratchpad, floating. Wayle hides special
   workspaces (`show-special = false`). `input.special_fallthrough = true` lets
   the pointer through a shown special workspace's empty area -- without it
@@ -397,10 +398,14 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
   (`unrealRuntimeLibs` in `programs.nix`). Its scripts need
   `bash <script>` (no `/bin/bash`). The Epic launcher can't install UE on
   Linux.
-- The editor runs native Wayland (menu entry
-  `~/.local/share/applications/unreal-editor.desktop`, outside git):
+- Start the editor with **`unreal-editor <.uproject>`** (`programs.nix`;
+  the menu entry `~/.local/share/applications/unreal-editor.desktop`,
+  outside git, runs it), never the bare binary. It runs native Wayland:
   `SDL_VIDEODRIVER=wayland SDL_VIDEO_WAYLAND_SCALE_TO_DISPLAY=1
-  SDL_MOUSE_INTEGER_MODE=1`. Without SCALE_TO_DISPLAY it renders at half
+  SDL_MOUSE_INTEGER_MODE=1`, plus `LD_PRELOAD` of `sdl-wayland-untile`
+  (`nixos/pkgs/`): Hyprland marks every window tiled, and SDL then never
+  saves a fixed-size window's resize, so UE's autosized dialogs (created
+  1x1) showed as empty frames. Without SCALE_TO_DISPLAY it renders at half
   resolution (UE doesn't ask SDL for HiDPI windows); without INTEGER_MODE
   mouse-look in Play doesn't move (UE truncates fractional deltas to int).
   XWayland (`x11`) was dropped: its pointer grabs trapped the mouse in
