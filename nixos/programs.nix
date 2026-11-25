@@ -127,6 +127,22 @@ let
       wrapProgram $out/bin/nomacs --unset LD_LIBRARY_PATH
     '';
   });
+  # Gitnuro picks folders with `zenity --file-selection --directory` (path on
+  # stdout). Without zenity it falls back to Swing's chooser, which doubled
+  # the folder name (~/code/X/X). This zenity, on Gitnuro's PATH only, opens
+  # KDE's folder dialog instead (clickable path bar, like the portal's).
+  gitnuroZenityShim = pkgs.writeShellScriptBin "zenity" ''
+    exec ${pkgs.kdePackages.kdialog}/bin/kdialog --title "Open repository" \
+      --getexistingdirectory "$HOME"
+  '';
+  gitnuroTuned = pkgs.symlinkJoin {
+    name = "gitnuro-${pkgs.gitnuro.version}";
+    paths = [ pkgs.gitnuro ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/gitnuro --prefix PATH : ${gitnuroZenityShim}/bin
+    '';
+  };
   # Links opened from other apps (Discord, Telegram...) went into a new Brave
   # window on that app's workspace. braveFocus runs before every `brave ...`
   # with a link (not --app/--new-window/... launches): it focuses the most
@@ -607,7 +623,7 @@ in
     pdfcraft                   # PDF reader/editor (same package file)
     wordcraft                  # Word-like document editor (same package file)
     calibre                    # E-book library manager + reader (epub/mobi/azw3, format conversion)
-    gitnuro                    # Git GUI with a visual commit graph (GitKraken-like)
+    gitnuroTuned               # Git GUI with a visual commit graph (GitKraken-like)
     file-roller                # Archive manager GUI (zip/tar/7z)
     hyprsunset                 # Night light (toggled by clicking the bar weather; config/hypr/nightlight.sh)
     vcgtLoader                 # Monitor calibration curve without Hyprland's ICC (nixos/pkgs/vcgt-loader)
