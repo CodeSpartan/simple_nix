@@ -695,9 +695,42 @@ hl.window_rule({
 -- editors) gets maximized. Fixed-size ones (progress popups) are smaller.
 -- First shrink it to 80% of the screen height and center it: Hyprland
 -- restores that size when it's un-maximized.
+-- Dragging a floating UE window's tab (to dock it) makes UE unmap and remap
+-- that same window: to Hyprland a new window, which got maximized here and
+-- sent to the workspace UE was launched from (initial_workspace_tracking).
+-- So a UE window back within 2 s keeps its last size, and every UE window
+-- opens on the main editor's workspace.
+local ue_closed = {}   -- address -> { t, size, at } of unmapped UE windows
+hl.on("window.close", function(w)
+    if w and w.class == "UnrealEditor" and w.floating and w.size and w.at then
+        ue_closed[w.address] = { t = os.time(),
+            size = { x = w.size.x, y = w.size.y }, at = { x = w.at.x, y = w.at.y } }
+    end
+end)
+local function ueMainWorkspace(w)
+    for _, m in ipairs(hl.get_windows()) do
+        if m.class == "UnrealEditor" and m.pid == w.pid and m.address ~= w.address
+            and not m.floating and m.title and m.title:find(" %- Unreal Editor$") then
+            return m.workspace
+        end
+    end
+end
 hl.on("window.open", function(w)
-    if w and w.class == "UnrealEditor" and w.floating
-        and w.size and w.size.y >= 1000 then
+    if not (w and w.class == "UnrealEditor") then return end
+    local ws = ueMainWorkspace(w)
+    if ws and ws.id and w.workspace and w.workspace.id ~= ws.id then
+        hl.dispatch(hl.dsp.window.move({ workspace = ws.id, window = w }))
+    end
+    local prev = ue_closed[w.address]
+    ue_closed[w.address] = nil
+    if prev and os.time() - prev.t <= 2 then
+        if w.floating and prev.size and prev.at then
+            hl.dispatch(hl.dsp.window.resize({ x = prev.size.x, y = prev.size.y, window = w }))
+            hl.dispatch(hl.dsp.window.move({ x = prev.at.x, y = prev.at.y, window = w }))
+        end
+        return
+    end
+    if w.floating and w.size and w.size.y >= 1000 then
         local mh = w.monitor and w.monitor.height
             and (w.monitor.height / (w.monitor.scale or 1)) or 1080
         hl.dispatch(hl.dsp.window.resize({ x = w.size.x, y = math.floor(mh * 0.8), window = w }))

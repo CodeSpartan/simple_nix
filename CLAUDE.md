@@ -437,7 +437,15 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
   rule (empty title at map) gives it no focus. It also catches the modal
   "Saving..." dialog (compile, autosave), whose activation request made
   `focus_on_activate` warp the cursor into it. If a real UE window ever
-  won't take focus, suspect that match. UE's window types show with
+  won't take focus, suspect that match.
+  Floating windows can't be docked by dragging: UE unmaps and remaps the
+  window whose last tab is dragged, which ends the drag on Wayland ("Dock in
+  Layout" just reopens the remembered floating window). Dock by editing
+  `~/.config/Epic/UnrealEngine/5.8/Saved/Config/LinuxEditor/EditorLayout.ini`
+  with UE closed (back it up): drop the floating `Area` from
+  `UnrealEd_Layout_*`, add the tab to the wanted `Stack` in
+  `LevelEditor_Layout_*`. A `window.open` hook keeps remapped/new UE windows
+  on the main editor's workspace and at their old size. UE's window types show with
   `log LogLinuxWindowType Verbose` in its console.
 - MMOKit: `~/code/MMOKit` (GitLab). Windows builds use a separate clone at
   `C:\MMOKit` (`/mnt/cdrive/MMOKit`), remote `windows` in the Linux repo.
