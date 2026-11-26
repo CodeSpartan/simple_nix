@@ -715,8 +715,9 @@ local function ueMainWorkspace(w)
         end
     end
 end
-hl.on("window.open", function(w)
-    if not (w and w.class == "UnrealEditor") then return end
+-- Moving a window to a workspace warps the cursor to it: with warps on,
+-- every save's progress popups yanked the cursor to their center.
+local function ueOpen(w)
     local ws = ueMainWorkspace(w)
     if ws and ws.id and w.workspace and w.workspace.id ~= ws.id then
         hl.dispatch(hl.dsp.window.move({ workspace = ws.id, window = w }))
@@ -737,6 +738,12 @@ hl.on("window.open", function(w)
         hl.dispatch(hl.dsp.window.center({ window = w }))
         hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized", window = w }))
     end
+end
+hl.on("window.open", function(w)
+    if not (w and w.class == "UnrealEditor") then return end
+    hl.config({ cursor = { no_warps = true } })
+    ueOpen(w)
+    hl.config({ cursor = { no_warps = false } })
 end)
 
 -- Any fullscreen window (movie, game) keeps hypridle from turning the
