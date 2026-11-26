@@ -58,7 +58,9 @@ inherited from Vitalii stays -- don't trim it.
   - Pointer locked under viewport context menus: not reported upstream
     yet (found 2026-11-25; the same early return is still on SDL `main`).
     Test: right-click an actor in the level viewport, the menu must be
-    clickable. User may want an SDL issue/PR filed -- ask first.
+    clickable. Also present on SDL `main` (tested 2026-11-26). No SDL
+    PR/issue from Claude: SDL's templates forbid LLM-written code and
+    issue text. Only the user, in their own words, can report it.
 - `~/Documents/work2.txt` (UTF-16 Notepad file, was on D:) holds account
   logins and passwords in plain text; a few lines ended up in a Claude
   session on 2026-11-21. Discuss with the user what to do with it, incl.
