@@ -452,6 +452,11 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
   `log LogLinuxWindowType Verbose` in its console.
 - MMOKit: `~/code/MMOKit` (GitLab). Windows builds use a separate clone at
   `C:\MMOKit` (`/mnt/cdrive/MMOKit`), remote `windows` in the Linux repo.
+- Kit demo Steam upload (app 2090870, depot 2090871, default branch):
+  `~/code/MMOKit-steam-upload/upload_client.sh` (outside git), password from
+  agenix `steam-upload`. Its `steamcmd.sh` gives steamcmd its own `HOME`:
+  nixpkgs' steamcmd otherwise installs into the Steam client's
+  `~/.local/share/Steam`.
 - PersistenceServer: `~/former-D/MMO_Kit_Creation/PersistenceServer`, built with `dotnet-sdk_8` into `bin-linux/` so
   Windows' `bin/` is untouched; its launcher shares Windows' `mmokit.db`. That
   repo needs `core.autocrlf=true`.
