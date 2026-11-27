@@ -18,6 +18,11 @@ opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 opt.foldenable = false
 opt.relativenumber = true
 
+-- Files from Windows are often Windows-1251 (Russian ANSI), not UTF-8. Try
+-- cp1251 when UTF-8 fails instead of the default Latin-1 fallback, which
+-- turned Cyrillic into "âåñü". Saving keeps the file's own encoding.
+opt.fileencodings = "ucs-bom,utf-8,cp1251"
+
 opt.backup = true
 opt.writebackup = true
 opt.backupdir = backupdir
