@@ -1,11 +1,13 @@
 { config, lib, pkgs, host, ... }:
 
 let
-  # NTFS data drive, see the fileSystems entries below.
+  # Windows C:, see its fileSystems entry below.
   ntfs = uuid: {
     device = "/dev/disk/by-uuid/${uuid}";
-    fsType = "ntfs3";
-    options = [ "uid=1000" "gid=100" "windows_names" "noatime" "sparse"
+    # mkForce: hardware-configuration.nix is regenerated from what's mounted
+    # and may name the kernel driver (ntfs3) instead.
+    fsType = lib.mkForce "ntfs-3g";
+    options = [ "uid=1000" "gid=100" "windows_names" "noatime"
                 "nofail" "x-systemd.device-timeout=10s" "x-gvfs-show" ];
   };
 in
@@ -86,17 +88,17 @@ in
   fileSystems."/".options = [ "noatime" "compress=zstd" ];
   fileSystems."/home".options = [ "noatime" "compress=zstd" ];
 
-  # NTFS data drives, mounted at boot with the in-kernel ntfs3 driver.
+  # Windows C: (the last NTFS drive), mounted at boot with ntfs-3g (FUSE,
+  # userspace). Not the in-kernel ntfs3: files copied onto C: with it came
+  # out zero-filled (2026-11-27), and earlier it stalled in zero-fill and
+  # broke files. ntfs-3g costs more CPU; C: is rarely used.
   #  - nofail + short timeout: a missing/unmountable drive never blocks boot.
-  #  - ntfs3 refuses to mount a volume Windows left "dirty" (Fast Startup /
-  #    hibernation) -- that's a safety feature; disable Fast Startup in
-  #    Windows if /mnt/cdrive doesn't show up.
+  #  - ntfs-3g refuses to mount a volume Windows hibernated (Fast Startup);
+  #    disable Fast Startup in Windows if /mnt/cdrive doesn't show up.
   #  - windows_names: refuse file names Windows can't open.
-  #  - x-gvfs-show: list them in the file manager sidebar.
-  #  - sparse: new files get holes instead of zeros. Without it, a torrent or
-  #    game downloader writing deep into a new file makes ntfs3 zero-fill
-  #    everything before it -- tens of GB on the HDD, stalling the whole
-  #    desktop. Windows' qBittorrent makes sparse files too.
+  #  - x-gvfs-show: list it in the file manager sidebar.
+  #  - no `sparse` option: ntfs-3g has none -- it always leaves holes where a
+  #    program skips ahead (what ntfs3's `sparse` turned on), never zero-fills.
   fileSystems."/mnt/cdrive" = ntfs "5E22E87B79FB8B5A";   # Samsung 990 Pro 1 -- Windows C:
   # D: (Samsung 990 Pro 2, nvme0n1p2) was emptied into ~/former-D on
   # 2026-11-21 and its partition added to the root btrfs.

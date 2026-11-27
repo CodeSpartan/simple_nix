@@ -322,8 +322,10 @@ Pointer accel imitates Windows' "Enhance pointer precision": a custom curve in
   denied"); `chmod u+w` clears it.
 - `kernel.hung_task_panic` reboots when a task is stuck >120 s (e.g. ntfs3
   zero-filling a big sparse write, `ntfs_extend_initialized_size`). Panic
-  logs: `/var/lib/systemd/pstore/` (root-only). The user keeps the setting;
-  don't propose ntfs-3g.
+  logs: `/var/lib/systemd/pstore/` (root-only). The user keeps the setting.
+- C: is mounted with **ntfs-3g** (FUSE), not ntfs3: files copied to it with
+  ntfs3 came out zero-filled (2026-11-27). ntfs-3g has no `sparse` option
+  (makes holes on its own) -- don't add one, it won't mount.
 - Builds failing with "gzip: unexpected end of file" after a power cut:
   `sudo nix-store --verify --check-contents --repair`.
 
