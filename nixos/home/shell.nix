@@ -21,6 +21,12 @@
       IdentityFile = "/run/agenix/id_ed25519_mmokit_server";
       IdentitiesOnly = "yes";
     };
+    settings."rpgplanet-server" = {
+      HostName = "185.248.103.190";
+      User = "root";
+      IdentityFile = "/run/agenix/id_ed25519_rpgplanet_server";
+      IdentitiesOnly = "yes";
+    };
   };
 
   # Git -- rebase on pull and copy AuthorDate to CommitterDate during rebase so the

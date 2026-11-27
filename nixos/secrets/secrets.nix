@@ -25,4 +25,5 @@ in
   "cloudinary.age".publicKeys = [ vervain ];
   "steam-upload.age".publicKeys = [ vervain ];
   "id_ed25519_mmokit_server.age".publicKeys = [ vervain ];
+  "id_ed25519_rpgplanet_server.age".publicKeys = [ vervain ];
 }
