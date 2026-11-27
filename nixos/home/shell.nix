@@ -14,6 +14,13 @@
     settings."gitlab.com" = {
       IdentityFile = "/run/agenix/id_ed25519_gitlab";
     };
+    # MMO Kit demo game server (Ubuntu); runs the Linux server build.
+    settings."mmokit-server" = {
+      HostName = "193.218.188.117";
+      User = "root";
+      IdentityFile = "/run/agenix/id_ed25519_mmokit_server";
+      IdentitiesOnly = "yes";
+    };
   };
 
   # Git -- rebase on pull and copy AuthorDate to CommitterDate during rebase so the
