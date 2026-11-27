@@ -462,7 +462,7 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
   agenix `steam-upload`. Its `steamcmd.sh` gives steamcmd its own `HOME`:
   nixpkgs' steamcmd otherwise installs into the Steam client's
   `~/.local/share/Steam`.
-- PersistenceServer: `~/former-D/MMO_Kit_Creation/PersistenceServer`, built with `dotnet-sdk_8` into `bin-linux/` so
+- PersistenceServer: `~/code/MMO_Kit_Creation/PersistenceServer`, built with `dotnet-sdk_8` into `bin-linux/` so
   Windows' `bin/` is untouched; its launcher shares Windows' `mmokit.db`. That
   repo needs `core.autocrlf=true`.
 
