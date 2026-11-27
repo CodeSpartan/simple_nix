@@ -682,7 +682,7 @@ its own auto-updater can replace the file. Runs via `appimage-run`, which
 needed `libgpg-error` added (`programs.appimage.package` in `programs.nix`);
 if a new version fails with a missing `.so`, add that library there. It
 downloads games over BitTorrent, so it's a torrent client for the VPNs too
-(process name `exodium`).
+(process name `exodium`): in the iVPN bypass list and v2rayN's direct-process rule.
 
 ## Calibre
 
