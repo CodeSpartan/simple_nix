@@ -674,6 +674,16 @@ WordCraft runs under XWayland on purpose (drag-and-drop), so its wrapper sets
 `WINIT_X11_SCALE_FACTOR` (else half size). PDF and Markdown defaults are
 pinned (Brave, glow) so these apps' MIME claims don't take them over.
 
+## Exodium (eXoDOS launcher)
+
+Official AppImage in `~/Applications/Exodium.AppImage` (outside git, menu
+entry `~/.local/share/applications/exodium.desktop`), not a Nix package, so
+its own auto-updater can replace the file. Runs via `appimage-run`, which
+needed `libgpg-error` added (`programs.appimage.package` in `programs.nix`);
+if a new version fails with a missing `.so`, add that library there. It
+downloads games over BitTorrent, so it's a torrent client for the VPNs too
+(process name `exodium`).
+
 ## Calibre
 
 nixpkgs `calibre` (`programs.nix`). Library `~/Calibre Library` was copied

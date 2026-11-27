@@ -333,6 +333,11 @@ in
   programs.appimage = {
     enable = true;
     binfmt = true;
+    # Libraries AppImages expect from the host but appimage-run's environment
+    # lacks. libgpg-error: Exodium (~/Applications) didn't start without it.
+    package = pkgs.appimage-run.override {
+      extraPkgs = pkgs: [ pkgs.libgpg-error ];
+    };
   };
 
   # --- Mission Center extras ---
