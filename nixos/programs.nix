@@ -516,6 +516,9 @@ in
     # .NET -- MMOKit's PersistenceServer (net8.0, ASP.NET Core; SDK includes the runtimes)
     dotnet-sdk_8
 
+    # Steam: upload game builds to depots (steamcmd +run_app_build)
+    steamcmd
+
     # Cloud tools
     awscli2                    # AWS CLI v2
 
