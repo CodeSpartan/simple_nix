@@ -15,13 +15,13 @@
       IdentityFile = "/run/agenix/id_ed25519_gitlab";
     };
     # MMO Kit demo game server (Ubuntu); runs the Linux server build.
-    settings."mmokit-server" = {
+    settings."mmokit-server mmo" = {
       HostName = "193.218.188.117";
       User = "root";
       IdentityFile = "/run/agenix/id_ed25519_mmokit_server";
       IdentitiesOnly = "yes";
     };
-    settings."rpgplanet-server" = {
+    settings."rpgplanet-server rpg" = {
       HostName = "185.248.103.190";
       User = "root";
       IdentityFile = "/run/agenix/id_ed25519_rpgplanet_server";

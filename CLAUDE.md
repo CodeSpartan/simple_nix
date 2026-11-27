@@ -377,7 +377,7 @@ the overlay. `AMDuProfPcm` doesn't support this CPU (desktop Zen 2).
 - Add with `./scripts/add-secret.sh <name>` (stdin). Never read private key
   material into context: generate to a file, pipe it in, shred the file.
 - Never touch Vitalii's secrets (`vastai.age` etc.).
-- Servers: `ssh mmokit-server`, `ssh rpgplanet-server` (both root, Ubuntu;
+- Servers: `ssh mmokit-server` (`ssh mmo`), `ssh rpgplanet-server` (`ssh rpg`) (both root, Ubuntu;
   host entries in `nixos/home/shell.nix`, one agenix key each, `.pub` next to
   the `.age`). A new server's key goes on it with `ssh-copy-id -f -i
   nixos/secrets/<key>.pub <host>`, run by the user (types the password once);
