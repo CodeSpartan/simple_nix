@@ -23,4 +23,5 @@ in
   "id_ed25519_gitlab.age".publicKeys = [ vervain ];
   "gyazo-token.age".publicKeys = [ vervain ];
   "cloudinary.age".publicKeys = [ vervain ];
+  "steam-upload.age".publicKeys = [ vervain ];
 }
