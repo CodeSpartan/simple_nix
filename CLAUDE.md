@@ -676,13 +676,21 @@ pinned (Brave, glow) so these apps' MIME claims don't take them over.
 
 ## Exodium (eXoDOS launcher)
 
-Official AppImage in `~/Applications/Exodium.AppImage` (outside git, menu
-entry `~/.local/share/applications/exodium.desktop`), not a Nix package, so
-its own auto-updater can replace the file. Runs via `appimage-run`, which
-needed `libgpg-error` added (`programs.appimage.package` in `programs.nix`);
-if a new version fails with a missing `.so`, add that library there. It
-downloads games over BitTorrent, so it's a torrent client for the VPNs too
-(process name `exodium`): in the iVPN bypass list and v2rayN's direct-process rule.
+Runs a **local build** of `~/code/exodium` (our fork's `preview` branch =
+upstream + our PRs: MobyGames rating sort, storage-tab fix), installed in
+`~/Applications/exodium/` (outside git) in the AppImage's layout:
+`bin/exodium` + `bin/dosbox-staging` (Exodium's own DOSBox 0.83, runs via
+nix-ld) and resources in `lib/Exodium/` (Tauri looks there). Menu entry
+`~/.local/share/applications/exodium.desktop`. No auto-update: once
+upstream releases with our PRs, go back to the official AppImage
+(`appimage-run` has `libgpg-error` added for it, `programs.nix`).
+Rebuild: in a temporary detached `git worktree` of the branch (so the
+binary can't fall back to the repo's `metadata/`), build in a nix-shell
+with Tauri's GTK/WebKit deps, `pnpm tauri build --no-bundle`, then copy
+binary + `metadata/`/`torrents/` into the install. Data stays in
+`~/.local/share/com.redfox.exodium` and `~/Games`. It downloads games over
+BitTorrent (process name `exodium`): in the iVPN bypass list and v2rayN's
+direct-process rule.
 
 ## Calibre
 
