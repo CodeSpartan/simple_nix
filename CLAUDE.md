@@ -625,6 +625,21 @@ Flameshot's "Open with" and Dolphin's right-click "Upload to". Credentials:
 agenix `gyazo-token` (access token) and `cloudinary`
 (`cloudinary://key:secret@cloud`, signed upload).
 
+## Gameplay recording / fan-noise cleanup
+
+Recorder: `gpu-screen-recorder` (+ `-gtk` GUI, NVENC), e.g. `-w screen -f 60
+-k hevc -q very_high -a default_output -a default_input -o ~/Videos/x.mp4`
+(separate game/mic tracks; `"default_output|default_input"` mixes them into
+one). For YouTube record 60 FPS (its playback max). Default quality gave only
+~4 Mbit/s at 4K60 -- suggest `-bm cbr -q 50000` if it looks blocky.
+Fan noise in the mic: **`scripts/denoise-video.sh <in> [out]`** (out
+defaults to `<in>-clean.mp4`, input untouched). It finds the longest quiet
+stretch itself, learns the noise there, and runs `highpass 80 Hz` + `afftdn`
+(video copied, audio -> AAC); with several audio tracks it cleans only the
+last (mic). The user compared it with DeepFilterNet (nixpkgs ships only its
+LADSPA plugin; needs `ffmpeg-full`) and found DeepFilterNet left the fan
+noise audible -- stick with afftdn. Stronger/weaker: `NR=<dB>` (default 40).
+
 ## Calendar / day notes (replaces Rainlendar)
 
 `nixos/calendar.nix`. calcurse in a `foot` window (`calendar-open`, from the
