@@ -47,6 +47,11 @@ inherited from Vitalii stays -- don't trim it.
   private `MacroEditBox`, `MacroExecutionManager.lua`); if it recurs, read
   `Logs/taint.log` after `/console taintLog 2` + `/reload` + click +
   `/reload`.
+- Exodium PRs (see Exodium): #68 storage-tab fix, #69 MobyGames rating sort
+  (`gh pr view N -R tvollstaedt/exodium`; fork remote `fork` =
+  CodeSpartan/exodium). Address review comments on their branches, then
+  rebuild `preview`. Once a release contains both, return to the official
+  AppImage and delete `~/Applications/exodium/`.
 - `config/hypr/user.conf` is dead (see Hyprland) -- could be deleted.
 - `sdl-wayland-fixes` (see Unreal Engine) holds two SDL workarounds. UE
   links SDL statically, so each can go only once a UE update ships a fixed
@@ -676,8 +681,8 @@ pinned (Brave, glow) so these apps' MIME claims don't take them over.
 
 ## Exodium (eXoDOS launcher)
 
-Runs a **local build** of `~/code/exodium` (our fork's `preview` branch =
-upstream + our PRs: MobyGames rating sort, storage-tab fix), installed in
+Runs a **local build** of `~/code/exodium` (local branch `preview` =
+upstream `main` + our two PRs, merged), installed in
 `~/Applications/exodium/` (outside git) in the AppImage's layout:
 `bin/exodium` + `bin/dosbox-staging` (Exodium's own DOSBox 0.83, runs via
 nix-ld) and resources in `lib/Exodium/` (Tauri looks there). Menu entry
