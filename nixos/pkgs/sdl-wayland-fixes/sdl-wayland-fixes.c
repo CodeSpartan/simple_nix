@@ -1,6 +1,6 @@
 // LD_PRELOAD shim for SDL3 apps (Unreal) on Hyprland. Two workarounds:
 //
-// 1. Empty fixed-size windows -- hide the xdg_toplevel TILED_* states.
+// 1. Wrong window sizes -- hide the xdg_toplevel TILED_* and MAXIMIZED states.
 //    Hyprland marks every toplevel as tiled on all four edges, floating
 //    ones too. SDL3 then stops saving programmatic resizes of a fixed-size
 //    (non-resizable) window (SDL_windowevents.c: floating.w is only updated
@@ -8,6 +8,13 @@
 //    size. Unreal's autosized dialogs are created at 1x1 and resized to fit
 //    their content, so they collapsed back to 1x1: an empty frame.
 //    SDL issue #16093, fixed on SDL main (fcb5ef8a9), in no 3.4.x release.
+//
+//    MAXIMIZED is hidden too: Hyprland sets it on every toplevel when it
+//    maps (XDGShell.cpp, "forces apps to not draw CSD"; its real maximize
+//    never sends the state). SDL then refuses all programmatic resizes
+//    (Wayland_SetWindowSize), so an autosized dialog froze at whatever size
+//    it had when that configure arrived -- e.g. Pick Parent Class stuck at
+//    417 px while its class tree was still loading.
 //
 //    SDL loads libwayland-client with dlopen + dlsym, so dlsym is hooked to
 //    hand out our wl_proxy_add_listener; programs linked directly against
@@ -38,7 +45,7 @@ struct wl_array { size_t size, alloc; void *data; };
 typedef void (*listener_fn)(void);
 typedef void (*configure_fn)(void *, struct wl_proxy *, int32_t, int32_t, struct wl_array *);
 
-enum { TILED_LEFT = 5, TILED_RIGHT = 6, TILED_TOP = 7, TILED_BOTTOM = 8 };
+enum { MAXIMIZED = 1, TILED_LEFT = 5, TILED_RIGHT = 6, TILED_TOP = 7, TILED_BOTTOM = 8 };
 // xdg_toplevel events: configure, close, configure_bounds, wm_capabilities.
 #define TOPLEVEL_EVENTS 4
 #define MAX_LISTENERS 16
@@ -90,7 +97,7 @@ static void untiled_configure(void *data, struct wl_proxy *toplevel,
     struct wl_array filtered = { 0, sizeof(kept), kept };
     uint32_t *s = states->data;
     for (size_t i = 0; i < states->size / sizeof(uint32_t) && filtered.size < sizeof(kept); i++) {
-        if (s[i] >= TILED_LEFT && s[i] <= TILED_BOTTOM)
+        if (s[i] == MAXIMIZED || (s[i] >= TILED_LEFT && s[i] <= TILED_BOTTOM))
             continue;
         kept[filtered.size / sizeof(uint32_t)] = s[i];
         filtered.size += sizeof(uint32_t);

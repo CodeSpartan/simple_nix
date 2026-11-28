@@ -60,6 +60,9 @@ inherited from Vitalii stays -- don't trim it.
   - Empty dialogs: SDL issue libsdl-org/SDL#16093, fixed on SDL `main`
     (fcb5ef8a9, 2026-08-01), in no release up to 3.4.20. Test: change a
     Blueprint variable to an array.
+  - Its MAXIMIZED filter is not an SDL bug but Hyprland's (fake maximized
+    on every map, `XDGShell.cpp`): it stays even with a fixed SDL, unless
+    Hyprland stops doing that.
   - Pointer locked under viewport context menus: not reported upstream
     yet (found 2026-11-25; the same early return is still on SDL `main`).
     Test: right-click an actor in the level viewport, the menu must be
@@ -429,7 +432,8 @@ its config/DB on your own initiative.** Reading logs and the sing-box API
   `SDL_VIDEODRIVER=wayland SDL_VIDEO_WAYLAND_SCALE_TO_DISPLAY=1
   SDL_MOUSE_INTEGER_MODE=1`, plus `LD_PRELOAD` of `sdl-wayland-fixes`
   (`nixos/pkgs/`, details in its .c): without it UE's autosized dialogs
-  show as empty frames, and a viewport right-click menu leaves the pointer
+  show as empty frames or freeze half-grown (Pick Parent Class cut off:
+  SDL took Hyprland's fake "maximized" state and refused resizes), and a viewport right-click menu leaves the pointer
   hidden and locked (menu unclickable). UE's calls into SDL go through the
   PLT, so a tracing `LD_PRELOAD` can log them when debugging
   (`SDL_SetWindowRelativeMouseMode` etc.). Without SCALE_TO_DISPLAY it renders at half
